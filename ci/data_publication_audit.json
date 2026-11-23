@@ -1,0 +1,1925 @@
+{
+  "schema_version": 1,
+  "purpose": "Decoded data inspection for publication of the requested public benchmark revision",
+  "source_scan_sha256": "07f8b74bd60679326ad59a2717af5b42bb697d5c235a54d231531f22e712d464",
+  "manifest_sha256": "b224cbfb49e4cbbb1a373a6be67c51a50d18d4a69feab5bd0f1d35611314632e",
+  "scope": "Read-only exhaustive decoded string/key scan of eight exact original transported core files; excludes other repository files and makes no universal privacy guarantee. Numeric cells and numeric JSON structures classified as benchmark numeric data, not personal identifiers. Pattern detections are heuristics; complete vocabularies/schemas accompany them.",
+  "file_count": 8,
+  "total_string_values_scanned": 431763,
+  "total_pattern_hits": 0,
+  "all_other_string_vocabularies_enumerated": true,
+  "source_template_path_segment_vocabularies": {
+    "0": [
+      "FFT",
+      "GE",
+      "Genome",
+      "LA",
+      "LIGO",
+      "Montage"
+    ],
+    "1": [
+      "100Nodes",
+      "11Nodes",
+      "135Nodes",
+      "137Nodes",
+      "200Nodes",
+      "224Nodes",
+      "35Nodes",
+      "37Nodes",
+      "40Nodes",
+      "50Nodes",
+      "96Nodes",
+      "9Nodes"
+    ],
+    "2": [
+      "16PROCESSORS",
+      "32PROCESSORS",
+      "64PROCESSORS",
+      "8PROCESSORS"
+    ],
+    "3": [
+      "10_16.txt",
+      "10_32.txt",
+      "10_64.txt",
+      "10_8.txt",
+      "1_16.txt",
+      "1_32.txt",
+      "1_64.txt",
+      "1_8.txt",
+      "2_16.txt",
+      "2_32.txt",
+      "2_64.txt",
+      "2_8.txt",
+      "3_16.txt",
+      "3_32.txt",
+      "3_64.txt",
+      "3_8.txt",
+      "4_16.txt",
+      "4_32.txt",
+      "4_64.txt",
+      "4_8.txt",
+      "5_16.txt",
+      "5_32.txt",
+      "5_64.txt",
+      "5_8.txt",
+      "6_16.txt",
+      "6_32.txt",
+      "6_64.txt",
+      "6_8.txt",
+      "7_16.txt",
+      "7_32.txt",
+      "7_64.txt",
+      "7_8.txt",
+      "8_16.txt",
+      "8_32.txt",
+      "8_64.txt",
+      "8_8.txt",
+      "9_16.txt",
+      "9_32.txt",
+      "9_64.txt",
+      "9_8.txt"
+    ]
+  },
+  "finding": "No sensitive-pattern match or unexplained free-text string was observed in the eight decoded files. Non-numeric strings are SHA-256 digests, synthetic instance identifiers, numeric workflow-template paths, synthetic variant labels, the enumerated technical categorical vocabularies, or six Git ignore patterns. This bounded content audit does not establish licensing rights, confer publication authorization, or override approval review.",
+  "files": [
+    {
+      "path": "source_evidence/candidates.jsonl.gz",
+      "bytes": 15512167,
+      "sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77",
+      "records_or_ignore_lines": 3072,
+      "top_level_fields": [
+        "costs",
+        "edges",
+        "family",
+        "format",
+        "id",
+        "input_sha256",
+        "n",
+        "nominal_n",
+        "normalized_input_sha256",
+        "p",
+        "provenance",
+        "root_count",
+        "search_seed",
+        "source_sha256",
+        "split",
+        "synthetic",
+        "trial_index",
+        "variant_label"
+      ],
+      "all_object_keys": [
+        "added_edges",
+        "added_nodes",
+        "anchor_children",
+        "bait_cost",
+        "bait_processor",
+        "child",
+        "coherence_percent",
+        "continuation_cost",
+        "continuation_processor",
+        "costs",
+        "costs_resampled",
+        "edges",
+        "entry_base",
+        "entry_comm_low",
+        "entry_comm_span",
+        "entry_jitter_max",
+        "entry_node",
+        "entry_treatment",
+        "family",
+        "fast_cost_high",
+        "fast_cost_low",
+        "format",
+        "generator_version",
+        "id",
+        "input_sha256",
+        "internal_comm_high",
+        "internal_comm_low",
+        "lookahead_traps",
+        "n",
+        "node_affinities",
+        "nominal_n",
+        "normalized_input_sha256",
+        "original_n",
+        "original_p",
+        "original_root_count",
+        "original_roots",
+        "outcome_selection_performed_by_generator",
+        "p",
+        "parameter_sha256",
+        "parameters",
+        "preserved_zero_edges",
+        "preserved_zero_exit_nodes",
+        "preserved_zero_nodes",
+        "provenance",
+        "regime",
+        "root_count",
+        "search_seed",
+        "secondary_percent",
+        "seed",
+        "slow_factor_tenths_high",
+        "slow_factor_tenths_low",
+        "source_format",
+        "source_hash_kind",
+        "source_id",
+        "source_sha256",
+        "source_split",
+        "source_topology_sha256",
+        "split",
+        "synthetic",
+        "task",
+        "task_cost_high",
+        "task_cost_low",
+        "trap_extra_percent_high",
+        "trap_extra_percent_low",
+        "trap_percent",
+        "trial_index",
+        "variant_label",
+        "zero_edge_policy",
+        "zero_node_policy"
+      ],
+      "string_fields": {
+        "family": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "FFT",
+            "GE",
+            "Genome",
+            "LA",
+            "LIGO",
+            "Montage"
+          ]
+        },
+        "format": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "categorical_or_other_string": 1
+          },
+          "categorical_values": [
+            "synthetic_dag_v1"
+          ]
+        },
+        "id": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "synthetic_instance_id": 3072
+          }
+        },
+        "input_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "normalized_input_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "provenance.entry_treatment": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "append_positive_initializer",
+            "promote_zero_entry",
+            "reweight_real_entry"
+          ]
+        },
+        "provenance.generator_version": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "categorical_or_other_string": 1
+          },
+          "categorical_values": [
+            "synthetic_dag_v1"
+          ]
+        },
+        "provenance.parameter_sha256": {
+          "distinct_count": 3058,
+          "distinct_categories": {
+            "sha256_hex": 3058
+          }
+        },
+        "provenance.parameters.zero_edge_policy": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "categorical_or_other_string": 1
+          },
+          "categorical_values": [
+            "preserve_zero_edges_incident_to_preserved_zero_nodes_except_entry_outgoing"
+          ]
+        },
+        "provenance.parameters.zero_node_policy": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "categorical_or_other_string": 1
+          },
+          "categorical_values": [
+            "preserve_all_original_zero_rows_except_promoted_entry"
+          ]
+        },
+        "provenance.regime": {
+          "distinct_count": 4,
+          "distinct_categories": {
+            "categorical_or_other_string": 4
+          },
+          "categorical_values": [
+            "branch_affinity",
+            "entry_transfer",
+            "lookahead_traps",
+            "mixed_affinity"
+          ]
+        },
+        "provenance.source_format": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "categorical_or_other_string": 2
+          },
+          "categorical_values": [
+            "D1",
+            "D2"
+          ]
+        },
+        "provenance.source_hash_kind": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "categorical_or_other_string": 1
+          },
+          "categorical_values": [
+            "source_record_declared"
+          ]
+        },
+        "provenance.source_id": {
+          "distinct_count": 259,
+          "distinct_categories": {
+            "workflow_template_path": 259
+          }
+        },
+        "provenance.source_sha256": {
+          "distinct_count": 259,
+          "distinct_categories": {
+            "sha256_hex": 259
+          }
+        },
+        "provenance.source_split": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "categorical_or_other_string": 2
+          },
+          "categorical_values": [
+            "dev",
+            "test"
+          ]
+        },
+        "provenance.source_topology_sha256": {
+          "distinct_count": 65,
+          "distinct_categories": {
+            "sha256_hex": 65
+          }
+        },
+        "source_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "split": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "categorical_or_other_string": 1
+          },
+          "categorical_values": [
+            "exploratory_search"
+          ]
+        },
+        "variant_label": {
+          "distinct_count": 28,
+          "distinct_categories": {
+            "synthetic_variant_label": 28
+          }
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    },
+    {
+      "path": "source_evidence/full_pool_all_3072_results.csv",
+      "bytes": 3167196,
+      "sha256": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+      "records_or_ignore_lines": 3072,
+      "top_level_fields": [
+        "added_edges",
+        "added_nodes",
+        "append_AEFT-ref_makespan",
+        "append_BPPTS-ref_makespan",
+        "append_CPOP_makespan",
+        "append_ECTD-no-damping_makespan",
+        "append_ECTD-no-dup_makespan",
+        "append_ECTD_duplicate_count",
+        "append_ECTD_duplicate_work",
+        "append_ECTD_execution_horizon",
+        "append_ECTD_makespan",
+        "append_HEFT_makespan",
+        "append_IPEFT_makespan",
+        "append_IPPTS-ready_makespan",
+        "append_LSTD-ref_makespan",
+        "append_MPEFT-ref_makespan",
+        "append_PEFT_makespan",
+        "append_best_or_tied_all_eight",
+        "append_geomean_ratio_to_baselines",
+        "append_ratio_to_best_baseline",
+        "append_strict_all_eight",
+        "append_vs_AEFT-ref",
+        "append_vs_BPPTS-ref",
+        "append_vs_CPOP",
+        "append_vs_HEFT",
+        "append_vs_IPPTS-ready",
+        "append_vs_LSTD-ref",
+        "append_vs_MPEFT-ref",
+        "append_vs_PEFT",
+        "append_win_at_least_one",
+        "costs_resampled",
+        "entry_treatment",
+        "failure_reason",
+        "family",
+        "id",
+        "input_sha256",
+        "input_sha256_duplicate_of",
+        "insertion_AEFT-ref_makespan",
+        "insertion_BPPTS-ref_makespan",
+        "insertion_CPOP_makespan",
+        "insertion_ECTD-no-damping_makespan",
+        "insertion_ECTD-no-dup_makespan",
+        "insertion_ECTD_duplicate_count",
+        "insertion_ECTD_duplicate_work",
+        "insertion_ECTD_execution_horizon",
+        "insertion_ECTD_makespan",
+        "insertion_HEFT_makespan",
+        "insertion_IPEFT_makespan",
+        "insertion_IPPTS-ready_makespan",
+        "insertion_LSTD-ref_makespan",
+        "insertion_MPEFT-ref_makespan",
+        "insertion_PEFT_makespan",
+        "insertion_best_or_tied_all_eight",
+        "insertion_geomean_ratio_to_baselines",
+        "insertion_ratio_to_best_baseline",
+        "insertion_strict_all_eight",
+        "insertion_vs_AEFT-ref",
+        "insertion_vs_BPPTS-ref",
+        "insertion_vs_CPOP",
+        "insertion_vs_HEFT",
+        "insertion_vs_IPPTS-ready",
+        "insertion_vs_LSTD-ref",
+        "insertion_vs_MPEFT-ref",
+        "insertion_vs_PEFT",
+        "insertion_win_at_least_one",
+        "n",
+        "normalized_input_sha256",
+        "normalized_input_sha256_duplicate_of",
+        "original_n",
+        "original_root_count",
+        "p",
+        "parameter_identity_sha256",
+        "parameter_identity_sha256_duplicate_of",
+        "parent_source_sha256",
+        "regime",
+        "seed",
+        "selected",
+        "selected_rank",
+        "source_id",
+        "source_topology_sha256",
+        "strict_pool_duplicate_exclusion",
+        "valid",
+        "variant_label"
+      ],
+      "all_object_keys": [
+        "added_edges",
+        "added_nodes",
+        "append_AEFT-ref_makespan",
+        "append_BPPTS-ref_makespan",
+        "append_CPOP_makespan",
+        "append_ECTD-no-damping_makespan",
+        "append_ECTD-no-dup_makespan",
+        "append_ECTD_duplicate_count",
+        "append_ECTD_duplicate_work",
+        "append_ECTD_execution_horizon",
+        "append_ECTD_makespan",
+        "append_HEFT_makespan",
+        "append_IPEFT_makespan",
+        "append_IPPTS-ready_makespan",
+        "append_LSTD-ref_makespan",
+        "append_MPEFT-ref_makespan",
+        "append_PEFT_makespan",
+        "append_best_or_tied_all_eight",
+        "append_geomean_ratio_to_baselines",
+        "append_ratio_to_best_baseline",
+        "append_strict_all_eight",
+        "append_vs_AEFT-ref",
+        "append_vs_BPPTS-ref",
+        "append_vs_CPOP",
+        "append_vs_HEFT",
+        "append_vs_IPPTS-ready",
+        "append_vs_LSTD-ref",
+        "append_vs_MPEFT-ref",
+        "append_vs_PEFT",
+        "append_win_at_least_one",
+        "costs_resampled",
+        "entry_treatment",
+        "failure_reason",
+        "family",
+        "id",
+        "input_sha256",
+        "input_sha256_duplicate_of",
+        "insertion_AEFT-ref_makespan",
+        "insertion_BPPTS-ref_makespan",
+        "insertion_CPOP_makespan",
+        "insertion_ECTD-no-damping_makespan",
+        "insertion_ECTD-no-dup_makespan",
+        "insertion_ECTD_duplicate_count",
+        "insertion_ECTD_duplicate_work",
+        "insertion_ECTD_execution_horizon",
+        "insertion_ECTD_makespan",
+        "insertion_HEFT_makespan",
+        "insertion_IPEFT_makespan",
+        "insertion_IPPTS-ready_makespan",
+        "insertion_LSTD-ref_makespan",
+        "insertion_MPEFT-ref_makespan",
+        "insertion_PEFT_makespan",
+        "insertion_best_or_tied_all_eight",
+        "insertion_geomean_ratio_to_baselines",
+        "insertion_ratio_to_best_baseline",
+        "insertion_strict_all_eight",
+        "insertion_vs_AEFT-ref",
+        "insertion_vs_BPPTS-ref",
+        "insertion_vs_CPOP",
+        "insertion_vs_HEFT",
+        "insertion_vs_IPPTS-ready",
+        "insertion_vs_LSTD-ref",
+        "insertion_vs_MPEFT-ref",
+        "insertion_vs_PEFT",
+        "insertion_win_at_least_one",
+        "n",
+        "normalized_input_sha256",
+        "normalized_input_sha256_duplicate_of",
+        "original_n",
+        "original_root_count",
+        "p",
+        "parameter_identity_sha256",
+        "parameter_identity_sha256_duplicate_of",
+        "parent_source_sha256",
+        "regime",
+        "seed",
+        "selected",
+        "selected_rank",
+        "source_id",
+        "source_topology_sha256",
+        "strict_pool_duplicate_exclusion",
+        "valid",
+        "variant_label"
+      ],
+      "string_fields": {
+        "added_edges": {
+          "distinct_count": 18,
+          "distinct_categories": {
+            "numeric_json_structure": 18
+          }
+        },
+        "added_nodes": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "numeric_json_structure": 6
+          }
+        },
+        "append_AEFT-ref_makespan": {
+          "distinct_count": 1039,
+          "distinct_categories": {
+            "numeric_scalar": 1039
+          }
+        },
+        "append_BPPTS-ref_makespan": {
+          "distinct_count": 1116,
+          "distinct_categories": {
+            "numeric_scalar": 1116
+          }
+        },
+        "append_CPOP_makespan": {
+          "distinct_count": 1292,
+          "distinct_categories": {
+            "numeric_scalar": 1292
+          }
+        },
+        "append_ECTD-no-damping_makespan": {
+          "distinct_count": 1015,
+          "distinct_categories": {
+            "numeric_scalar": 1015
+          }
+        },
+        "append_ECTD-no-dup_makespan": {
+          "distinct_count": 1014,
+          "distinct_categories": {
+            "numeric_scalar": 1014
+          }
+        },
+        "append_ECTD_duplicate_count": {
+          "distinct_count": 4,
+          "distinct_categories": {
+            "numeric_scalar": 4
+          }
+        },
+        "append_ECTD_duplicate_work": {
+          "distinct_count": 536,
+          "distinct_categories": {
+            "numeric_scalar": 536
+          }
+        },
+        "append_ECTD_execution_horizon": {
+          "distinct_count": 1020,
+          "distinct_categories": {
+            "numeric_scalar": 1020
+          }
+        },
+        "append_ECTD_makespan": {
+          "distinct_count": 1020,
+          "distinct_categories": {
+            "numeric_scalar": 1020
+          }
+        },
+        "append_HEFT_makespan": {
+          "distinct_count": 1025,
+          "distinct_categories": {
+            "numeric_scalar": 1025
+          }
+        },
+        "append_IPEFT_makespan": {
+          "distinct_count": 1024,
+          "distinct_categories": {
+            "numeric_scalar": 1024
+          }
+        },
+        "append_IPPTS-ready_makespan": {
+          "distinct_count": 1189,
+          "distinct_categories": {
+            "numeric_scalar": 1189
+          }
+        },
+        "append_LSTD-ref_makespan": {
+          "distinct_count": 1012,
+          "distinct_categories": {
+            "numeric_scalar": 1012
+          }
+        },
+        "append_MPEFT-ref_makespan": {
+          "distinct_count": 1033,
+          "distinct_categories": {
+            "numeric_scalar": 1033
+          }
+        },
+        "append_PEFT_makespan": {
+          "distinct_count": 1029,
+          "distinct_categories": {
+            "numeric_scalar": 1029
+          }
+        },
+        "append_best_or_tied_all_eight": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "boolean_literal": 2
+          }
+        },
+        "append_geomean_ratio_to_baselines": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "numeric_scalar": 3072
+          }
+        },
+        "append_ratio_to_best_baseline": {
+          "distinct_count": 2741,
+          "distinct_categories": {
+            "numeric_scalar": 2741
+          }
+        },
+        "append_strict_all_eight": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "boolean_literal": 2
+          }
+        },
+        "append_vs_AEFT-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_vs_BPPTS-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_vs_CPOP": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_vs_HEFT": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_vs_IPPTS-ready": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_vs_LSTD-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_vs_MPEFT-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_vs_PEFT": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "append_win_at_least_one": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "boolean_literal": 2
+          }
+        },
+        "costs_resampled": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "boolean_literal": 1
+          }
+        },
+        "entry_treatment": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "append_positive_initializer",
+            "promote_zero_entry",
+            "reweight_real_entry"
+          ]
+        },
+        "failure_reason": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "categorical_or_other_string": 1
+          },
+          "categorical_values": [
+            "\"\""
+          ]
+        },
+        "family": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "FFT",
+            "GE",
+            "Genome",
+            "LA",
+            "LIGO",
+            "Montage"
+          ]
+        },
+        "id": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "synthetic_instance_id": 3072
+          }
+        },
+        "input_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "input_sha256_duplicate_of": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "empty": 1
+          }
+        },
+        "insertion_AEFT-ref_makespan": {
+          "distinct_count": 1018,
+          "distinct_categories": {
+            "numeric_scalar": 1018
+          }
+        },
+        "insertion_BPPTS-ref_makespan": {
+          "distinct_count": 1054,
+          "distinct_categories": {
+            "numeric_scalar": 1054
+          }
+        },
+        "insertion_CPOP_makespan": {
+          "distinct_count": 1158,
+          "distinct_categories": {
+            "numeric_scalar": 1158
+          }
+        },
+        "insertion_ECTD-no-damping_makespan": {
+          "distinct_count": 977,
+          "distinct_categories": {
+            "numeric_scalar": 977
+          }
+        },
+        "insertion_ECTD-no-dup_makespan": {
+          "distinct_count": 987,
+          "distinct_categories": {
+            "numeric_scalar": 987
+          }
+        },
+        "insertion_ECTD_duplicate_count": {
+          "distinct_count": 4,
+          "distinct_categories": {
+            "numeric_scalar": 4
+          }
+        },
+        "insertion_ECTD_duplicate_work": {
+          "distinct_count": 536,
+          "distinct_categories": {
+            "numeric_scalar": 536
+          }
+        },
+        "insertion_ECTD_execution_horizon": {
+          "distinct_count": 984,
+          "distinct_categories": {
+            "numeric_scalar": 984
+          }
+        },
+        "insertion_ECTD_makespan": {
+          "distinct_count": 984,
+          "distinct_categories": {
+            "numeric_scalar": 984
+          }
+        },
+        "insertion_HEFT_makespan": {
+          "distinct_count": 1014,
+          "distinct_categories": {
+            "numeric_scalar": 1014
+          }
+        },
+        "insertion_IPEFT_makespan": {
+          "distinct_count": 1007,
+          "distinct_categories": {
+            "numeric_scalar": 1007
+          }
+        },
+        "insertion_IPPTS-ready_makespan": {
+          "distinct_count": 1173,
+          "distinct_categories": {
+            "numeric_scalar": 1173
+          }
+        },
+        "insertion_LSTD-ref_makespan": {
+          "distinct_count": 1006,
+          "distinct_categories": {
+            "numeric_scalar": 1006
+          }
+        },
+        "insertion_MPEFT-ref_makespan": {
+          "distinct_count": 984,
+          "distinct_categories": {
+            "numeric_scalar": 984
+          }
+        },
+        "insertion_PEFT_makespan": {
+          "distinct_count": 1008,
+          "distinct_categories": {
+            "numeric_scalar": 1008
+          }
+        },
+        "insertion_best_or_tied_all_eight": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "boolean_literal": 2
+          }
+        },
+        "insertion_geomean_ratio_to_baselines": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "numeric_scalar": 3072
+          }
+        },
+        "insertion_ratio_to_best_baseline": {
+          "distinct_count": 2735,
+          "distinct_categories": {
+            "numeric_scalar": 2735
+          }
+        },
+        "insertion_strict_all_eight": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "boolean_literal": 2
+          }
+        },
+        "insertion_vs_AEFT-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_vs_BPPTS-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_vs_CPOP": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_vs_HEFT": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_vs_IPPTS-ready": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_vs_LSTD-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_vs_MPEFT-ref": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_vs_PEFT": {
+          "distinct_count": 3,
+          "distinct_categories": {
+            "categorical_or_other_string": 3
+          },
+          "categorical_values": [
+            "loss",
+            "tie",
+            "win"
+          ]
+        },
+        "insertion_win_at_least_one": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "boolean_literal": 2
+          }
+        },
+        "n": {
+          "distinct_count": 15,
+          "distinct_categories": {
+            "numeric_scalar": 15
+          }
+        },
+        "normalized_input_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "normalized_input_sha256_duplicate_of": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "empty": 1
+          }
+        },
+        "original_n": {
+          "distinct_count": 14,
+          "distinct_categories": {
+            "numeric_scalar": 14
+          }
+        },
+        "original_root_count": {
+          "distinct_count": 17,
+          "distinct_categories": {
+            "numeric_scalar": 17
+          }
+        },
+        "p": {
+          "distinct_count": 4,
+          "distinct_categories": {
+            "numeric_scalar": 4
+          }
+        },
+        "parameter_identity_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "parameter_identity_sha256_duplicate_of": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "empty": 1
+          }
+        },
+        "parent_source_sha256": {
+          "distinct_count": 259,
+          "distinct_categories": {
+            "sha256_hex": 259
+          }
+        },
+        "regime": {
+          "distinct_count": 4,
+          "distinct_categories": {
+            "categorical_or_other_string": 4
+          },
+          "categorical_values": [
+            "branch_affinity",
+            "entry_transfer",
+            "lookahead_traps",
+            "mixed_affinity"
+          ]
+        },
+        "seed": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "numeric_scalar": 3072
+          }
+        },
+        "selected": {
+          "distinct_count": 2,
+          "distinct_categories": {
+            "boolean_literal": 2
+          }
+        },
+        "selected_rank": {
+          "distinct_count": 121,
+          "distinct_categories": {
+            "empty": 1,
+            "numeric_scalar": 120
+          }
+        },
+        "source_id": {
+          "distinct_count": 259,
+          "distinct_categories": {
+            "workflow_template_path": 259
+          }
+        },
+        "source_topology_sha256": {
+          "distinct_count": 65,
+          "distinct_categories": {
+            "sha256_hex": 65
+          }
+        },
+        "strict_pool_duplicate_exclusion": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "empty": 1
+          }
+        },
+        "valid": {
+          "distinct_count": 1,
+          "distinct_categories": {
+            "boolean_literal": 1
+          }
+        },
+        "variant_label": {
+          "distinct_count": 28,
+          "distinct_categories": {
+            "synthetic_variant_label": 28
+          }
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    },
+    {
+      "path": "source_evidence/ipeft_pool_results.jsonl.gz",
+      "bytes": 487773,
+      "sha256": "2e6e5896ea61af7c45577b2b9c0219c4162ddea523d4a42af3b327c813131567",
+      "records_or_ignore_lines": 3072,
+      "top_level_fields": [
+        "family",
+        "id",
+        "modes",
+        "source_sha256"
+      ],
+      "all_object_keys": [
+        "append",
+        "duplicate_count",
+        "duration_sec",
+        "errors",
+        "execution_horizon",
+        "family",
+        "id",
+        "insertion",
+        "makespan",
+        "modes",
+        "schedule_sha256",
+        "source_sha256",
+        "valid"
+      ],
+      "string_fields": {
+        "family": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "FFT",
+            "GE",
+            "Genome",
+            "LA",
+            "LIGO",
+            "Montage"
+          ]
+        },
+        "id": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "synthetic_instance_id": 3072
+          }
+        },
+        "modes.append.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "modes.insertion.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "source_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    },
+    {
+      "path": "source_evidence/original_results.jsonl.gz",
+      "bytes": 3153207,
+      "sha256": "a724e8c93e3b160105db2aa7b23fa6ab9d7f1f3371cf3041f71793042fbfdcd7",
+      "records_or_ignore_lines": 3072,
+      "top_level_fields": [
+        "family",
+        "id",
+        "input_sha256",
+        "normalized_input_sha256",
+        "placements",
+        "regime",
+        "seed",
+        "source_id",
+        "trial_index",
+        "valid"
+      ],
+      "all_object_keys": [
+        "AEFT-ref",
+        "BPPTS-ref",
+        "CPOP",
+        "ECTD",
+        "ECTD-no-damping",
+        "ECTD-no-dup",
+        "HEFT",
+        "IPPTS-ready",
+        "LSTD-ref",
+        "MPEFT-ref",
+        "PEFT",
+        "append",
+        "damping_scored_tasks",
+        "damping_selected_tasks",
+        "damping_tasks",
+        "diagnostics",
+        "duplicate_count",
+        "duplicate_work",
+        "entry_is_dummy",
+        "errors",
+        "execution_horizon",
+        "family",
+        "id",
+        "input_sha256",
+        "insertion",
+        "makespan",
+        "min_weight",
+        "normalized_input_sha256",
+        "placements",
+        "pure_eft_tasks",
+        "regime",
+        "schedule_sha256",
+        "seed",
+        "source_id",
+        "trial_index",
+        "valid"
+      ],
+      "string_fields": {
+        "family": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "FFT",
+            "GE",
+            "Genome",
+            "LA",
+            "LIGO",
+            "Montage"
+          ]
+        },
+        "id": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "synthetic_instance_id": 3072
+          }
+        },
+        "input_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "normalized_input_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.AEFT-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.BPPTS-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.CPOP.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.ECTD-no-damping.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.ECTD-no-dup.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.ECTD.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.HEFT.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.IPPTS-ready.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.LSTD-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.MPEFT-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.append.PEFT.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.AEFT-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.BPPTS-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.CPOP.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.ECTD-no-damping.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.ECTD-no-dup.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.ECTD.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.HEFT.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.IPPTS-ready.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.LSTD-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.MPEFT-ref.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "placements.insertion.PEFT.schedule_sha256": {
+          "distinct_count": 3072,
+          "distinct_categories": {
+            "sha256_hex": 3072
+          }
+        },
+        "regime": {
+          "distinct_count": 4,
+          "distinct_categories": {
+            "categorical_or_other_string": 4
+          },
+          "categorical_values": [
+            "branch_affinity",
+            "entry_transfer",
+            "lookahead_traps",
+            "mixed_affinity"
+          ]
+        },
+        "source_id": {
+          "distinct_count": 259,
+          "distinct_categories": {
+            "workflow_template_path": 259
+          }
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    },
+    {
+      "path": "validation/replay-full_order_209/replayed_results.jsonl.gz",
+      "bytes": 128864,
+      "sha256": "352a949f8260d00747eace34c9ab1dd81ea5d0ba287ecf2fa9be3c339eebbf6a",
+      "records_or_ignore_lines": 209,
+      "top_level_fields": [
+        "family",
+        "id",
+        "input_sha256",
+        "placements"
+      ],
+      "all_object_keys": [
+        "AEFT",
+        "BPPTS",
+        "ECTD",
+        "HEFT",
+        "IPEFT",
+        "LSTD",
+        "append",
+        "duplicate_count",
+        "duplicate_work",
+        "errors",
+        "execution_horizon",
+        "family",
+        "id",
+        "input_sha256",
+        "insertion",
+        "makespan",
+        "placements",
+        "schedule_sha256",
+        "valid"
+      ],
+      "string_fields": {
+        "family": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "FFT",
+            "GE",
+            "Genome",
+            "LA",
+            "LIGO",
+            "Montage"
+          ]
+        },
+        "id": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "synthetic_instance_id": 209
+          }
+        },
+        "input_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.append.AEFT.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.append.BPPTS.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.append.ECTD.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.append.HEFT.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.append.IPEFT.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.append.LSTD.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.insertion.AEFT.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.insertion.BPPTS.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.insertion.ECTD.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.insertion.HEFT.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.insertion.IPEFT.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        },
+        "placements.insertion.LSTD.schedule_sha256": {
+          "distinct_count": 209,
+          "distinct_categories": {
+            "sha256_hex": 209
+          }
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    },
+    {
+      "path": "validation/replay-full_order_225/replayed_results.jsonl.gz",
+      "bytes": 139127,
+      "sha256": "71c33a1e49e718f1dc07485f96db12e8d325c5a9cdac3ea94d578c0cfab2c482",
+      "records_or_ignore_lines": 225,
+      "top_level_fields": [
+        "family",
+        "id",
+        "input_sha256",
+        "placements"
+      ],
+      "all_object_keys": [
+        "AEFT",
+        "BPPTS",
+        "ECTD",
+        "HEFT",
+        "IPEFT",
+        "LSTD",
+        "append",
+        "duplicate_count",
+        "duplicate_work",
+        "errors",
+        "execution_horizon",
+        "family",
+        "id",
+        "input_sha256",
+        "insertion",
+        "makespan",
+        "placements",
+        "schedule_sha256",
+        "valid"
+      ],
+      "string_fields": {
+        "family": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "FFT",
+            "GE",
+            "Genome",
+            "LA",
+            "LIGO",
+            "Montage"
+          ]
+        },
+        "id": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "synthetic_instance_id": 225
+          }
+        },
+        "input_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.append.AEFT.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.append.BPPTS.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.append.ECTD.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.append.HEFT.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.append.IPEFT.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.append.LSTD.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.insertion.AEFT.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.insertion.BPPTS.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.insertion.ECTD.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.insertion.HEFT.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.insertion.IPEFT.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        },
+        "placements.insertion.LSTD.schedule_sha256": {
+          "distinct_count": 225,
+          "distinct_categories": {
+            "sha256_hex": 225
+          }
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    },
+    {
+      "path": "validation/replay-latest_497/replayed_results.jsonl.gz",
+      "bytes": 300274,
+      "sha256": "fee936b2c052234c7cc3d3302764307de2fe2f00ce1c99c0850952c313d0c33f",
+      "records_or_ignore_lines": 497,
+      "top_level_fields": [
+        "family",
+        "id",
+        "input_sha256",
+        "placements"
+      ],
+      "all_object_keys": [
+        "AEFT",
+        "BPPTS",
+        "ECTD",
+        "HEFT",
+        "IPEFT",
+        "LSTD",
+        "append",
+        "duplicate_count",
+        "duplicate_work",
+        "errors",
+        "execution_horizon",
+        "family",
+        "id",
+        "input_sha256",
+        "insertion",
+        "makespan",
+        "placements",
+        "schedule_sha256",
+        "valid"
+      ],
+      "string_fields": {
+        "family": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "FFT",
+            "GE",
+            "Genome",
+            "LA",
+            "LIGO",
+            "Montage"
+          ]
+        },
+        "id": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "synthetic_instance_id": 497
+          }
+        },
+        "input_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.append.AEFT.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.append.BPPTS.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.append.ECTD.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.append.HEFT.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.append.IPEFT.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.append.LSTD.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.insertion.AEFT.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.insertion.BPPTS.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.insertion.ECTD.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.insertion.HEFT.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.insertion.IPEFT.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        },
+        "placements.insertion.LSTD.schedule_sha256": {
+          "distinct_count": 497,
+          "distinct_categories": {
+            "sha256_hex": 497
+          }
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 111,
+      "sha256": "827cf57848c528e07eca7a61f436ac0b0c4d9da4cc28cf919c30bdc9e53b2764",
+      "records_or_ignore_lines": 6,
+      "top_level_fields": [],
+      "all_object_keys": [],
+      "string_fields": {
+        "ignore_pattern": {
+          "distinct_count": 6,
+          "distinct_categories": {
+            "categorical_or_other_string": 6
+          },
+          "categorical_values": [
+            "*.py[cod]",
+            ".venv/",
+            "__pycache__/",
+            "cohorts-reproduction/",
+            "optimizer-reproduction*/",
+            "validation/replay-*-reproduction/"
+          ]
+        }
+      },
+      "sensitivity_pattern_hits": {},
+      "hit_field_locations": {}
+    }
+  ],
+  "initial_blocked_batch_mapping": [
+    {
+      "path": "transport/chunks/27002ac7da9f606a6fa3/0034.part",
+      "offset_in_original_gzip_bytes": 3342336,
+      "size": 98304,
+      "sha256": "103a084592c736480cdae7412eecc08127c927376ca0db445b370d60264f2c0e",
+      "original_path": "source_evidence/candidates.jsonl.gz",
+      "original_sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77"
+    },
+    {
+      "path": "transport/chunks/27002ac7da9f606a6fa3/0035.part",
+      "offset_in_original_gzip_bytes": 3440640,
+      "size": 98304,
+      "sha256": "6b54a5db760c0a0cc09a8a98ee3bfcf1896f95c8619ea02f43123a3c844f088a",
+      "original_path": "source_evidence/candidates.jsonl.gz",
+      "original_sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77"
+    },
+    {
+      "path": "transport/chunks/27002ac7da9f606a6fa3/0036.part",
+      "offset_in_original_gzip_bytes": 3538944,
+      "size": 98304,
+      "sha256": "6184e36313d69041968f35188f688c1f735e56d498827428bbde6cb32c766724",
+      "original_path": "source_evidence/candidates.jsonl.gz",
+      "original_sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77"
+    },
+    {
+      "path": "transport/chunks/27002ac7da9f606a6fa3/0037.part",
+      "offset_in_original_gzip_bytes": 3637248,
+      "size": 98304,
+      "sha256": "35e1d67753d455e87010d893783a9aa19968c99965577d1d660609e7c3191687",
+      "original_path": "source_evidence/candidates.jsonl.gz",
+      "original_sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77"
+    },
+    {
+      "path": "transport/chunks/27002ac7da9f606a6fa3/0038.part",
+      "offset_in_original_gzip_bytes": 3735552,
+      "size": 98304,
+      "sha256": "32d31b7375fff8a5e81dc3b42981bee582c77ef229bc3410da74f4ed3b878e3d",
+      "original_path": "source_evidence/candidates.jsonl.gz",
+      "original_sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77"
+    },
+    {
+      "path": "transport/chunks/27002ac7da9f606a6fa3/0039.part",
+      "offset_in_original_gzip_bytes": 3833856,
+      "size": 98304,
+      "sha256": "727d8fc0801f0506808ccc0a0d2a356904a6e32e81df831e1fc87fd8483c62ef",
+      "original_path": "source_evidence/candidates.jsonl.gz",
+      "original_sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77"
+    }
+  ]
+}
