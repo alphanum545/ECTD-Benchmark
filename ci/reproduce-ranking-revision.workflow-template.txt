@@ -1,0 +1,116 @@
+name: Reproduce frozen ECTD ranking revision
+
+on:
+  push:
+    branches: [research/ranking-revision-2026-11-23]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ectd-ranking-revision-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONHASHSEED: '0'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  NUMEXPR_NUM_THREADS: '1'
+
+jobs:
+  prepare:
+    if: github.repository == 'alphanum545/ECTD-Benchmark'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: '3.12'
+      - name: Install pinned runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Restore source files and regenerate all three cohorts
+        run: python ci/run_study.py prepare --output "$RUNNER_TEMP/ectd-prepared"
+      - name: Upload an allowlisted workspace without Git credentials
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ectd-prepared
+          path: ${{ runner.temp }}/ectd-prepared/
+          include-hidden-files: true
+          compression-level: 0
+          retention-days: 14
+          if-no-files-found: error
+
+  replay:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: ectd-prepared
+          path: ${{ github.workspace }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: '3.12'
+      - name: Install pinned runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - name: Replay this shard using four worker processes
+        env:
+          SHARD_INDEX: ${{ matrix.shard }}
+        run: python ci/run_study.py shard --index "$SHARD_INDEX" --output "$RUNNER_TEMP/ectd-shard-$SHARD_INDEX"
+      - name: Upload replay data and validation receipt
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ectd-shard-${{ matrix.shard }}
+          path: ${{ runner.temp }}/ectd-shard-${{ matrix.shard }}/
+          compression-level: 0
+          retention-days: 14
+          if-no-files-found: error
+
+  finalize:
+    needs: [prepare, replay]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+        with:
+          python-version: '3.12'
+      - name: Install pinned runtime
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: ectd-prepared
+          path: ${{ runner.temp }}/ectd-prepared
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: ectd-shard-*
+          path: ${{ runner.temp }}/ectd-shards
+          merge-multiple: false
+      - name: Verify all schedules and publish to the existing feature branch
+        run: python ci/run_study.py finalize --prepared "$RUNNER_TEMP/ectd-prepared" --shards "$RUNNER_TEMP/ectd-shards" --publish
+      - name: Retain the actual GitHub Actions receipts
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ectd-github-validation
+          path: validation/github-actions/${{ github.run_id }}/
+          compression-level: 0
+          retention-days: 90
+          if-no-files-found: error
