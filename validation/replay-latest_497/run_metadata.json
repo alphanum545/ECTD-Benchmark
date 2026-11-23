@@ -1,0 +1,58 @@
+{
+  "execution_environment": "local",
+  "ci": null,
+  "started_at_utc": "2026-11-23T17:36:11.571091+00:00",
+  "input_file_sha256": "97e9e8dd4ad4fc41182afb1411cdcae199567190ca41fc492a880bdb64e02865",
+  "expected_file_sha256": "729cb26f1e3e6132f66911f3e4530fe1d5efd4ad17a5b8c2d4d33ecc97687088",
+  "summary_file_sha256": "c4d92f7763c2c3450f14ee29a98277c301bcb9d1d308811edeed5942a85ce0fc",
+  "profile": "latest_497",
+  "source_sha256": {
+    "ectdbench/__init__.py": "315cd821c286670c0f5d976df87acc3db9c0d4d935f52b0dca8e54b66f7d5f53",
+    "ectdbench/baselines.py": "08bd45145de72a59224d75f1e8ca1ecde35d1a4231772fede916505b800db207",
+    "ectdbench/engine.py": "81de4360381dd7adc239038b8b5aa78fa26f65fd21422179b46c963c87fa07ec",
+    "ectdbench/extended_baselines.py": "97f7d155da62ec118c9479bf8bf8e0cdaccde3d9efce2bb5f63fe5d5ad2f8c1b",
+    "ectdbench/ipeft.py": "63cd89fb4de31424b69cc4077a8d9e95b2da059575a27c427dfb9d5567116e0e",
+    "ectdbench/model.py": "580777a813aeee99295ca4fe3c6ae3fbc2fc6335e426ad25797b25b304372c4e",
+    "ectdbench/proposed.py": "5174eaca1210962aac322456bb2c0aafa7681934b776c50bade6402fce7e9b90",
+    "rankstudy/__init__.py": "0eb5bf4370caaaa85525ee463f3a1b4e7769e652358976407369b36f19fb0b95",
+    "rankstudy/algorithms.py": "957e507e679b773e576b948fa809a3b578c0fa4ba37c425e4de55f5d3fc7e2a7",
+    "rankstudy/build.py": "cf688735b227e8c7c27c0151d3d681a39bfefceec5feaace373749cc9d6484ec",
+    "rankstudy/evidence.py": "a773cc606878274b07b85f25cb0f22de412d912a0e568033ed1d9039b15ddf10",
+    "rankstudy/optimize.py": "c34ea8bc6080ae1665e42bdedf0524a8e5d172867d86619f9b631c8ae6cdadfd",
+    "rankstudy/replay.py": "717e185263aa8d2b10fb5501555b8ae26fdf52fc479f5b534e14607bfe1cc788"
+  },
+  "workers": 2,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "algorithms": [
+    "ECTD",
+    "AEFT",
+    "LSTD",
+    "BPPTS",
+    "HEFT",
+    "IPEFT"
+  ],
+  "placements": [
+    "append",
+    "insertion"
+  ],
+  "input_count": 497,
+  "finished_at_utc": "2026-11-23T17:36:23.969036+00:00",
+  "elapsed_seconds": 12.385580518999632,
+  "checked_schedules": 5964,
+  "mismatched_schedules": 0,
+  "invalid_schedules": 0,
+  "families": {
+    "FFT": 61,
+    "GE": 99,
+    "Genome": 105,
+    "LA": 132,
+    "LIGO": 64,
+    "Montage": 36
+  },
+  "changed_source_files": [],
+  "failures": [],
+  "replayed_results_sha256": "fee936b2c052234c7cc3d3302764307de2fe2f00ce1c99c0850952c313d0c33f",
+  "passed": true
+}

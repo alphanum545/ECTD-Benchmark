@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "study_kind": "explicitly-biased-synthetic-structural-search",
+  "execution_environment": "local",
+  "ci": null,
+  "started_at_utc": "2026-11-23T16:31:41.601571+00:00",
+  "source_sha256": {
+    "ectdbench/__init__.py": "315cd821c286670c0f5d976df87acc3db9c0d4d935f52b0dca8e54b66f7d5f53",
+    "ectdbench/analyze.py": "e9240c05d94254821c4489d1d75f4a15291278c19bfe39740116925c2a92d768",
+    "ectdbench/baselines.py": "08bd45145de72a59224d75f1e8ca1ecde35d1a4231772fede916505b800db207",
+    "ectdbench/benchmark.py": "60988f5ffe87d9d63c38e7c3089ee87c3cb0927db87001ba7f208729df8ba76e",
+    "ectdbench/engine.py": "81de4360381dd7adc239038b8b5aa78fa26f65fd21422179b46c963c87fa07ec",
+    "ectdbench/extended_baselines.py": "97f7d155da62ec118c9479bf8bf8e0cdaccde3d9efce2bb5f63fe5d5ad2f8c1b",
+    "ectdbench/model.py": "580777a813aeee99295ca4fe3c6ae3fbc2fc6335e426ad25797b25b304372c4e",
+    "ectdbench/proposed.py": "5174eaca1210962aac322456bb2c0aafa7681934b776c50bade6402fce7e9b90",
+    "ectdbench/select_instances.py": "345e9b5b9176f3e5f2be9006a61c858f2126a66a85b8a247a087fdcaef6d12ab",
+    "ectdbench/sharding.py": "066bbffe5c244197c090c049296899ab07aee5563b045aa4262e5a83691b7f2f",
+    "exploratory/__init__.py": "b5b230ac97dfb2e3a5eaa0a33785400423794df341a0c4f6a548f40277af531c",
+    "exploratory/generator.py": "a5f99387224b23271678a652cf657af796209d369883e347d3ede2d69b6e4cb4",
+    "exploratory/report.py": "d8c7e784055b2c68876ed1010f897194422d613c0611b7e8db2ae56611dad50c",
+    "exploratory/search.py": "a7b06a306a5a2784e96156a2a102ba9b012b9d69bf2f3707505ed70e889a663c",
+    "requirements.txt": "7bd6b8946940b79948c548c8048e545684b91c8edc9444d8dfc0c8f76a97c0a7",
+    "tests/test_generator.py": "e50e2089860c029d89bccfb37a5ce6420ba83e0eb0bd7bda47135b6f201ace80",
+    "tests/test_search_integrity.py": "56eb6a4fee494df1c76bd1fa67ee2be626033e5611f274d5ecf4b5cb1b8ef29c",
+    "tests/test_study_reporting.py": "2c1f8f8522a9fbd229f69263e86acc2a076e58edd3253af837e47de46be78eb8",
+    "tools/prepare_inputs.py": "c983b87952cd0cb7c2deec34a99555f5bb07e5c95ec3fff84b778ec0e7b78296"
+  },
+  "original_corpus_sha256": "75878525214fa3d20fb6f8a895533310241fdb7291a8b7c2f46107e4a12c66ec",
+  "budget_per_family": 512,
+  "target_per_family": 20,
+  "families": [
+    "FFT",
+    "GE",
+    "Genome",
+    "LA",
+    "LIGO",
+    "Montage"
+  ],
+  "search_seed": 20261123,
+  "regimes": [
+    "entry_transfer",
+    "mixed_affinity",
+    "lookahead_traps",
+    "branch_affinity"
+  ],
+  "processors": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "max_template_tasks": 224,
+  "template_sizes": {
+    "FFT": [
+      40,
+      96,
+      224
+    ],
+    "GE": [
+      9,
+      35,
+      135
+    ],
+    "Genome": [
+      47,
+      100,
+      199
+    ],
+    "LA": [
+      11,
+      37,
+      137
+    ],
+    "LIGO": [
+      50,
+      100,
+      200
+    ],
+    "Montage": [
+      50,
+      100,
+      200
+    ]
+  },
+  "unique_template_count": 260,
+  "workers": 6,
+  "algorithms": [
+    "HEFT",
+    "CPOP",
+    "PEFT",
+    "IPPTS-ready",
+    "MPEFT-ref",
+    "LSTD-ref",
+    "BPPTS-ref",
+    "AEFT-ref",
+    "ECTD",
+    "ECTD-no-dup",
+    "ECTD-no-damping"
+  ],
+  "baselines": [
+    "HEFT",
+    "CPOP",
+    "PEFT",
+    "IPPTS-ready",
+    "MPEFT-ref",
+    "LSTD-ref",
+    "BPPTS-ref",
+    "AEFT-ref"
+  ],
+  "placements": [
+    "append",
+    "insertion"
+  ],
+  "primary_placement": "append",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "interpretation": "Synthetic costs and explicitly modified entries; candidates are searched to favor ECTD. Outcome-selected sets are conditional stress cases, not the original benchmark or a fresh holdout.",
+  "selection_objective": "Strict append-only win against every one of eight fixed baselines; report insertion, both-mode wins, and both component ablations without changing the algorithms.",
+  "finished_at_utc": "2026-11-23T16:32:44.981254+00:00",
+  "elapsed_seconds": 63.343907659000024,
+  "attempted_candidates": 3072,
+  "attempted_by_family": {
+    "GE": 512,
+    "LA": 512,
+    "FFT": 512,
+    "Genome": 512,
+    "LIGO": 512,
+    "Montage": 512
+  },
+  "invalid_candidates": 0,
+  "strict_append_winners": {
+    "GE": 270,
+    "LA": 286,
+    "FFT": 267,
+    "Genome": 194,
+    "LIGO": 180,
+    "Montage": 294
+  },
+  "strict_both_mode_winners": {
+    "GE": 251,
+    "LA": 253,
+    "FFT": 220,
+    "Genome": 167,
+    "LIGO": 161,
+    "Montage": 258
+  },
+  "candidates_sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77",
+  "results_sha256": "a724e8c93e3b160105db2aa7b23fa6ab9d7f1f3371cf3041f71793042fbfdcd7"
+}

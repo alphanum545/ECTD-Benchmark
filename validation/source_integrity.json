@@ -1,0 +1,46 @@
+{
+  "all_algorithm_and_engine_files_identical": true,
+  "comparison_origin": "ectd_mixed_1967",
+  "files": {
+    "ectdbench/ipeft.py": {
+      "original_sha256": "63cd89fb4de31424b69cc4077a8d9e95b2da059575a27c427dfb9d5567116e0e",
+      "revision_sha256": "63cd89fb4de31424b69cc4077a8d9e95b2da059575a27c427dfb9d5567116e0e"
+    },
+    "ectdbench/__init__.py": {
+      "original_sha256": "315cd821c286670c0f5d976df87acc3db9c0d4d935f52b0dca8e54b66f7d5f53",
+      "revision_sha256": "315cd821c286670c0f5d976df87acc3db9c0d4d935f52b0dca8e54b66f7d5f53"
+    },
+    "ectdbench/engine.py": {
+      "original_sha256": "81de4360381dd7adc239038b8b5aa78fa26f65fd21422179b46c963c87fa07ec",
+      "revision_sha256": "81de4360381dd7adc239038b8b5aa78fa26f65fd21422179b46c963c87fa07ec"
+    },
+    "ectdbench/baselines.py": {
+      "original_sha256": "08bd45145de72a59224d75f1e8ca1ecde35d1a4231772fede916505b800db207",
+      "revision_sha256": "08bd45145de72a59224d75f1e8ca1ecde35d1a4231772fede916505b800db207"
+    },
+    "ectdbench/proposed.py": {
+      "original_sha256": "5174eaca1210962aac322456bb2c0aafa7681934b776c50bade6402fce7e9b90",
+      "revision_sha256": "5174eaca1210962aac322456bb2c0aafa7681934b776c50bade6402fce7e9b90"
+    },
+    "ectdbench/extended_baselines.py": {
+      "original_sha256": "97f7d155da62ec118c9479bf8bf8e0cdaccde3d9efce2bb5f63fe5d5ad2f8c1b",
+      "revision_sha256": "97f7d155da62ec118c9479bf8bf8e0cdaccde3d9efce2bb5f63fe5d5ad2f8c1b"
+    },
+    "ectdbench/model.py": {
+      "original_sha256": "580777a813aeee99295ca4fe3c6ae3fbc2fc6335e426ad25797b25b304372c4e",
+      "revision_sha256": "580777a813aeee99295ca4fe3c6ae3fbc2fc6335e426ad25797b25b304372c4e"
+    },
+    "rankstudy/algorithms.py": {
+      "original_sha256": "957e507e679b773e576b948fa809a3b578c0fa4ba37c425e4de55f5d3fc7e2a7",
+      "revision_sha256": "957e507e679b773e576b948fa809a3b578c0fa4ba37c425e4de55f5d3fc7e2a7"
+    }
+  },
+  "original_1967_files_sha256": {
+    "cohort/summary.json": "b34b0455c470ff42a8506168cdab30cfd46cda3bba23b353260167d0bd1283cf",
+    "cohort/inputs_1967.jsonl.gz": "668ad893c38fcb66df0188ebe8ed349f920558735c0d4b9ffba5ed8b35bd1cb9",
+    "cohort/expected_results.jsonl.gz": "ee933f2cd9622f32464799d194847ffc975965e7c4dcf075fcbc1c986deafcf3",
+    "cohort/membership.csv": "b936428af147445c85d60aa306b5b1829fc22040f3b938e95b3b2035f008b5ee",
+    "RESULTS.md": "8dc1a08b37d611861b47c9cfd48abb7d353d431e1ca9c364045401e6b6d1819c"
+  },
+  "original_1967_files_unchanged_after_revision": true
+}
