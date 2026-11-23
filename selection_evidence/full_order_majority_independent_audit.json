@@ -1,0 +1,228 @@
+{
+  "status": "passed",
+  "candidate": "full_order_majority",
+  "source_sha256": {
+    "full_pool_all_3072_results.csv": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+    "original_results.jsonl.gz": "a724e8c93e3b160105db2aa7b23fa6ab9d7f1f3371cf3041f71793042fbfdcd7",
+    "ipeft_pool_results.jsonl.gz": "2e6e5896ea61af7c45577b2b9c0219c4162ddea523d4a42af3b327c813131567"
+  },
+  "selected_count": 225,
+  "distinct_input_hash_count": 225,
+  "classification_counts": {
+    "ectd_strict_both": 134,
+    "ectd_loss_both": 91
+  },
+  "winner_fraction": 0.5955555555555555,
+  "ids_sha256": "03f877b20465fb56edacf2224a759089ea1a7c7e075bef621605768a01fbc5b7",
+  "family_counts": {
+    "FFT": {
+      "wins": 18,
+      "losses": 15,
+      "total": 33
+    },
+    "GE": {
+      "wins": 41,
+      "losses": 16,
+      "total": 57
+    },
+    "Genome": {
+      "wins": 25,
+      "losses": 37,
+      "total": 62
+    },
+    "LA": {
+      "wins": 34,
+      "losses": 13,
+      "total": 47
+    },
+    "LIGO": {
+      "wins": 9,
+      "losses": 5,
+      "total": 14
+    },
+    "Montage": {
+      "wins": 7,
+      "losses": 5,
+      "total": 12
+    }
+  },
+  "placements": {
+    "append": {
+      "geomeans": {
+        "ECTD": 599.901898829074,
+        "AEFT": 633.1849951535614,
+        "BPPTS": 653.0570765803376,
+        "HEFT": 653.7702773267321,
+        "LSTD": 654.4514299044981,
+        "IPEFT": 655.1109956828982
+      },
+      "order": [
+        "ECTD",
+        "AEFT",
+        "BPPTS",
+        "HEFT",
+        "LSTD",
+        "IPEFT"
+      ],
+      "adjacent_improvement_percent": {
+        "ECTD<AEFT": 5.256456893204742,
+        "AEFT<BPPTS": 3.0429317956148894,
+        "BPPTS<HEFT": 0.10909042076839848,
+        "HEFT<LSTD": 0.10407992811101163,
+        "LSTD<IPEFT": 0.10068000426591839
+      },
+      "sole_winners": {
+        "ECTD": 134,
+        "AEFT": 17,
+        "BPPTS": 24,
+        "HEFT": 18,
+        "LSTD": 15,
+        "IPEFT": 11
+      },
+      "tied_best_instances": 6
+    },
+    "insertion": {
+      "geomeans": {
+        "ECTD": 588.9740979328395,
+        "AEFT": 616.2625323160419,
+        "BPPTS": 634.2680625457217,
+        "HEFT": 642.5253010986854,
+        "LSTD": 643.194168900532,
+        "IPEFT": 643.8418857617236
+      },
+      "order": [
+        "ECTD",
+        "AEFT",
+        "BPPTS",
+        "HEFT",
+        "LSTD",
+        "IPEFT"
+      ],
+      "adjacent_improvement_percent": {
+        "ECTD<AEFT": 4.428053459723857,
+        "AEFT<BPPTS": 2.8387887224546993,
+        "BPPTS<HEFT": 1.285122708606845,
+        "HEFT<LSTD": 0.10399158359751803,
+        "LSTD<IPEFT": 0.10060185202540595
+      },
+      "sole_winners": {
+        "ECTD": 134,
+        "AEFT": 26,
+        "BPPTS": 17,
+        "HEFT": 16,
+        "LSTD": 18,
+        "IPEFT": 7
+      },
+      "tied_best_instances": 7
+    }
+  },
+  "source_schedule_outcomes_compared": 2700,
+  "checks": [
+    {
+      "check": "225 distinct instance IDs",
+      "passed": true
+    },
+    {
+      "check": "All instance IDs present in original source",
+      "passed": true
+    },
+    {
+      "check": "225 distinct input hashes",
+      "passed": true
+    },
+    {
+      "check": "Expected strict both-mode win/loss composition",
+      "passed": true
+    },
+    {
+      "check": "CSV source hash matches selector receipt",
+      "passed": true
+    },
+    {
+      "check": "All source archive hashes match frozen study",
+      "passed": true
+    },
+    {
+      "check": "Membership hash matches selector receipt",
+      "passed": true
+    },
+    {
+      "check": "Membership CSV matches selected IDs",
+      "passed": true
+    },
+    {
+      "check": "Membership family/group/input hash agrees with source",
+      "passed": true
+    },
+    {
+      "check": "Six families with at least one win and one loss each",
+      "passed": true
+    },
+    {
+      "check": "Family counts match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "ECTD wins strict majority",
+      "passed": true
+    },
+    {
+      "check": "append: full requested aggregate order",
+      "passed": true
+    },
+    {
+      "check": "append: adjacent improvements at least 0.1 percent",
+      "passed": true
+    },
+    {
+      "check": "append: means match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "append: margins match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "insertion: full requested aggregate order",
+      "passed": true
+    },
+    {
+      "check": "insertion: adjacent improvements at least 0.1 percent",
+      "passed": true
+    },
+    {
+      "check": "insertion: means match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "insertion: margins match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "Every selected makespan exactly matches a valid archived outcome",
+      "passed": true
+    },
+    {
+      "check": "225 selector receipt records optimum for its stated constraints",
+      "passed": true
+    }
+  ],
+  "margin_definition": "100 * (1 - geometric_mean(faster) / geometric_mean(slower)); every adjacent pair must improve by at least 0.1 percent in each mode.",
+  "solver_receipt": {
+    "status": 0,
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "success": true,
+    "mip_gap": 0.0,
+    "mip_node_count": 1,
+    "mip_dual_bound": -225.0,
+    "elapsed_seconds": 1.078904916999818
+  },
+  "scope": "Separate 225-instance alternative; retains 134 of the original 1467 winners and selects 91 genuine both-mode losses. Does not preserve the 1467+500 composition. Original 1967-instance study remains unchanged.",
+  "limitations": [
+    "Outcome-selected synthetic exploratory subset; not an independent or representative confirmation.",
+    "Aggregate order only; individual instance rankings can differ.",
+    "Several adjacent margins are close to 0.1 percent, so robustness is not established.",
+    "Source-level feasibility audit only; this audit does not replay schedules or independently prove solver optimality.",
+    "225 is reported optimal only for the exact saved constraint set, including pool eligibility, at least one winner/loss per family, majority ECTD wins, and the 0.1 percent full-order margins. This audit verifies feasibility without independently certifying optimality."
+  ]
+}

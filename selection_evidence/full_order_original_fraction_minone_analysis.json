@@ -1,0 +1,147 @@
+{
+  "name": "full_order_original_fraction_minone",
+  "source_sha256": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+  "pool_counts": {
+    "full_pool": 3072,
+    "strict_winners_both": 1467,
+    "losses_both": 1112,
+    "other": 493
+  },
+  "constraints": {
+    "max_count": 1967,
+    "winner_fraction_range": [
+      0.7458057956278596,
+      0.7468057956278596
+    ],
+    "strict_margin_relative": 0.001,
+    "family_min_each_group": 1,
+    "eligible_groups": [
+      "strict_winners_both",
+      "losses_both"
+    ],
+    "order": "full",
+    "pairs": [
+      [
+        "ECTD",
+        "AEFT"
+      ],
+      [
+        "AEFT",
+        "BPPTS"
+      ],
+      [
+        "BPPTS",
+        "HEFT"
+      ],
+      [
+        "HEFT",
+        "LSTD"
+      ],
+      [
+        "LSTD",
+        "IPEFT"
+      ]
+    ]
+  },
+  "solver": {
+    "status": 1,
+    "message": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+    "success": false,
+    "mip_gap": 0.014354066985645933,
+    "mip_node_count": 7646,
+    "mip_dual_bound": -212.0,
+    "elapsed_seconds": 40.03171307199955
+  },
+  "selection": {
+    "count": 209,
+    "strict_wins_both": 156,
+    "losses_both": 53,
+    "winner_fraction": 0.7464114832535885,
+    "max_constraint_violation": 0.0,
+    "ids_sha256": "83c0aeb2c7cf875958018404ed3c3784f463c4ccc0b106fc9d231d9d7eba4903",
+    "families": {
+      "FFT": {
+        "wins": 24,
+        "losses": 9,
+        "total": 33
+      },
+      "GE": {
+        "wins": 45,
+        "losses": 9,
+        "total": 54
+      },
+      "Genome": {
+        "wins": 26,
+        "losses": 25,
+        "total": 51
+      },
+      "LA": {
+        "wins": 42,
+        "losses": 6,
+        "total": 48
+      },
+      "LIGO": {
+        "wins": 11,
+        "losses": 3,
+        "total": 14
+      },
+      "Montage": {
+        "wins": 8,
+        "losses": 1,
+        "total": 9
+      }
+    },
+    "placements": {
+      "append": {
+        "geomeans": {
+          "ECTD": 592.3644481847113,
+          "AEFT": 632.0642573835661,
+          "BPPTS": 651.7447950734518,
+          "HEFT": 653.5136385913845,
+          "LSTD": 654.2958485189623,
+          "IPEFT": 655.0023172414786
+        },
+        "order": [
+          "ECTD",
+          "AEFT",
+          "BPPTS",
+          "HEFT",
+          "LSTD",
+          "IPEFT"
+        ],
+        "margins_percent": {
+          "ECTD<AEFT": 6.28097677334144,
+          "AEFT<BPPTS": 3.0196693304881173,
+          "BPPTS<HEFT": 0.2706666568957017,
+          "HEFT<LSTD": 0.11954988394751176,
+          "LSTD<IPEFT": 0.10785743865633357
+        }
+      },
+      "insertion": {
+        "geomeans": {
+          "ECTD": 582.6651149969297,
+          "AEFT": 617.8393001147697,
+          "BPPTS": 633.6769231776826,
+          "HEFT": 642.5779061837285,
+          "LSTD": 643.2388119140805,
+          "IPEFT": 644.152919371196
+        },
+        "order": [
+          "ECTD",
+          "AEFT",
+          "BPPTS",
+          "HEFT",
+          "LSTD",
+          "IPEFT"
+        ],
+        "margins_percent": {
+          "ECTD<AEFT": 5.693096103032946,
+          "AEFT<BPPTS": 2.4993214181593393,
+          "BPPTS<HEFT": 1.3851990428536243,
+          "HEFT<LSTD": 0.10274655666150379,
+          "LSTD<IPEFT": 0.14190845521709905
+        }
+      }
+    }
+  }
+}

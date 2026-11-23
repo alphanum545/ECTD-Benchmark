@@ -1,0 +1,344 @@
+{
+  "package": "ECTD ranking revision: outcome-selected exploratory alternatives",
+  "profiles": [
+    "full_order_209",
+    "latest_497",
+    "full_order_225"
+  ],
+  "source_pool_instances": 3072,
+  "local_schedule_evaluations": 11172,
+  "unique_inputs_in_profile_union": 546,
+  "ci": null,
+  "files": {
+    ".gitignore": {
+      "bytes": 111,
+      "sha256": "827cf57848c528e07eca7a61f436ac0b0c4d9da4cc28cf919c30bdc9e53b2764"
+    },
+    "README.md": {
+      "bytes": 4681,
+      "sha256": "3b1e92030b91859c43ac27f116f2fe4cee8e999f57bbbb80d80a4476b82125a0"
+    },
+    "RESULTS.md": {
+      "bytes": 15600,
+      "sha256": "85c438e29cdeb7d395b0aff99615c59627b2232a99c0855be19129367e52a410"
+    },
+    "cohorts/build_summary.json": {
+      "bytes": 10035,
+      "sha256": "c686213a68c7e8693a655d294b7588e09805e90947bece433266e4e55940c600"
+    },
+    "cohorts/full_order_209/expected_results.jsonl.gz": {
+      "bytes": 126852,
+      "sha256": "16ab76073269eee6f549128a5f5c50c7d64a4fcc4c5105f64861c0bdfd040f01"
+    },
+    "cohorts/full_order_209/inputs.jsonl.gz": {
+      "bytes": 1163663,
+      "sha256": "27fca97749c54c6dd64126ae5c2ae5214ccc3d9c4aa1a4d954a3199710537ce9"
+    },
+    "cohorts/full_order_209/inputs_losses.jsonl.gz": {
+      "bytes": 299756,
+      "sha256": "a85397b8bbf6af765579869c49f037d5a7d08f412517ca3a5dddd8258f7157c9"
+    },
+    "cohorts/full_order_209/inputs_winners.jsonl.gz": {
+      "bytes": 866639,
+      "sha256": "0cfa056caf662274f41440fddeb23a32c8612a1da12765267461801b02609881"
+    },
+    "cohorts/full_order_209/membership.csv": {
+      "bytes": 100282,
+      "sha256": "c1fab532c4cf215696ecb7f03094177f48692466a2d7c45d9da10c4925994f9c"
+    },
+    "cohorts/full_order_209/per_family.json": {
+      "bytes": 38066,
+      "sha256": "6b3bd27997c9feff5ca3da31fc9bdbedd47725bc7b6ed1e6b8931263990d9d90"
+    },
+    "cohorts/full_order_209/summary.json": {
+      "bytes": 10892,
+      "sha256": "d1aa9ab522426a5b2e6da89d923f3baf67c8fe71de2ccefc417d7f44b7240fca"
+    },
+    "cohorts/full_order_225/expected_results.jsonl.gz": {
+      "bytes": 136897,
+      "sha256": "e1b6f5db10fec647e5d5ff3364c80d1aa9d2c5d20a194a3df66d7014a498704b"
+    },
+    "cohorts/full_order_225/inputs.jsonl.gz": {
+      "bytes": 1175281,
+      "sha256": "526e3f7dd50cb54352c62ed65df9001561fcf5a5e5052e427dc6f8acd880db17"
+    },
+    "cohorts/full_order_225/inputs_losses.jsonl.gz": {
+      "bytes": 444038,
+      "sha256": "bbe0374308d2dc4318ee8f89d4719d00eb6ecfc30a4c0686ef46c19e03309dc4"
+    },
+    "cohorts/full_order_225/inputs_winners.jsonl.gz": {
+      "bytes": 736850,
+      "sha256": "d3f4102c86f342263a5b08f3e0b4e9a7e44490a02f61026d24eed9f28feb2fee"
+    },
+    "cohorts/full_order_225/membership.csv": {
+      "bytes": 108045,
+      "sha256": "1fb11631faf310b3b2879782ea9e68e3589665b86fdd5895cf46f6abe10245c2"
+    },
+    "cohorts/full_order_225/per_family.json": {
+      "bytes": 38229,
+      "sha256": "ac3dbddd7e7f412be84c31855f045729dc0870b8cc027d370631c79598dfaec7"
+    },
+    "cohorts/full_order_225/summary.json": {
+      "bytes": 10893,
+      "sha256": "35f846d46d72380a1ff0aa3df9fd37512e2974ebf1b7ac4932d21dd22b5c8284"
+    },
+    "cohorts/latest_497/expected_results.jsonl.gz": {
+      "bytes": 295560,
+      "sha256": "729cb26f1e3e6132f66911f3e4530fe1d5efd4ad17a5b8c2d4d33ecc97687088"
+    },
+    "cohorts/latest_497/inputs.jsonl.gz": {
+      "bytes": 2689865,
+      "sha256": "97e9e8dd4ad4fc41182afb1411cdcae199567190ca41fc492a880bdb64e02865"
+    },
+    "cohorts/latest_497/inputs_losses.jsonl.gz": {
+      "bytes": 667954,
+      "sha256": "49e9d117b9eadbe2a2fe35c3f405abd8b19b1df2391ead5e007899b041e7cbd8"
+    },
+    "cohorts/latest_497/inputs_winners.jsonl.gz": {
+      "bytes": 2026220,
+      "sha256": "8e061b0c444841746fd39e174b86f84f5e05ae24d7199b890ce90db7821ce699"
+    },
+    "cohorts/latest_497/membership.csv": {
+      "bytes": 237952,
+      "sha256": "9b9b08cf23f03b2a29f5d419bacfb2ac1714be142f901400b24ddf45d11c531d"
+    },
+    "cohorts/latest_497/per_family.json": {
+      "bytes": 38248,
+      "sha256": "b98ce24c3d42d64a0237007980bdae467293cfa63637e708c401204b50ca1be4"
+    },
+    "cohorts/latest_497/summary.json": {
+      "bytes": 10956,
+      "sha256": "c4d92f7763c2c3450f14ee29a98277c301bcb9d1d308811edeed5942a85ce0fc"
+    },
+    "ectdbench/__init__.py": {
+      "bytes": 86,
+      "sha256": "315cd821c286670c0f5d976df87acc3db9c0d4d935f52b0dca8e54b66f7d5f53"
+    },
+    "ectdbench/baselines.py": {
+      "bytes": 7109,
+      "sha256": "08bd45145de72a59224d75f1e8ca1ecde35d1a4231772fede916505b800db207"
+    },
+    "ectdbench/engine.py": {
+      "bytes": 10950,
+      "sha256": "81de4360381dd7adc239038b8b5aa78fa26f65fd21422179b46c963c87fa07ec"
+    },
+    "ectdbench/extended_baselines.py": {
+      "bytes": 4770,
+      "sha256": "97f7d155da62ec118c9479bf8bf8e0cdaccde3d9efce2bb5f63fe5d5ad2f8c1b"
+    },
+    "ectdbench/ipeft.py": {
+      "bytes": 3802,
+      "sha256": "63cd89fb4de31424b69cc4077a8d9e95b2da059575a27c427dfb9d5567116e0e"
+    },
+    "ectdbench/model.py": {
+      "bytes": 4063,
+      "sha256": "580777a813aeee99295ca4fe3c6ae3fbc2fc6335e426ad25797b25b304372c4e"
+    },
+    "ectdbench/proposed.py": {
+      "bytes": 9500,
+      "sha256": "5174eaca1210962aac322456bb2c0aafa7681934b776c50bade6402fce7e9b90"
+    },
+    "rankstudy/__init__.py": {
+      "bytes": 64,
+      "sha256": "0eb5bf4370caaaa85525ee463f3a1b4e7769e652358976407369b36f19fb0b95"
+    },
+    "rankstudy/algorithms.py": {
+      "bytes": 414,
+      "sha256": "957e507e679b773e576b948fa809a3b578c0fa4ba37c425e4de55f5d3fc7e2a7"
+    },
+    "rankstudy/build.py": {
+      "bytes": 10223,
+      "sha256": "cf688735b227e8c7c27c0151d3d681a39bfefceec5feaace373749cc9d6484ec"
+    },
+    "rankstudy/evidence.py": {
+      "bytes": 11761,
+      "sha256": "a773cc606878274b07b85f25cb0f22de412d912a0e568033ed1d9039b15ddf10"
+    },
+    "rankstudy/optimize.py": {
+      "bytes": 6024,
+      "sha256": "c34ea8bc6080ae1665e42bdedf0524a8e5d172867d86619f9b631c8ae6cdadfd"
+    },
+    "rankstudy/replay.py": {
+      "bytes": 8255,
+      "sha256": "717e185263aa8d2b10fb5501555b8ae26fdf52fc479f5b534e14607bfe1cc788"
+    },
+    "requirements-optimizer.txt": {
+      "bytes": 27,
+      "sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3"
+    },
+    "requirements.txt": {
+      "bytes": 13,
+      "sha256": "7bd6b8946940b79948c548c8048e545684b91c8edc9444d8dfc0c8f76a97c0a7"
+    },
+    "selection_evidence/audit_full_order_candidates.py": {
+      "bytes": 8991,
+      "sha256": "4c63ef94995a3d1fdc83b176bc5ab8aeff531b147d646ca1139dd9486f87d970"
+    },
+    "selection_evidence/audit_revised_candidate.py": {
+      "bytes": 8018,
+      "sha256": "7cceb5734aa7c87bf85da456b864ba25c1c27052f2c6d0a17ef209b45d9d66f3"
+    },
+    "selection_evidence/exact_pairwise_bounds.json": {
+      "bytes": 18388,
+      "sha256": "810c09f0ef01203762498ee973d08826a05f8701ece03df2608fb22f291bcafc"
+    },
+    "selection_evidence/exact_pairwise_bounds.py": {
+      "bytes": 5598,
+      "sha256": "8dd1e4cc769ea5f2ffb079991f8ba264e605e438635fee8ac3bc8cf8fa785dac"
+    },
+    "selection_evidence/full_order_majority_analysis.json": {
+      "bytes": 3198,
+      "sha256": "6de882c1139bbd25887b379a36c1fb83c3eb7ee052c8fe5dc755e7fc96672287"
+    },
+    "selection_evidence/full_order_majority_ids.json": {
+      "bytes": 19485,
+      "sha256": "b7bc069c3866e3d0be74acb1777b01d0c1767194217f3f14e216bce5d49ba292"
+    },
+    "selection_evidence/full_order_majority_independent_audit.json": {
+      "bytes": 6322,
+      "sha256": "940134790cb34ee6cd77d8d01a1c3eb5b21f915cf66a5521d1d6beff39704456"
+    },
+    "selection_evidence/full_order_majority_membership.csv": {
+      "bytes": 37924,
+      "sha256": "3b98d0942a4cfb9aab30debc14bb0cb7c50ca70afe55e094b16fb0605c457a6a"
+    },
+    "selection_evidence/full_order_near_original_fraction_analysis.json": {
+      "bytes": 1121,
+      "sha256": "d11eca13c4b8fee08396db3ba5dcc0b02e5caab73c0bafa135ddaa514676bf5b"
+    },
+    "selection_evidence/full_order_original_fraction_minone_analysis.json": {
+      "bytes": 3282,
+      "sha256": "88f302535f9f9544a9a5ebe398dc4b2ffca48f7160bc37e11c064763503a96d0"
+    },
+    "selection_evidence/full_order_original_fraction_minone_ids.json": {
+      "bytes": 18052,
+      "sha256": "3f9bdd711deefd54123c35a3417ad8c0b637af5e3e0fa4874dac3b2e200129f3"
+    },
+    "selection_evidence/full_order_original_fraction_minone_independent_audit.json": {
+      "bytes": 6292,
+      "sha256": "b7029fbc08ff768ab973e969c66a98ca028f1cc27fad4e83a3335ba412cac5f3"
+    },
+    "selection_evidence/full_order_original_fraction_minone_membership.csv": {
+      "bytes": 35212,
+      "sha256": "6e6e88abf901976482316ceb9b9401bab33159493afee5e82b3c07a79333a92d"
+    },
+    "selection_evidence/optimizer_provenance.json": {
+      "bytes": 2704,
+      "sha256": "3de7be4aa15accbc7576a956e9b3819ed3f07962df2bc87ff493b6ea41f19ffb"
+    },
+    "selection_evidence/partial_order_near_original_fraction_analysis.json": {
+      "bytes": 4147,
+      "sha256": "5453353ec7ad8ffa49570693c684495148bdb8589b62b3c58593cc172d964799"
+    },
+    "selection_evidence/partial_order_near_original_fraction_ids.json": {
+      "bytes": 42997,
+      "sha256": "d3b32cd3b3ce0b663d799b6e53f11758f1f965b5eff2220eb8b3e5f2bac47b72"
+    },
+    "selection_evidence/partial_order_near_original_fraction_membership.csv": {
+      "bytes": 83812,
+      "sha256": "eb35f446e5518e5c0a553b6feec5d44e960ade90dfecace7df1431b7a91d7350"
+    },
+    "selection_evidence/profile_map.json": {
+      "bytes": 161,
+      "sha256": "a6d78389bc3b96c84d1d82df04b38370118111c26728f842746000e1b706b9af"
+    },
+    "selection_evidence/revised_candidate_independent_audit.json": {
+      "bytes": 5929,
+      "sha256": "12774221bfb7d517d8968c5199ee661f1e175ca11758b66a5e2e1941f0f9a15d"
+    },
+    "selection_evidence/revised_order_near_original_fraction_analysis.json": {
+      "bytes": 3285,
+      "sha256": "17e212394899e08b71bf1924ded162ea1e1354b8d200d3314e7a115256d163bb"
+    },
+    "selection_evidence/revised_order_near_original_fraction_ids.json": {
+      "bytes": 43000,
+      "sha256": "df43753c8ffae4c7630cd288f3611a5dc4baf1afa332930d4f3c84ae595f511d"
+    },
+    "selection_evidence/revised_order_near_original_fraction_membership.csv": {
+      "bytes": 83821,
+      "sha256": "6234991452b56a78ed59e14f26bcf820360051db323678398cdc967a4228d2a5"
+    },
+    "selection_evidence/select_alternative.py": {
+      "bytes": 5879,
+      "sha256": "f6d01f65999634cb87568b1679aed106b258d92731809bdbb1e396c647c11b3d"
+    },
+    "selection_evidence/unrestricted_1967_impossibility.json": {
+      "bytes": 777,
+      "sha256": "c27f3faf08a031b2119b4c770ff9cc68f623e49da8ece230ff61be871f589890"
+    },
+    "source_evidence/candidates.jsonl.gz": {
+      "bytes": 15512167,
+      "sha256": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77"
+    },
+    "source_evidence/full_pool_all_3072_results.csv": {
+      "bytes": 3167196,
+      "sha256": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e"
+    },
+    "source_evidence/ipeft.cpp": {
+      "bytes": 9261,
+      "sha256": "c6abb8593b4e5b79217a2956b7409127a04d5e1ea262d3cdcab57e5ceddfb64c"
+    },
+    "source_evidence/ipeft_pool_results.jsonl.gz": {
+      "bytes": 487773,
+      "sha256": "2e6e5896ea61af7c45577b2b9c0219c4162ddea523d4a42af3b327c813131567"
+    },
+    "source_evidence/original_results.jsonl.gz": {
+      "bytes": 3153207,
+      "sha256": "a724e8c93e3b160105db2aa7b23fa6ab9d7f1f3371cf3041f71793042fbfdcd7"
+    },
+    "source_evidence/original_run_metadata.json": {
+      "bytes": 4653,
+      "sha256": "a57f50cf2c65b1d24400d3b872541c95a645003364707e54035c6fe80230e5e9"
+    },
+    "tools/write_docs.py": {
+      "bytes": 21018,
+      "sha256": "f3d649c2f19bbc79aa3342ada309e1c78ab2ceeb2f504f36e157703b72b4cb18"
+    },
+    "validation/clean_reproduction.json": {
+      "bytes": 9979,
+      "sha256": "90ddb0a05a0b6c55298450dcac1334fd6a0670de5bb8d79f3d972aa03b6cf538"
+    },
+    "validation/ipeft_native_parity.json": {
+      "bytes": 79223,
+      "sha256": "aff2f3908725e7c3811124ce60fb8893c6162131174ef99faba0594879a1798d"
+    },
+    "validation/ipeft_native_parity.py": {
+      "bytes": 10540,
+      "sha256": "a281a985d5252969f483193eb5219d8a6aced60bde780879099a1af050837dc3"
+    },
+    "validation/replay-full_order_209/replayed_results.jsonl.gz": {
+      "bytes": 128864,
+      "sha256": "352a949f8260d00747eace34c9ab1dd81ea5d0ba287ecf2fa9be3c339eebbf6a"
+    },
+    "validation/replay-full_order_209/run_metadata.json": {
+      "bytes": 2492,
+      "sha256": "30e8281cdbacb685b2ff998a684ace4b75282ee0d7e4ecb707d94468297f979a"
+    },
+    "validation/replay-full_order_225/replayed_results.jsonl.gz": {
+      "bytes": 139127,
+      "sha256": "71c33a1e49e718f1dc07485f96db12e8d325c5a9cdac3ea94d578c0cfab2c482"
+    },
+    "validation/replay-full_order_225/run_metadata.json": {
+      "bytes": 2493,
+      "sha256": "915ec11cbbd43a1fab1ecefa130fca960bab6e789fdb610acf80d9f13072900d"
+    },
+    "validation/replay-latest_497/replayed_results.jsonl.gz": {
+      "bytes": 300274,
+      "sha256": "fee936b2c052234c7cc3d3302764307de2fe2f00ce1c99c0850952c313d0c33f"
+    },
+    "validation/replay-latest_497/run_metadata.json": {
+      "bytes": 2492,
+      "sha256": "b77ff7f789621d7ec412aee4721361e335d33dfb8b27d705caca1ca1924dddb1"
+    },
+    "validation/replay_summary.json": {
+      "bytes": 864,
+      "sha256": "7615908b5612bebbda7fba0e9f02e65bde7d9e16ae12facedd50abf4573b1604"
+    },
+    "validation/source_integrity.json": {
+      "bytes": 2486,
+      "sha256": "e9f48011d0bede732e41e87a755a4b9bd9f2d06ca714f581ae0162dadcf85ffb"
+    }
+  },
+  "branch": "research/ranking-revision-2026-11-23",
+  "clean_reproduction_receipt": "validation/clean_reproduction.json"
+}

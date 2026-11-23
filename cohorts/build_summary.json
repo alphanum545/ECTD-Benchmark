@@ -1,0 +1,355 @@
+{
+  "created_at_utc": "2026-11-23T17:35:39.812563+00:00",
+  "full_pool": {
+    "instances": 3072,
+    "placements": {
+      "append": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "LSTD",
+          "AEFT",
+          "IPEFT",
+          "HEFT",
+          "BPPTS"
+        ],
+        "geometric_makespans": {
+          "ECTD": 495.1538004905458,
+          "AEFT": 547.0076054265539,
+          "LSTD": 515.7461848789081,
+          "BPPTS": 578.070245250722,
+          "HEFT": 577.4016216978316,
+          "IPEFT": 549.7489059635619
+        },
+        "sole_winners": {
+          "ECTD": 1630,
+          "AEFT": 119,
+          "LSTD": 970,
+          "BPPTS": 70,
+          "HEFT": 29,
+          "IPEFT": 110
+        },
+        "tied_best_instances": 144,
+        "tied_best_membership": {
+          "ECTD": 113,
+          "AEFT": 45,
+          "LSTD": 69,
+          "BPPTS": 40,
+          "HEFT": 6,
+          "IPEFT": 61
+        },
+        "tie_groups": {
+          "ECTD + LSTD": 57,
+          "ECTD + IPEFT": 19,
+          "LSTD + IPEFT": 2,
+          "HEFT + IPEFT": 2,
+          "ECTD + LSTD + BPPTS + IPEFT": 2,
+          "ECTD + AEFT + BPPTS + IPEFT": 11,
+          "AEFT + IPEFT": 7,
+          "AEFT + BPPTS": 4,
+          "AEFT + BPPTS + IPEFT": 8,
+          "ECTD + AEFT": 6,
+          "BPPTS + IPEFT": 2,
+          "ECTD + BPPTS": 9,
+          "ECTD + AEFT + BPPTS + HEFT + IPEFT": 1,
+          "ECTD + AEFT + BPPTS": 2,
+          "ECTD + AEFT + IPEFT": 3,
+          "AEFT + LSTD": 3,
+          "ECTD + LSTD + IPEFT": 2,
+          "ECTD + BPPTS + IPEFT": 1,
+          "LSTD + HEFT + IPEFT": 1,
+          "LSTD + HEFT": 2
+        },
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 1630,
+            "tied_best": 113,
+            "beaten": 1329
+          },
+          "AEFT": {
+            "strict_wins": 119,
+            "tied_best": 45,
+            "beaten": 2908
+          },
+          "LSTD": {
+            "strict_wins": 970,
+            "tied_best": 69,
+            "beaten": 2033
+          },
+          "BPPTS": {
+            "strict_wins": 70,
+            "tied_best": 40,
+            "beaten": 2962
+          },
+          "HEFT": {
+            "strict_wins": 29,
+            "tied_best": 6,
+            "beaten": 3037
+          },
+          "IPEFT": {
+            "strict_wins": 110,
+            "tied_best": 61,
+            "beaten": 2901
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 2681,
+            "ties": 36,
+            "losses": 355,
+            "geometric_makespan_reduction_percent": 9.479540032276656
+          },
+          "LSTD": {
+            "wins": 1906,
+            "ties": 66,
+            "losses": 1100,
+            "geometric_makespan_reduction_percent": 3.9927361543541484
+          },
+          "BPPTS": {
+            "wins": 2819,
+            "ties": 31,
+            "losses": 222,
+            "geometric_makespan_reduction_percent": 14.3436624599513
+          },
+          "HEFT": {
+            "wins": 2774,
+            "ties": 6,
+            "losses": 292,
+            "geometric_makespan_reduction_percent": 14.244473537403424
+          },
+          "IPEFT": {
+            "wins": 2690,
+            "ties": 58,
+            "losses": 324,
+            "geometric_makespan_reduction_percent": 9.930916620438857
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 89088,
+          "AEFT": 0,
+          "LSTD": 89088,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 612455.0,
+          "AEFT": 0.0,
+          "LSTD": 612455.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      },
+      "insertion": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "LSTD",
+          "AEFT",
+          "IPEFT",
+          "BPPTS",
+          "HEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 485.7617656672306,
+          "AEFT": 534.5701857485557,
+          "LSTD": 509.53193775753107,
+          "BPPTS": 557.5416258839177,
+          "HEFT": 570.2935594781004,
+          "IPEFT": 541.918606209064
+        },
+        "sole_winners": {
+          "ECTD": 1681,
+          "AEFT": 161,
+          "LSTD": 923,
+          "BPPTS": 57,
+          "HEFT": 23,
+          "IPEFT": 79
+        },
+        "tied_best_instances": 148,
+        "tied_best_membership": {
+          "ECTD": 118,
+          "AEFT": 49,
+          "LSTD": 67,
+          "BPPTS": 42,
+          "HEFT": 9,
+          "IPEFT": 65
+        },
+        "tie_groups": {
+          "ECTD + IPEFT": 20,
+          "ECTD + LSTD": 50,
+          "AEFT + HEFT": 2,
+          "HEFT + IPEFT": 2,
+          "ECTD + LSTD + BPPTS + IPEFT": 2,
+          "ECTD + AEFT": 11,
+          "ECTD + LSTD + IPEFT": 3,
+          "ECTD + AEFT + LSTD + BPPTS": 1,
+          "ECTD + AEFT + BPPTS + IPEFT": 12,
+          "AEFT + IPEFT": 5,
+          "AEFT + BPPTS + IPEFT": 6,
+          "LSTD + BPPTS + IPEFT": 1,
+          "AEFT + BPPTS": 3,
+          "BPPTS + IPEFT": 2,
+          "ECTD + BPPTS": 9,
+          "ECTD + AEFT + BPPTS + HEFT + IPEFT": 1,
+          "ECTD + AEFT + BPPTS": 1,
+          "ECTD + AEFT + IPEFT": 3,
+          "AEFT + LSTD": 3,
+          "ECTD + BPPTS + IPEFT": 3,
+          "LSTD + HEFT + IPEFT": 1,
+          "LSTD + HEFT": 1,
+          "ECTD + HEFT": 1,
+          "AEFT + LSTD + BPPTS + IPEFT": 1,
+          "LSTD + IPEFT": 3,
+          "ECTD + LSTD + HEFT": 1
+        },
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 1681,
+            "tied_best": 118,
+            "beaten": 1273
+          },
+          "AEFT": {
+            "strict_wins": 161,
+            "tied_best": 49,
+            "beaten": 2862
+          },
+          "LSTD": {
+            "strict_wins": 923,
+            "tied_best": 67,
+            "beaten": 2082
+          },
+          "BPPTS": {
+            "strict_wins": 57,
+            "tied_best": 42,
+            "beaten": 2973
+          },
+          "HEFT": {
+            "strict_wins": 23,
+            "tied_best": 9,
+            "beaten": 3040
+          },
+          "IPEFT": {
+            "strict_wins": 79,
+            "tied_best": 65,
+            "beaten": 2928
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 2667,
+            "ties": 44,
+            "losses": 361,
+            "geometric_makespan_reduction_percent": 9.130404459982921
+          },
+          "LSTD": {
+            "wins": 1968,
+            "ties": 61,
+            "losses": 1043,
+            "geometric_makespan_reduction_percent": 4.665099541142381
+          },
+          "BPPTS": {
+            "wins": 2854,
+            "ties": 36,
+            "losses": 182,
+            "geometric_makespan_reduction_percent": 12.874349982907285
+          },
+          "HEFT": {
+            "wins": 2837,
+            "ties": 6,
+            "losses": 229,
+            "geometric_makespan_reduction_percent": 14.822505428297038
+          },
+          "IPEFT": {
+            "wins": 2771,
+            "ties": 65,
+            "losses": 236,
+            "geometric_makespan_reduction_percent": 10.362596873112151
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 89088,
+          "AEFT": 0,
+          "LSTD": 89088,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 612455.0,
+          "AEFT": 0.0,
+          "LSTD": 612455.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      }
+    },
+    "both_mode_classifications": {
+      "ectd_loss_both": 1112,
+      "ectd_strict_both": 1467,
+      "other": 493
+    }
+  },
+  "pool_group_counts": {
+    "ectd_loss_both": 1112,
+    "ectd_strict_both": 1467,
+    "other": 493
+  },
+  "full_pool_input_hashes_checked": 3072,
+  "retained_algorithm_mode_makespans_checked_against_csv": 36864,
+  "source_files_sha256": {
+    "candidates.jsonl.gz": "1ce1e373de8d9b52574c45abee872c25424870c1df0b55c417858b1729addd77",
+    "original_results.jsonl.gz": "a724e8c93e3b160105db2aa7b23fa6ab9d7f1f3371cf3041f71793042fbfdcd7",
+    "ipeft_pool_results.jsonl.gz": "2e6e5896ea61af7c45577b2b9c0219c4162ddea523d4a42af3b327c813131567",
+    "full_pool_all_3072_results.csv": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+    "original_run_metadata.json": "a57f50cf2c65b1d24400d3b872541c95a645003364707e54035c6fe80230e5e9"
+  },
+  "profiles": {
+    "latest_497": {
+      "instances": 497,
+      "classifications": {
+        "ectd_strict_both": 371,
+        "ectd_loss_both": 126
+      },
+      "ids_sha256": "e0c6e1a45619d3285dfa484cbd33b3b7ed996a5cd48f1bff530bc10feee0e465",
+      "summary_sha256": "c4d92f7763c2c3450f14ee29a98277c301bcb9d1d308811edeed5942a85ce0fc"
+    },
+    "full_order_209": {
+      "instances": 209,
+      "classifications": {
+        "ectd_strict_both": 156,
+        "ectd_loss_both": 53
+      },
+      "ids_sha256": "83c0aeb2c7cf875958018404ed3c3784f463c4ccc0b106fc9d231d9d7eba4903",
+      "summary_sha256": "d1aa9ab522426a5b2e6da89d923f3baf67c8fe71de2ccefc417d7f44b7240fca"
+    },
+    "full_order_225": {
+      "instances": 225,
+      "classifications": {
+        "ectd_strict_both": 134,
+        "ectd_loss_both": 91
+      },
+      "ids_sha256": "03f877b20465fb56edacf2224a759089ea1a7c7e075bef621605768a01fbc5b7",
+      "summary_sha256": "35f846d46d72380a1ff0aa3df9fd37512e2974ebf1b7ac4932d21dd22b5c8284"
+    }
+  },
+  "build_source_sha256": "cf688735b227e8c7c27c0151d3d681a39bfefceec5feaace373749cc9d6484ec",
+  "execution_environment": "local",
+  "ci": null
+}

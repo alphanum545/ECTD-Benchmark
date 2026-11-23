@@ -1,0 +1,55 @@
+{
+  "name": "full_order_near_original_fraction",
+  "source_sha256": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+  "pool_counts": {
+    "full_pool": 3072,
+    "strict_winners_both": 1467,
+    "losses_both": 1112,
+    "other": 493
+  },
+  "constraints": {
+    "max_count": 1967,
+    "winner_fraction_range": [
+      0.7458057956278596,
+      0.7468057956278596
+    ],
+    "strict_margin_relative": 0.001,
+    "family_min_each_group": 10,
+    "eligible_groups": [
+      "strict_winners_both",
+      "losses_both"
+    ],
+    "order": "full",
+    "pairs": [
+      [
+        "ECTD",
+        "AEFT"
+      ],
+      [
+        "AEFT",
+        "BPPTS"
+      ],
+      [
+        "BPPTS",
+        "HEFT"
+      ],
+      [
+        "HEFT",
+        "LSTD"
+      ],
+      [
+        "LSTD",
+        "IPEFT"
+      ]
+    ]
+  },
+  "solver": {
+    "status": 2,
+    "message": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+    "success": false,
+    "mip_gap": null,
+    "mip_node_count": null,
+    "mip_dual_bound": null,
+    "elapsed_seconds": 0.08390580200011755
+  }
+}

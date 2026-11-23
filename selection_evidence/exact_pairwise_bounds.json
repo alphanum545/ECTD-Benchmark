@@ -1,0 +1,550 @@
+{
+  "source_path": "/workspace/scratch/751f658a66a6/ectd_mixed_1967/source_evidence/full_pool_all_3072_results.csv",
+  "source_sha256": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+  "fixed_winner_count": 1467,
+  "additional_case_count": 500,
+  "cohort_size": 1967,
+  "independent_classification_counts": {
+    "winners_both": 1467,
+    "losses_both": 1112,
+    "other": 493
+  },
+  "fixed_winner_ids_sha256": "32da52136d582e131c12fe9ba9db80dcdf0aa0949b6fa35ee72a9a982e2f038b",
+  "definition": "For each pair and mode separately, retain all 1467 fixed winners and select 500 eligible cases with the smallest log(A/B). Exponentiating their combined mean gives the exact minimum geometric-mean A/B ratio in that selection class. Arithmetic-order bound uses smallest A-B instead; its minimum difference is exact, not an exact ratio bound. Pairwise optimizing sets may differ, so bounds do not by themselves prove joint feasibility when less than one.",
+  "current_cohort_means": {
+    "append": {
+      "ECTD": {
+        "geometric": 473.1265771034489,
+        "arithmetic": 544.067615658363
+      },
+      "AEFT": {
+        "geometric": 530.4058966093414,
+        "arithmetic": 599.1148957803762
+      },
+      "BPPTS": {
+        "geometric": 556.8159514702987,
+        "arithmetic": 636.8581596339603
+      },
+      "HEFT": {
+        "geometric": 571.2755929586395,
+        "arithmetic": 641.0279613624809
+      },
+      "LSTD": {
+        "geometric": 509.97031049522184,
+        "arithmetic": 585.0788002033554
+      },
+      "IPEFT": {
+        "geometric": 534.1906837688284,
+        "arithmetic": 603.4062023385867
+      }
+    },
+    "insertion": {
+      "ECTD": {
+        "geometric": 467.24010364848164,
+        "arithmetic": 535.0981189628876
+      },
+      "AEFT": {
+        "geometric": 520.8094266873092,
+        "arithmetic": 586.6710726995425
+      },
+      "BPPTS": {
+        "geometric": 541.2287609545999,
+        "arithmetic": 614.2038637519065
+      },
+      "HEFT": {
+        "geometric": 565.6321115519474,
+        "arithmetic": 633.6929334011185
+      },
+      "LSTD": {
+        "geometric": 505.15805693444355,
+        "arithmetic": 578.5973563802745
+      },
+      "IPEFT": {
+        "geometric": 527.4682408201103,
+        "arithmetic": 594.8047788510422
+      }
+    }
+  },
+  "bounds": [
+    {
+      "mode": "append",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.0211820369867892,
+      "minimum_arithmetic_mean_difference": 4.137264870360956,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "820ee55d1ecc54a57f910ae45aec7ec7efd8168251210937c7d544c85bf91589",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 122,
+        "GE": 74,
+        "Genome": 115,
+        "LA": 74,
+        "LIGO": 52,
+        "Montage": 63
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 1.0046229681708023,
+      "minimum_arithmetic_mean_difference": -5.356888662938485,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "ab1e5fdbe44242ef7f1d9b7049e2ff6e5f9df6a3c9d51b11413ac119042ccd03",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 92,
+        "GE": 141,
+        "Genome": 98,
+        "LA": 114,
+        "LIGO": 15,
+        "Montage": 40
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.0654548285396426,
+      "minimum_arithmetic_mean_difference": 33.510930350788,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "d6b1f8acb1a3ec901e4527b22cf601427769c4069546c3f37662fd8ecef17378",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 96,
+        "GE": 75,
+        "Genome": 128,
+        "LA": 77,
+        "LIGO": 81,
+        "Montage": 43
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 1.0454476143050337,
+      "minimum_arithmetic_mean_difference": 23.76156583629893,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "227c9f32c29580de07fbdda01eb46707cb33e8cebb0779b4d6ca0090b360f2f9",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 76,
+        "GE": 147,
+        "Genome": 124,
+        "LA": 114,
+        "LIGO": 23,
+        "Montage": 16
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "HEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.0414530683936867,
+      "minimum_arithmetic_mean_difference": 21.99644128113879,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "6f86bc950116f6fd829ad91079d7a0b87ec8472e6e58768ae3e9cc7f6aae4575",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 60,
+        "GE": 5,
+        "Genome": 146,
+        "LA": 20,
+        "LIGO": 196,
+        "Montage": 73
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "HEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 1.0399561082715663,
+      "minimum_arithmetic_mean_difference": 20.8576512455516,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "716a709b3a89f8881b950619121702207dca2c1d08cca0512717d794d25a10a7",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 65,
+        "GE": 8,
+        "Genome": 139,
+        "LA": 32,
+        "LIGO": 190,
+        "Montage": 66
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.017468938471722,
+      "minimum_arithmetic_mean_difference": 15.970513472292831,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "154d9afeccb988919ef4d425f90945fea9488c14c77d745025e76552bea4072c",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 59,
+        "GE": 56,
+        "Genome": 136,
+        "LA": 61,
+        "LIGO": 140,
+        "Montage": 48
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 1.0106420124450042,
+      "minimum_arithmetic_mean_difference": 12.677173360447382,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "13e427e8ca462b7115e5d3a818bc7d8fc887df84d4a3467a533d5f9cfa76909d",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 57,
+        "GE": 93,
+        "Genome": 140,
+        "LA": 89,
+        "LIGO": 104,
+        "Montage": 17
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "LSTD",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 0.9238566002804839,
+      "minimum_arithmetic_mean_difference": -36.62379257752923,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "3b94ac7b55472fb9aa68961cead5111a9c4d1673ed36a2f48ab31003742b8d31",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 32,
+        "GE": 7,
+        "Genome": 113,
+        "LA": 29,
+        "LIGO": 233,
+        "Montage": 86
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "LSTD",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 0.9205519028623943,
+      "minimum_arithmetic_mean_difference": -38.058464667005595,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "9d71b5114bdc9b055b3e81c36ba710b730df1d79d04b207fe59f9d5b9332b1c6",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 22,
+        "GE": 21,
+        "Genome": 103,
+        "LA": 40,
+        "LIGO": 232,
+        "Montage": 82
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 0.9778994827799807,
+      "minimum_arithmetic_mean_difference": -13.566853075749872,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "d03e8def4e94332869e5735c3b43d2db000144fa7d92adf3b971afb30f539101",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 78,
+        "GE": 30,
+        "Genome": 132,
+        "LA": 50,
+        "LIGO": 147,
+        "Montage": 63
+      }
+    },
+    {
+      "mode": "append",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 0.9728894010191008,
+      "minimum_arithmetic_mean_difference": -16.809354346720895,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "1298b12b835e7d559eee901bc7427e646622bda08296948b3ec57b1a0e876d9a",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 84,
+        "GE": 48,
+        "Genome": 119,
+        "LA": 88,
+        "LIGO": 111,
+        "Montage": 50
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.0111029779951453,
+      "minimum_arithmetic_mean_difference": -1.998474834773767,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "a783338bb351ee8346c4f202457f82a1a798c1f910e1ff295ab1506a842861f9",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 130,
+        "GE": 73,
+        "Genome": 125,
+        "LA": 68,
+        "LIGO": 52,
+        "Montage": 52
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 0.9956235294211538,
+      "minimum_arithmetic_mean_difference": -10.991357397051347,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "1ed0266b3e3327236bedfd0b9fdf7dc2973e5055f7512233584965e367df6661",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 105,
+        "GE": 133,
+        "Genome": 106,
+        "LA": 100,
+        "LIGO": 21,
+        "Montage": 35
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.0498195417217295,
+      "minimum_arithmetic_mean_difference": 22.920691408235893,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "ff1e1c79b7140a9c4ae66598074e31f4896832cd7139e7651cac580efc05093b",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 110,
+        "GE": 72,
+        "Genome": 138,
+        "LA": 76,
+        "LIGO": 64,
+        "Montage": 40
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "LSTD",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 1.0316630756479654,
+      "minimum_arithmetic_mean_difference": 13.4844941535333,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "eb2131e21e2c87c47cdeabdca70bf5d98d0c2bc1964bf7d17aff52aad8da2cdc",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 94,
+        "GE": 143,
+        "Genome": 124,
+        "LA": 102,
+        "LIGO": 20,
+        "Montage": 17
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "HEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.0440016687466473,
+      "minimum_arithmetic_mean_difference": 23.221148957803763,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "57011da74c5735f141a6c04fe7e590c519c232739c82de4d107647b73789ff61",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 54,
+        "GE": 4,
+        "Genome": 137,
+        "LA": 22,
+        "LIGO": 205,
+        "Montage": 78
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "HEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 1.0423904074868426,
+      "minimum_arithmetic_mean_difference": 22.133706151499744,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "91a0cd223bc70b879a24b250c8b71e6af4c3c104718d0a26b3b7373642d54008",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 49,
+        "GE": 7,
+        "Genome": 135,
+        "LA": 33,
+        "LIGO": 204,
+        "Montage": 72
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 1.0065035385222634,
+      "minimum_arithmetic_mean_difference": 7.392475851550585,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "5bffc26c8014ac1bdb26bbcfef6e2f97a46a349d46012e08ae8b661c2c8aa8ac",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 63,
+        "GE": 49,
+        "Genome": 149,
+        "LA": 58,
+        "LIGO": 136,
+        "Montage": 45
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "BPPTS",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 1.0008329034574508,
+      "minimum_arithmetic_mean_difference": 4.449923741738688,
+      "geometric_order_impossible": true,
+      "arithmetic_order_impossible": true,
+      "pairwise_optimal_500_ids_sha256": "ff9db61b497029480e3e160ffddb1bac11dbe13b0e83e8d5a45f8306e8bd87e1",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 57,
+        "GE": 93,
+        "Genome": 143,
+        "LA": 72,
+        "LIGO": 115,
+        "Montage": 20
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "LSTD",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 0.9267485716802564,
+      "minimum_arithmetic_mean_difference": -34.46314184036604,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "776a078a9fe03f73ee51d508f468e527919d2fc9dad22e9e47457dfcfd196268",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 21,
+        "GE": 7,
+        "Genome": 120,
+        "LA": 32,
+        "LIGO": 235,
+        "Montage": 85
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "LSTD",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 0.9230698866250315,
+      "minimum_arithmetic_mean_difference": -35.79511947127605,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "8bf1297ef970d7d065893602ee7db60ead9b2a9a220d12ca44382321fd4af8b5",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 16,
+        "GE": 24,
+        "Genome": 107,
+        "LA": 41,
+        "LIGO": 233,
+        "Montage": 79
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "genuine_losses_both",
+      "eligible_count": 1112,
+      "minimum_geometric_ratio": 0.9710724453344945,
+      "minimum_arithmetic_mean_difference": -18.56888662938485,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "34df01f832971654f139e74335ad555a28404e1ef8c3521d6801ac06f45105fa",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 86,
+        "GE": 26,
+        "Genome": 126,
+        "LA": 53,
+        "LIGO": 157,
+        "Montage": 52
+      }
+    },
+    {
+      "mode": "insertion",
+      "first_algorithm": "AEFT",
+      "second_algorithm": "IPEFT",
+      "eligible_pool": "all_remaining_cases",
+      "eligible_count": 1605,
+      "minimum_geometric_ratio": 0.9664113966108979,
+      "minimum_arithmetic_mean_difference": -21.67107269954245,
+      "geometric_order_impossible": false,
+      "arithmetic_order_impossible": false,
+      "pairwise_optimal_500_ids_sha256": "93ed95b24b3fda689c9f4f8c2e925acc1634f3d0dfebed5b8f9cf26ef3658330",
+      "pairwise_optimal_500_family_counts": {
+        "FFT": 88,
+        "GE": 36,
+        "Genome": 126,
+        "LA": 83,
+        "LIGO": 123,
+        "Montage": 44
+      }
+    }
+  ]
+}

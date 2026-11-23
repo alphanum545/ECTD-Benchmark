@@ -1,0 +1,222 @@
+{
+  "status": "passed",
+  "audited_source_path": "/workspace/scratch/751f658a66a6/ectd_mixed_1967/source_evidence/full_pool_all_3072_results.csv",
+  "source_sha256": {
+    "full_pool_all_3072_results.csv": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+    "original_results.jsonl.gz": "a724e8c93e3b160105db2aa7b23fa6ab9d7f1f3371cf3041f71793042fbfdcd7",
+    "ipeft_pool_results.jsonl.gz": "2e6e5896ea61af7c45577b2b9c0219c4162ddea523d4a42af3b327c813131567"
+  },
+  "selected_count": 497,
+  "distinct_input_hash_count": 497,
+  "classification_counts": {
+    "ectd_strict_both": 371,
+    "ectd_loss_both": 126
+  },
+  "winner_fraction": 0.7464788732394366,
+  "ids_sha256": "e0c6e1a45619d3285dfa484cbd33b3b7ed996a5cd48f1bff530bc10feee0e465",
+  "family_counts": {
+    "FFT": {
+      "wins": 51,
+      "losses": 10,
+      "total": 61
+    },
+    "GE": {
+      "wins": 83,
+      "losses": 16,
+      "total": 99
+    },
+    "Genome": {
+      "wins": 51,
+      "losses": 54,
+      "total": 105
+    },
+    "LA": {
+      "wins": 113,
+      "losses": 19,
+      "total": 132
+    },
+    "LIGO": {
+      "wins": 47,
+      "losses": 17,
+      "total": 64
+    },
+    "Montage": {
+      "wins": 26,
+      "losses": 10,
+      "total": 36
+    }
+  },
+  "placements": {
+    "append": {
+      "geomeans": {
+        "ECTD": 529.1909043673224,
+        "AEFT": 574.4828458643004,
+        "BPPTS": 575.0697024163868,
+        "LSTD": 575.6580106460585,
+        "HEFT": 607.8603897814752,
+        "IPEFT": 608.5291863776799
+      },
+      "order": [
+        "ECTD",
+        "AEFT",
+        "BPPTS",
+        "LSTD",
+        "HEFT",
+        "IPEFT"
+      ],
+      "adjacent_improvement_percent": {
+        "ECTD<AEFT": 7.883950203741419,
+        "AEFT<BPPTS": 0.10204963843869486,
+        "BPPTS<LSTD": 0.10219752331970255,
+        "LSTD<HEFT": 5.297660396492255,
+        "HEFT<IPEFT": 0.1099037829534244
+      },
+      "sole_winners": {
+        "ECTD": 371,
+        "AEFT": 17,
+        "BPPTS": 39,
+        "LSTD": 55,
+        "HEFT": 8,
+        "IPEFT": 3
+      },
+      "tied_best_instances": 4
+    },
+    "insertion": {
+      "geomeans": {
+        "ECTD": 523.6605344498256,
+        "AEFT": 566.4679788741054,
+        "BPPTS": 568.9455312734536,
+        "LSTD": 569.5334646729208,
+        "HEFT": 601.997871490486,
+        "IPEFT": 602.6165264771316
+      },
+      "order": [
+        "ECTD",
+        "AEFT",
+        "BPPTS",
+        "LSTD",
+        "HEFT",
+        "IPEFT"
+      ],
+      "adjacent_improvement_percent": {
+        "ECTD<AEFT": 7.556904541958853,
+        "AEFT<BPPTS": 0.43546389999810087,
+        "BPPTS<LSTD": 0.10323070301141435,
+        "LSTD<HEFT": 5.392777674975258,
+        "HEFT<IPEFT": 0.10266147034869721
+      },
+      "sole_winners": {
+        "ECTD": 371,
+        "AEFT": 24,
+        "BPPTS": 27,
+        "LSTD": 59,
+        "HEFT": 7,
+        "IPEFT": 3
+      },
+      "tied_best_instances": 6
+    }
+  },
+  "source_schedule_outcomes_compared": 5964,
+  "checks": [
+    {
+      "check": "pool has3072 uniqueIDs",
+      "passed": true
+    },
+    {
+      "check": "selected has497 distinctIDs",
+      "passed": true
+    },
+    {
+      "check": "selectedIDs present in source",
+      "passed": true
+    },
+    {
+      "check": "distinct input hashes",
+      "passed": true
+    },
+    {
+      "check": "371 strict both-mode wins and126 genuine both-mode losses",
+      "passed": true
+    },
+    {
+      "check": "CSV hash matches selector receipt",
+      "passed": true
+    },
+    {
+      "check": "CSV hash matches frozen study receipt",
+      "passed": true
+    },
+    {
+      "check": "ID hash matches selector receipt",
+      "passed": true
+    },
+    {
+      "check": "membership matches selectedIDset",
+      "passed": true
+    },
+    {
+      "check": "membership family/group/inputhash agree with CSV",
+      "passed": true
+    },
+    {
+      "check": "all six families include at least10wins and10losses",
+      "passed": true
+    },
+    {
+      "check": "family counts match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "winner fraction within declared range",
+      "passed": true
+    },
+    {
+      "check": "append exact requested revised aggregate order",
+      "passed": true
+    },
+    {
+      "check": "append adjacent margins at least0.1percent",
+      "passed": true
+    },
+    {
+      "check": "append means match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "append margins match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "insertion exact requested revised aggregate order",
+      "passed": true
+    },
+    {
+      "check": "insertion adjacent margins at least0.1percent",
+      "passed": true
+    },
+    {
+      "check": "insertion means match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "insertion margins match selector receipt",
+      "passed": true
+    },
+    {
+      "check": "allthree archives match frozen source hashes",
+      "passed": true
+    },
+    {
+      "check": "all5964selected makespans exactly match valid archive schedules",
+      "passed": true
+    }
+  ],
+  "margin_definition": "100 * (1 - geometric_mean(faster) / geometric_mean(slower)); each adjacent pair must be at least0.1percent in each mode.",
+  "scope": "Independent source-level audit. The497-case alternative drops1096 of the original1467 fixed winners, retains371winners, and selects126losses. It does not preserve the requested1467+500composition. Original1967study files were not changed.",
+  "limitations": [
+    "Outcome-selected synthetic exploratory subset; not representative or independent confirmation.",
+    "Aggregate order only; individual-case orders may differ.",
+    "Several adjacent aggregate margins are about0.1percent; this audit does not establish robustness.",
+    "This audit verifies selected saved outcomes, not schedule replay or solver optimality. Root performs replay separately."
+  ]
+}

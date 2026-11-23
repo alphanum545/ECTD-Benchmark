@@ -1,0 +1,25 @@
+{
+  "proof": "For any subset S with |S|=1967, its log-ratio sum is at least the sum of the1967 smallest log-ratios in the entire3072 pool. Each displayed minimum ratio exceeds1, so BPPTS cannot be geometrically faster than LSTD on any1967 distinct subset, regardless of other conditions.",
+  "bounds": [
+    {
+      "mode": "append",
+      "pair": [
+        "BPPTS",
+        "LSTD"
+      ],
+      "minimum_geomean_ratio_any_1967": 1.0270112510057985,
+      "maximum_count_for_pair_alone_strict": 1614
+    },
+    {
+      "mode": "insertion",
+      "pair": [
+        "BPPTS",
+        "LSTD"
+      ],
+      "minimum_geomean_ratio_any_1967": 1.0149950901492937,
+      "maximum_count_for_pair_alone_strict": 1740
+    }
+  ],
+  "numpy_version": "2.3.5",
+  "scipy_version": "1.17.0"
+}

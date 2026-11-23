@@ -1,0 +1,75 @@
+{
+  "purpose": "Exploratory outcome-selected alternative feasibility; no baseline/input/result mutation",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "solver_options": {
+    "time_limit": 40,
+    "mip_rel_gap": 0.0
+  },
+  "margin_definition": {
+    "relative_improvement": 0.001,
+    "inequality": "geomean(Mfirst)/geomean(Msecond) <= 0.999",
+    "per_instance_constraint_coefficient": "log(Mfirst/Msecond) - log(0.999)",
+    "sum_of_selected_coefficients_upper_bound": 0.0
+  },
+  "runs": {
+    "revised_order_near_original_fraction": [
+      "select_alternative.py",
+      "revised_order_near_original_fraction",
+      "--revised",
+      "--time-limit",
+      "40"
+    ],
+    "full_order_majority": [
+      "select_alternative.py",
+      "full_order_majority",
+      "--majority-only",
+      "--min-each",
+      "1",
+      "--time-limit",
+      "40"
+    ]
+  },
+  "limitations": [
+    "497 is the optimal maximum only under the exact declared composition window, both-mode win/loss eligibility, minimum10 wins and10 losses perfamily, margin, and revised chain. It is not an unrestricted global maximum.",
+    "The original1967 cohort is unchanged. The alternative drops original winner cases and reduces the total to497.",
+    "Solver memberships can vary between optimal solutions/software versions; the frozen IDs and file hashes identify the supplied solution."
+  ],
+  "files": {
+    "select_alternative.py": {
+      "bytes": 5879,
+      "sha256": "f6d01f65999634cb87568b1679aed106b258d92731809bdbb1e396c647c11b3d"
+    },
+    "revised_order_near_original_fraction_ids.json": {
+      "bytes": 43000,
+      "sha256": "df43753c8ffae4c7630cd288f3611a5dc4baf1afa332930d4f3c84ae595f511d"
+    },
+    "revised_order_near_original_fraction_membership.csv": {
+      "bytes": 83821,
+      "sha256": "6234991452b56a78ed59e14f26bcf820360051db323678398cdc967a4228d2a5"
+    },
+    "revised_order_near_original_fraction_analysis.json": {
+      "bytes": 3285,
+      "sha256": "17e212394899e08b71bf1924ded162ea1e1354b8d200d3314e7a115256d163bb"
+    },
+    "full_order_majority_ids.json": {
+      "bytes": 19485,
+      "sha256": "b7bc069c3866e3d0be74acb1777b01d0c1767194217f3f14e216bce5d49ba292"
+    },
+    "full_order_majority_membership.csv": {
+      "bytes": 37924,
+      "sha256": "3b98d0942a4cfb9aab30debc14bb0cb7c50ca70afe55e094b16fb0605c457a6a"
+    },
+    "full_order_majority_analysis.json": {
+      "bytes": 3198,
+      "sha256": "6de882c1139bbd25887b379a36c1fb83c3eb7ee052c8fe5dc755e7fc96672287"
+    },
+    "unrestricted_1967_impossibility.json": {
+      "bytes": 777,
+      "sha256": "c27f3faf08a031b2119b4c770ff9cc68f623e49da8ece230ff61be871f589890"
+    }
+  }
+}

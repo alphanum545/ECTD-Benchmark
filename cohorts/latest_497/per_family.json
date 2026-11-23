@@ -1,0 +1,1557 @@
+{
+  "FFT": {
+    "instances": 61,
+    "placements": {
+      "append": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "AEFT",
+          "LSTD",
+          "BPPTS",
+          "HEFT",
+          "IPEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 469.70487063962213,
+          "AEFT": 502.9947299285998,
+          "LSTD": 503.04686788310886,
+          "BPPTS": 518.4573134216843,
+          "HEFT": 521.134275340321,
+          "IPEFT": 522.529726294431
+        },
+        "sole_winners": {
+          "ECTD": 51,
+          "AEFT": 1,
+          "LSTD": 2,
+          "BPPTS": 2,
+          "HEFT": 3,
+          "IPEFT": 2
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 51,
+            "tied_best": 0,
+            "beaten": 10
+          },
+          "AEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 60
+          },
+          "LSTD": {
+            "strict_wins": 2,
+            "tied_best": 0,
+            "beaten": 59
+          },
+          "BPPTS": {
+            "strict_wins": 2,
+            "tied_best": 0,
+            "beaten": 59
+          },
+          "HEFT": {
+            "strict_wins": 3,
+            "tied_best": 0,
+            "beaten": 58
+          },
+          "IPEFT": {
+            "strict_wins": 2,
+            "tied_best": 0,
+            "beaten": 59
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 57,
+            "ties": 0,
+            "losses": 4,
+            "geometric_makespan_reduction_percent": 6.618331626198781
+          },
+          "LSTD": {
+            "wins": 56,
+            "ties": 0,
+            "losses": 5,
+            "geometric_makespan_reduction_percent": 6.628010106452797
+          },
+          "BPPTS": {
+            "wins": 59,
+            "ties": 0,
+            "losses": 2,
+            "geometric_makespan_reduction_percent": 9.403366780633993
+          },
+          "HEFT": {
+            "wins": 57,
+            "ties": 0,
+            "losses": 4,
+            "geometric_makespan_reduction_percent": 9.868743457166286
+          },
+          "IPEFT": {
+            "wins": 57,
+            "ties": 0,
+            "losses": 4,
+            "geometric_makespan_reduction_percent": 10.109445070124789
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 2323,
+          "AEFT": 0,
+          "LSTD": 2323,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 15423.0,
+          "AEFT": 0.0,
+          "LSTD": 15423.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      },
+      "insertion": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "AEFT",
+          "LSTD",
+          "BPPTS",
+          "IPEFT",
+          "HEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 461.73833573348253,
+          "AEFT": 496.8371682109512,
+          "LSTD": 497.76106694196284,
+          "BPPTS": 500.66584221518184,
+          "HEFT": 516.6889393035578,
+          "IPEFT": 516.3819168689388
+        },
+        "sole_winners": {
+          "ECTD": 51,
+          "AEFT": 3,
+          "LSTD": 2,
+          "BPPTS": 1,
+          "HEFT": 1,
+          "IPEFT": 1
+        },
+        "tied_best_instances": 2,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 1,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 2,
+          "IPEFT": 1
+        },
+        "tie_groups": {
+          "AEFT + HEFT": 1,
+          "HEFT + IPEFT": 1
+        },
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 51,
+            "tied_best": 0,
+            "beaten": 10
+          },
+          "AEFT": {
+            "strict_wins": 3,
+            "tied_best": 1,
+            "beaten": 57
+          },
+          "LSTD": {
+            "strict_wins": 2,
+            "tied_best": 0,
+            "beaten": 59
+          },
+          "BPPTS": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 60
+          },
+          "HEFT": {
+            "strict_wins": 1,
+            "tied_best": 2,
+            "beaten": 58
+          },
+          "IPEFT": {
+            "strict_wins": 1,
+            "tied_best": 1,
+            "beaten": 59
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 56,
+            "ties": 0,
+            "losses": 5,
+            "geometric_makespan_reduction_percent": 7.064453853936725
+          },
+          "LSTD": {
+            "wins": 57,
+            "ties": 0,
+            "losses": 4,
+            "geometric_makespan_reduction_percent": 7.236952345387115
+          },
+          "BPPTS": {
+            "wins": 57,
+            "ties": 0,
+            "losses": 4,
+            "geometric_makespan_reduction_percent": 7.775147253798198
+          },
+          "HEFT": {
+            "wins": 56,
+            "ties": 0,
+            "losses": 5,
+            "geometric_makespan_reduction_percent": 10.635142227767236
+          },
+          "IPEFT": {
+            "wins": 58,
+            "ties": 0,
+            "losses": 3,
+            "geometric_makespan_reduction_percent": 10.582009042219266
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 2323,
+          "AEFT": 0,
+          "LSTD": 2323,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 15423.0,
+          "AEFT": 0.0,
+          "LSTD": 15423.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      }
+    },
+    "both_mode_classifications": {
+      "ectd_strict_both": 51,
+      "ectd_loss_both": 10
+    }
+  },
+  "GE": {
+    "instances": 99,
+    "placements": {
+      "append": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "AEFT",
+          "BPPTS",
+          "IPEFT",
+          "LSTD",
+          "HEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 642.6990464085662,
+          "AEFT": 691.0389802129425,
+          "LSTD": 758.1381738694766,
+          "BPPTS": 691.4885789912813,
+          "HEFT": 787.0028086773431,
+          "IPEFT": 723.177329086945
+        },
+        "sole_winners": {
+          "ECTD": 83,
+          "AEFT": 4,
+          "LSTD": 1,
+          "BPPTS": 7,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tied_best_instances": 4,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 2,
+          "LSTD": 2,
+          "BPPTS": 2,
+          "HEFT": 2,
+          "IPEFT": 2
+        },
+        "tie_groups": {
+          "AEFT + BPPTS + IPEFT": 1,
+          "AEFT + BPPTS": 1,
+          "LSTD + HEFT + IPEFT": 1,
+          "LSTD + HEFT": 1
+        },
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 83,
+            "tied_best": 0,
+            "beaten": 16
+          },
+          "AEFT": {
+            "strict_wins": 4,
+            "tied_best": 2,
+            "beaten": 93
+          },
+          "LSTD": {
+            "strict_wins": 1,
+            "tied_best": 2,
+            "beaten": 96
+          },
+          "BPPTS": {
+            "strict_wins": 7,
+            "tied_best": 2,
+            "beaten": 90
+          },
+          "HEFT": {
+            "strict_wins": 0,
+            "tied_best": 2,
+            "beaten": 97
+          },
+          "IPEFT": {
+            "strict_wins": 0,
+            "tied_best": 2,
+            "beaten": 97
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 88,
+            "ties": 2,
+            "losses": 9,
+            "geometric_makespan_reduction_percent": 6.995254274871787
+          },
+          "LSTD": {
+            "wins": 96,
+            "ties": 0,
+            "losses": 3,
+            "geometric_makespan_reduction_percent": 15.226660711690364
+          },
+          "BPPTS": {
+            "wins": 85,
+            "ties": 1,
+            "losses": 13,
+            "geometric_makespan_reduction_percent": 7.055725006172553
+          },
+          "HEFT": {
+            "wins": 97,
+            "ties": 0,
+            "losses": 2,
+            "geometric_makespan_reduction_percent": 18.335863694222056
+          },
+          "IPEFT": {
+            "wins": 95,
+            "ties": 1,
+            "losses": 3,
+            "geometric_makespan_reduction_percent": 11.128429977193477
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 2981,
+          "AEFT": 0,
+          "LSTD": 2981,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 19178.0,
+          "AEFT": 0.0,
+          "LSTD": 19178.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      },
+      "insertion": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "AEFT",
+          "BPPTS",
+          "IPEFT",
+          "LSTD",
+          "HEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 638.2948670157954,
+          "AEFT": 684.1725479087237,
+          "LSTD": 745.5700030423035,
+          "BPPTS": 688.215612160615,
+          "HEFT": 773.922690572584,
+          "IPEFT": 716.6586140334871
+        },
+        "sole_winners": {
+          "ECTD": 83,
+          "AEFT": 5,
+          "LSTD": 1,
+          "BPPTS": 5,
+          "HEFT": 0,
+          "IPEFT": 1
+        },
+        "tied_best_instances": 4,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 2,
+          "LSTD": 2,
+          "BPPTS": 2,
+          "HEFT": 2,
+          "IPEFT": 2
+        },
+        "tie_groups": {
+          "AEFT + BPPTS + IPEFT": 1,
+          "AEFT + BPPTS": 1,
+          "LSTD + HEFT + IPEFT": 1,
+          "LSTD + HEFT": 1
+        },
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 83,
+            "tied_best": 0,
+            "beaten": 16
+          },
+          "AEFT": {
+            "strict_wins": 5,
+            "tied_best": 2,
+            "beaten": 92
+          },
+          "LSTD": {
+            "strict_wins": 1,
+            "tied_best": 2,
+            "beaten": 96
+          },
+          "BPPTS": {
+            "strict_wins": 5,
+            "tied_best": 2,
+            "beaten": 92
+          },
+          "HEFT": {
+            "strict_wins": 0,
+            "tied_best": 2,
+            "beaten": 97
+          },
+          "IPEFT": {
+            "strict_wins": 1,
+            "tied_best": 2,
+            "beaten": 96
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 87,
+            "ties": 2,
+            "losses": 10,
+            "geometric_makespan_reduction_percent": 6.705571720636893
+          },
+          "LSTD": {
+            "wins": 95,
+            "ties": 0,
+            "losses": 4,
+            "geometric_makespan_reduction_percent": 14.388338531428458
+          },
+          "BPPTS": {
+            "wins": 85,
+            "ties": 1,
+            "losses": 13,
+            "geometric_makespan_reduction_percent": 7.25364904002922
+          },
+          "HEFT": {
+            "wins": 96,
+            "ties": 0,
+            "losses": 3,
+            "geometric_makespan_reduction_percent": 17.52472504152125
+          },
+          "IPEFT": {
+            "wins": 93,
+            "ties": 2,
+            "losses": 4,
+            "geometric_makespan_reduction_percent": 10.934599191747107
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 2981,
+          "AEFT": 0,
+          "LSTD": 2981,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 19178.0,
+          "AEFT": 0.0,
+          "LSTD": 19178.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      }
+    },
+    "both_mode_classifications": {
+      "ectd_strict_both": 83,
+      "ectd_loss_both": 16
+    }
+  },
+  "Genome": {
+    "instances": 105,
+    "placements": {
+      "append": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "BPPTS",
+          "LSTD",
+          "AEFT",
+          "HEFT",
+          "IPEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 475.07730233412417,
+          "AEFT": 502.27456523579696,
+          "LSTD": 488.6013649418685,
+          "BPPTS": 487.4304555034854,
+          "HEFT": 512.2542175114146,
+          "IPEFT": 534.45677364533
+        },
+        "sole_winners": {
+          "ECTD": 51,
+          "AEFT": 4,
+          "LSTD": 25,
+          "BPPTS": 21,
+          "HEFT": 3,
+          "IPEFT": 1
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 51,
+            "tied_best": 0,
+            "beaten": 54
+          },
+          "AEFT": {
+            "strict_wins": 4,
+            "tied_best": 0,
+            "beaten": 101
+          },
+          "LSTD": {
+            "strict_wins": 25,
+            "tied_best": 0,
+            "beaten": 80
+          },
+          "BPPTS": {
+            "strict_wins": 21,
+            "tied_best": 0,
+            "beaten": 84
+          },
+          "HEFT": {
+            "strict_wins": 3,
+            "tied_best": 0,
+            "beaten": 102
+          },
+          "IPEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 104
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 82,
+            "ties": 1,
+            "losses": 22,
+            "geometric_makespan_reduction_percent": 5.414819858318887
+          },
+          "LSTD": {
+            "wins": 66,
+            "ties": 0,
+            "losses": 39,
+            "geometric_makespan_reduction_percent": 2.7679133907768216
+          },
+          "BPPTS": {
+            "wins": 62,
+            "ties": 0,
+            "losses": 43,
+            "geometric_makespan_reduction_percent": 2.5343416747731107
+          },
+          "HEFT": {
+            "wins": 80,
+            "ties": 1,
+            "losses": 24,
+            "geometric_makespan_reduction_percent": 7.257512755658668
+          },
+          "IPEFT": {
+            "wins": 96,
+            "ties": 0,
+            "losses": 9,
+            "geometric_makespan_reduction_percent": 11.110247683119567
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 3983,
+          "AEFT": 0,
+          "LSTD": 3983,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 28107.0,
+          "AEFT": 0.0,
+          "LSTD": 28107.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      },
+      "insertion": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "LSTD",
+          "BPPTS",
+          "AEFT",
+          "HEFT",
+          "IPEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 470.99101271853533,
+          "AEFT": 493.6027077562404,
+          "LSTD": 482.56607923535415,
+          "BPPTS": 485.1313545678418,
+          "HEFT": 507.2759991106733,
+          "IPEFT": 529.8649001184754
+        },
+        "sole_winners": {
+          "ECTD": 51,
+          "AEFT": 8,
+          "LSTD": 28,
+          "BPPTS": 12,
+          "HEFT": 5,
+          "IPEFT": 1
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 51,
+            "tied_best": 0,
+            "beaten": 54
+          },
+          "AEFT": {
+            "strict_wins": 8,
+            "tied_best": 0,
+            "beaten": 97
+          },
+          "LSTD": {
+            "strict_wins": 28,
+            "tied_best": 0,
+            "beaten": 77
+          },
+          "BPPTS": {
+            "strict_wins": 12,
+            "tied_best": 0,
+            "beaten": 93
+          },
+          "HEFT": {
+            "strict_wins": 5,
+            "tied_best": 0,
+            "beaten": 100
+          },
+          "IPEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 104
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 79,
+            "ties": 1,
+            "losses": 25,
+            "geometric_makespan_reduction_percent": 4.580950364006431
+          },
+          "LSTD": {
+            "wins": 62,
+            "ties": 0,
+            "losses": 43,
+            "geometric_makespan_reduction_percent": 2.3986490171791552
+          },
+          "BPPTS": {
+            "wins": 68,
+            "ties": 0,
+            "losses": 37,
+            "geometric_makespan_reduction_percent": 2.9147449894065924
+          },
+          "HEFT": {
+            "wins": 77,
+            "ties": 1,
+            "losses": 27,
+            "geometric_makespan_reduction_percent": 7.152908171439353
+          },
+          "IPEFT": {
+            "wins": 96,
+            "ties": 0,
+            "losses": 9,
+            "geometric_makespan_reduction_percent": 11.111112924591925
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 3983,
+          "AEFT": 0,
+          "LSTD": 3983,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 28107.0,
+          "AEFT": 0.0,
+          "LSTD": 28107.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      }
+    },
+    "both_mode_classifications": {
+      "ectd_strict_both": 51,
+      "ectd_loss_both": 54
+    }
+  },
+  "LA": {
+    "instances": 132,
+    "placements": {
+      "append": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "AEFT",
+          "BPPTS",
+          "LSTD",
+          "IPEFT",
+          "HEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 570.7224978158476,
+          "AEFT": 626.6048820292569,
+          "LSTD": 634.8608941483799,
+          "BPPTS": 633.3758465325649,
+          "HEFT": 675.8934509837892,
+          "IPEFT": 673.192750947156
+        },
+        "sole_winners": {
+          "ECTD": 113,
+          "AEFT": 7,
+          "LSTD": 5,
+          "BPPTS": 7,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 113,
+            "tied_best": 0,
+            "beaten": 19
+          },
+          "AEFT": {
+            "strict_wins": 7,
+            "tied_best": 0,
+            "beaten": 125
+          },
+          "LSTD": {
+            "strict_wins": 5,
+            "tied_best": 0,
+            "beaten": 127
+          },
+          "BPPTS": {
+            "strict_wins": 7,
+            "tied_best": 0,
+            "beaten": 125
+          },
+          "HEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 132
+          },
+          "IPEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 132
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 121,
+            "ties": 1,
+            "losses": 10,
+            "geometric_makespan_reduction_percent": 8.918281011861007
+          },
+          "LSTD": {
+            "wins": 124,
+            "ties": 0,
+            "losses": 8,
+            "geometric_makespan_reduction_percent": 10.102748007273199
+          },
+          "BPPTS": {
+            "wins": 120,
+            "ties": 0,
+            "losses": 12,
+            "geometric_makespan_reduction_percent": 9.891969998495343
+          },
+          "HEFT": {
+            "wins": 127,
+            "ties": 0,
+            "losses": 5,
+            "geometric_makespan_reduction_percent": 15.560285872700963
+          },
+          "IPEFT": {
+            "wins": 130,
+            "ties": 0,
+            "losses": 2,
+            "geometric_makespan_reduction_percent": 15.221532464087995
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 4156,
+          "AEFT": 0,
+          "LSTD": 4156,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 29599.0,
+          "AEFT": 0.0,
+          "LSTD": 29599.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      },
+      "insertion": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "AEFT",
+          "BPPTS",
+          "LSTD",
+          "IPEFT",
+          "HEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 561.9350475653035,
+          "AEFT": 614.7867118623315,
+          "LSTD": 629.6976373964029,
+          "BPPTS": 623.1096402531966,
+          "HEFT": 670.2394346883175,
+          "IPEFT": 663.3359499719946
+        },
+        "sole_winners": {
+          "ECTD": 113,
+          "AEFT": 6,
+          "LSTD": 5,
+          "BPPTS": 8,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 113,
+            "tied_best": 0,
+            "beaten": 19
+          },
+          "AEFT": {
+            "strict_wins": 6,
+            "tied_best": 0,
+            "beaten": 126
+          },
+          "LSTD": {
+            "strict_wins": 5,
+            "tied_best": 0,
+            "beaten": 127
+          },
+          "BPPTS": {
+            "strict_wins": 8,
+            "tied_best": 0,
+            "beaten": 124
+          },
+          "HEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 132
+          },
+          "IPEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 132
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 122,
+            "ties": 1,
+            "losses": 9,
+            "geometric_makespan_reduction_percent": 8.59674799036043
+          },
+          "LSTD": {
+            "wins": 123,
+            "ties": 0,
+            "losses": 9,
+            "geometric_makespan_reduction_percent": 10.76113134412825
+          },
+          "BPPTS": {
+            "wins": 121,
+            "ties": 0,
+            "losses": 11,
+            "geometric_makespan_reduction_percent": 9.81762899110904
+          },
+          "HEFT": {
+            "wins": 129,
+            "ties": 0,
+            "losses": 3,
+            "geometric_makespan_reduction_percent": 16.159059213425564
+          },
+          "IPEFT": {
+            "wins": 132,
+            "ties": 0,
+            "losses": 0,
+            "geometric_makespan_reduction_percent": 15.286507901610358
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 4156,
+          "AEFT": 0,
+          "LSTD": 4156,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 29599.0,
+          "AEFT": 0.0,
+          "LSTD": 29599.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      }
+    },
+    "both_mode_classifications": {
+      "ectd_strict_both": 113,
+      "ectd_loss_both": 19
+    }
+  },
+  "LIGO": {
+    "instances": 64,
+    "placements": {
+      "append": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "LSTD",
+          "BPPTS",
+          "AEFT",
+          "HEFT",
+          "IPEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 433.2072051583053,
+          "AEFT": 491.70240533866973,
+          "LSTD": 449.12439885400954,
+          "BPPTS": 486.2404535372591,
+          "HEFT": 493.6944027648175,
+          "IPEFT": 528.0036419858639
+        },
+        "sole_winners": {
+          "ECTD": 47,
+          "AEFT": 0,
+          "LSTD": 14,
+          "BPPTS": 2,
+          "HEFT": 1,
+          "IPEFT": 0
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 47,
+            "tied_best": 0,
+            "beaten": 17
+          },
+          "AEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 64
+          },
+          "LSTD": {
+            "strict_wins": 14,
+            "tied_best": 0,
+            "beaten": 50
+          },
+          "BPPTS": {
+            "strict_wins": 2,
+            "tied_best": 0,
+            "beaten": 62
+          },
+          "HEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 63
+          },
+          "IPEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 64
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 57,
+            "ties": 0,
+            "losses": 7,
+            "geometric_makespan_reduction_percent": 11.896464110252758
+          },
+          "LSTD": {
+            "wins": 47,
+            "ties": 0,
+            "losses": 17,
+            "geometric_makespan_reduction_percent": 3.5440500975495226
+          },
+          "BPPTS": {
+            "wins": 58,
+            "ties": 0,
+            "losses": 6,
+            "geometric_makespan_reduction_percent": 10.906794774715301
+          },
+          "HEFT": {
+            "wins": 56,
+            "ties": 0,
+            "losses": 8,
+            "geometric_makespan_reduction_percent": 12.251951261300121
+          },
+          "IPEFT": {
+            "wins": 63,
+            "ties": 0,
+            "losses": 1,
+            "geometric_makespan_reduction_percent": 17.95374677171194
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 2160,
+          "AEFT": 0,
+          "LSTD": 2160,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 14152.0,
+          "AEFT": 0.0,
+          "LSTD": 14152.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      },
+      "insertion": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "LSTD",
+          "BPPTS",
+          "AEFT",
+          "HEFT",
+          "IPEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 431.1367763670676,
+          "AEFT": 487.92181417914804,
+          "LSTD": 446.84711895147024,
+          "BPPTS": 485.60174075497576,
+          "HEFT": 491.6375024357829,
+          "IPEFT": 526.6691481797687
+        },
+        "sole_winners": {
+          "ECTD": 47,
+          "AEFT": 1,
+          "LSTD": 15,
+          "BPPTS": 1,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 47,
+            "tied_best": 0,
+            "beaten": 17
+          },
+          "AEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 63
+          },
+          "LSTD": {
+            "strict_wins": 15,
+            "tied_best": 0,
+            "beaten": 49
+          },
+          "BPPTS": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 63
+          },
+          "HEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 64
+          },
+          "IPEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 64
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 56,
+            "ties": 0,
+            "losses": 8,
+            "geometric_makespan_reduction_percent": 11.63814286672391
+          },
+          "LSTD": {
+            "wins": 47,
+            "ties": 0,
+            "losses": 17,
+            "geometric_makespan_reduction_percent": 3.515820493878763
+          },
+          "BPPTS": {
+            "wins": 59,
+            "ties": 0,
+            "losses": 5,
+            "geometric_makespan_reduction_percent": 11.215973876706098
+          },
+          "HEFT": {
+            "wins": 56,
+            "ties": 0,
+            "losses": 8,
+            "geometric_makespan_reduction_percent": 12.305962374507384
+          },
+          "IPEFT": {
+            "wins": 64,
+            "ties": 0,
+            "losses": 0,
+            "geometric_makespan_reduction_percent": 18.13897247311189
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 2160,
+          "AEFT": 0,
+          "LSTD": 2160,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 14152.0,
+          "AEFT": 0.0,
+          "LSTD": 14152.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      }
+    },
+    "both_mode_classifications": {
+      "ectd_loss_both": 17,
+      "ectd_strict_both": 47
+    }
+  },
+  "Montage": {
+    "instances": 36,
+    "placements": {
+      "append": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "LSTD",
+          "AEFT",
+          "HEFT",
+          "BPPTS",
+          "IPEFT"
+        ],
+        "geometric_makespans": {
+          "ECTD": 562.4992468133231,
+          "AEFT": 614.3758043937656,
+          "LSTD": 594.265569912976,
+          "BPPTS": 632.4222078271434,
+          "HEFT": 626.6818514341392,
+          "IPEFT": 635.9760096832325
+        },
+        "sole_winners": {
+          "ECTD": 26,
+          "AEFT": 1,
+          "LSTD": 8,
+          "BPPTS": 0,
+          "HEFT": 1,
+          "IPEFT": 0
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 26,
+            "tied_best": 0,
+            "beaten": 10
+          },
+          "AEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 35
+          },
+          "LSTD": {
+            "strict_wins": 8,
+            "tied_best": 0,
+            "beaten": 28
+          },
+          "BPPTS": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 36
+          },
+          "HEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 35
+          },
+          "IPEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 36
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 34,
+            "ties": 0,
+            "losses": 2,
+            "geometric_makespan_reduction_percent": 8.443782650527986
+          },
+          "LSTD": {
+            "wins": 27,
+            "ties": 0,
+            "losses": 9,
+            "geometric_makespan_reduction_percent": 5.345475946773226
+          },
+          "BPPTS": {
+            "wins": 35,
+            "ties": 0,
+            "losses": 1,
+            "geometric_makespan_reduction_percent": 11.05637343983531
+          },
+          "HEFT": {
+            "wins": 30,
+            "ties": 0,
+            "losses": 6,
+            "geometric_makespan_reduction_percent": 10.24165682697471
+          },
+          "IPEFT": {
+            "wins": 34,
+            "ties": 0,
+            "losses": 2,
+            "geometric_makespan_reduction_percent": 11.553385937703343
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 1412,
+          "AEFT": 0,
+          "LSTD": 1412,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 9101.0,
+          "AEFT": 0.0,
+          "LSTD": 9101.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      },
+      "insertion": {
+        "ranking_lowest_makespan_first": [
+          "ECTD",
+          "LSTD",
+          "AEFT",
+          "HEFT",
+          "IPEFT",
+          "BPPTS"
+        ],
+        "geometric_makespans": {
+          "ECTD": 558.8364323524238,
+          "AEFT": 607.474606457957,
+          "LSTD": 589.1965225786379,
+          "BPPTS": 632.7073520989952,
+          "HEFT": 622.6332564710893,
+          "IPEFT": 632.1146706645719
+        },
+        "sole_winners": {
+          "ECTD": 26,
+          "AEFT": 1,
+          "LSTD": 8,
+          "BPPTS": 0,
+          "HEFT": 1,
+          "IPEFT": 0
+        },
+        "tied_best_instances": 0,
+        "tied_best_membership": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "tie_groups": {},
+        "win_tie_loss_vs_best": {
+          "ECTD": {
+            "strict_wins": 26,
+            "tied_best": 0,
+            "beaten": 10
+          },
+          "AEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 35
+          },
+          "LSTD": {
+            "strict_wins": 8,
+            "tied_best": 0,
+            "beaten": 28
+          },
+          "BPPTS": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 36
+          },
+          "HEFT": {
+            "strict_wins": 1,
+            "tied_best": 0,
+            "beaten": 35
+          },
+          "IPEFT": {
+            "strict_wins": 0,
+            "tied_best": 0,
+            "beaten": 36
+          }
+        },
+        "ECTD_pairwise": {
+          "AEFT": {
+            "wins": 34,
+            "ties": 0,
+            "losses": 2,
+            "geometric_makespan_reduction_percent": 8.006618480586546
+          },
+          "LSTD": {
+            "wins": 27,
+            "ties": 0,
+            "losses": 9,
+            "geometric_makespan_reduction_percent": 5.152795215650996
+          },
+          "BPPTS": {
+            "wins": 36,
+            "ties": 0,
+            "losses": 0,
+            "geometric_makespan_reduction_percent": 11.675369268510316
+          },
+          "HEFT": {
+            "wins": 30,
+            "ties": 0,
+            "losses": 6,
+            "geometric_makespan_reduction_percent": 10.246292413008584
+          },
+          "IPEFT": {
+            "wins": 34,
+            "ties": 0,
+            "losses": 2,
+            "geometric_makespan_reduction_percent": 11.592554596954264
+          }
+        },
+        "duplicate_count_totals": {
+          "ECTD": 1412,
+          "AEFT": 0,
+          "LSTD": 1412,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        },
+        "duplicate_work_totals": {
+          "ECTD": 9101.0,
+          "AEFT": 0.0,
+          "LSTD": 9101.0,
+          "BPPTS": 0.0,
+          "HEFT": 0.0,
+          "IPEFT": 0.0
+        },
+        "horizon_exceeds_makespan_instances": {
+          "ECTD": 0,
+          "AEFT": 0,
+          "LSTD": 0,
+          "BPPTS": 0,
+          "HEFT": 0,
+          "IPEFT": 0
+        }
+      }
+    },
+    "both_mode_classifications": {
+      "ectd_loss_both": 10,
+      "ectd_strict_both": 26
+    }
+  }
+}

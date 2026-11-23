@@ -1,0 +1,187 @@
+{
+  "name": "partial_order_near_original_fraction",
+  "source_sha256": "3b8142578095b99ebadc0fe247e699aaf22b0f25512b6c9637192a5b41a0110e",
+  "pool_counts": {
+    "full_pool": 3072,
+    "strict_winners_both": 1467,
+    "losses_both": 1112,
+    "other": 493
+  },
+  "constraints": {
+    "max_count": 1967,
+    "winner_fraction_range": [
+      0.7458057956278596,
+      0.7468057956278596
+    ],
+    "strict_margin_relative": 0.001,
+    "family_min_each_group": 10,
+    "eligible_groups": [
+      "strict_winners_both",
+      "losses_both"
+    ],
+    "order": "partial",
+    "pairs": [
+      [
+        "ECTD",
+        "AEFT"
+      ],
+      [
+        "ECTD",
+        "BPPTS"
+      ],
+      [
+        "ECTD",
+        "HEFT"
+      ],
+      [
+        "ECTD",
+        "LSTD"
+      ],
+      [
+        "ECTD",
+        "IPEFT"
+      ],
+      [
+        "AEFT",
+        "LSTD"
+      ],
+      [
+        "BPPTS",
+        "LSTD"
+      ],
+      [
+        "ECTD",
+        "IPEFT"
+      ],
+      [
+        "AEFT",
+        "IPEFT"
+      ],
+      [
+        "BPPTS",
+        "IPEFT"
+      ],
+      [
+        "HEFT",
+        "IPEFT"
+      ],
+      [
+        "LSTD",
+        "IPEFT"
+      ]
+    ]
+  },
+  "solver": {
+    "status": 0,
+    "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "success": true,
+    "mip_gap": 0.0,
+    "mip_node_count": 1,
+    "mip_dual_bound": -497.0,
+    "elapsed_seconds": 0.4422479579998253
+  },
+  "selection": {
+    "count": 497,
+    "strict_wins_both": 371,
+    "losses_both": 126,
+    "winner_fraction": 0.7464788732394366,
+    "max_constraint_violation": 0.0,
+    "ids_sha256": "b29b335cceb0bcd13e8cdbee11527d9a4764c9048876f99dc00cfa7f59baf8d7",
+    "families": {
+      "FFT": {
+        "wins": 51,
+        "losses": 10,
+        "total": 61
+      },
+      "GE": {
+        "wins": 85,
+        "losses": 14,
+        "total": 99
+      },
+      "Genome": {
+        "wins": 51,
+        "losses": 54,
+        "total": 105
+      },
+      "LA": {
+        "wins": 113,
+        "losses": 19,
+        "total": 132
+      },
+      "LIGO": {
+        "wins": 47,
+        "losses": 19,
+        "total": 66
+      },
+      "Montage": {
+        "wins": 24,
+        "losses": 10,
+        "total": 34
+      }
+    },
+    "placements": {
+      "append": {
+        "geomeans": {
+          "ECTD": 530.2775877457598,
+          "AEFT": 576.1986207524093,
+          "BPPTS": 576.1776640085884,
+          "HEFT": 609.1145835390812,
+          "LSTD": 576.7816433532367,
+          "IPEFT": 609.7549720627909
+        },
+        "order": [
+          "ECTD",
+          "BPPTS",
+          "AEFT",
+          "LSTD",
+          "HEFT",
+          "IPEFT"
+        ],
+        "margins_percent": {
+          "ECTD<AEFT": 7.969653406439104,
+          "ECTD<BPPTS": 7.966306077103413,
+          "ECTD<HEFT": 12.942884298593249,
+          "ECTD<LSTD": 8.06267955011818,
+          "ECTD<IPEFT": 13.034315086953773,
+          "AEFT<LSTD": 0.10108203122379811,
+          "BPPTS<LSTD": 0.10471542421790492,
+          "AEFT<IPEFT": 5.503251772898388,
+          "BPPTS<IPEFT": 5.506688685228922,
+          "HEFT<IPEFT": 0.10502391174331827,
+          "LSTD<IPEFT": 5.407635889873264
+        }
+      },
+      "insertion": {
+        "geomeans": {
+          "ECTD": 524.7358613196465,
+          "AEFT": 568.1855274574997,
+          "BPPTS": 570.0161122230711,
+          "HEFT": 603.1972202156779,
+          "LSTD": 570.6433389238952,
+          "IPEFT": 603.8341928573356
+        },
+        "order": [
+          "ECTD",
+          "AEFT",
+          "BPPTS",
+          "LSTD",
+          "HEFT",
+          "IPEFT"
+        ],
+        "margins_percent": {
+          "ECTD<AEFT": 7.6470913175632145,
+          "ECTD<BPPTS": 7.943679122828828,
+          "ECTD<HEFT": 13.007579654955471,
+          "ECTD<LSTD": 8.044863485276089,
+          "ECTD<IPEFT": 13.099346223405606,
+          "AEFT<LSTD": 0.43070886817505594,
+          "BPPTS<LSTD": 0.10991571407927836,
+          "AEFT<IPEFT": 5.903717580342183,
+          "BPPTS<IPEFT": 5.600557410344342,
+          "HEFT<IPEFT": 0.10548800468610509,
+          "LSTD<IPEFT": 5.4966834150914305
+        }
+      }
+    }
+  }
+}
