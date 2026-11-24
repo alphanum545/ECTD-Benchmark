@@ -3,8 +3,8 @@
 A reproducible benchmark suite for workflow-scheduling makespan policies, built
 around the ECTD family of algorithms.
 
-Six policies, four workflow families, five structural motifs, 240 instances,
-standard library only.
+Six policies, four workflow families, five structural motifs, 800 instances,
+standard library only. Instance sizes span 51-496 tasks and 4-64 processors.
 
 ## What this is, and what it is not
 
@@ -29,7 +29,7 @@ generates first, scores everything, and reports whatever comes out.
 ## Quick start
 
 ```bash
-python3 -m ectdbench.run --out results --seeds 12
+python3 -m ectdbench.run --out results --instances 800
 python3 -m unittest discover -s tests -v
 ```
 
@@ -60,10 +60,22 @@ and a single real exit, as real workflow DAGs do.
 
 | Family | Shape | n | Depth |
 |---|---|---|---|
-| **FFT** | butterfly, k+1 layers of 2^k, outdegree 2 | 34-82 | 5-6 |
-| **GE** | Gaussian elimination triangular graph | 28-45 | 12-16 |
-| **Genome** | wide independent stage, dependent stage, reduction tail | 36-52 | 5 |
-| **LA** | irregular layered graph, variable outdegree | 32-72 | 6-8 |
+| **FFT** | butterfly, layers of 2^k, outdegree 2 | 82-482 | 6-31 |
+| **GE** | Gaussian elimination triangular graph | 66-496 | 20-60 |
+| **Genome** | wide independent stage, dependent stage, reduction tail | 51-484 | 5-8 |
+| **LA** | irregular layered graph, variable outdegree | 52-482 | 6-49 |
+
+Each family is parameterised by a target node count drawn per seed, so the suite
+spans the full 50-500 range rather than sitting in a narrow band. FFT and GE are
+quantised by their structure (FFT to multiples of its width, GE to triangular
+numbers) and land on the nearest shape their topology allows; Genome and LA are
+close to continuous. The finished instance, including the entry and exit
+super-nodes, is always inside the declared range, and `validate_structure`
+rejects any instance that is not.
+
+Processor counts are drawn from the ladder 4, 6, 8, 12, 16, 24, 32, 48, 64
+rather than uniformly, so the small- and large-machine regimes are covered
+evenly instead of piling up in the middle of the range.
 
 ## The five motifs
 
@@ -81,35 +93,57 @@ only variable, which is what makes a group comparison controlled.
 
 ## Results
 
-240 instances, 1,440 policy runs, all feasible.
+800 instances, 4,800 policy runs, all feasible.
 
 Pooled geometric mean makespan, lower is better:
 
 | Rank | Policy | Makespan | vs ECTD |
 |---:|---|---:|---:|
-| 1 | **ECTD** | 294.64 | — |
-| 2 | LSTD | 296.51 | +0.63% |
-| 3 | HEFT | 298.41 | +1.28% |
-| 4 | AEFT | 298.56 | +1.33% |
-| 5 | IPEFT | 298.87 | +1.44% |
-| 6 | BPPTS | 310.68 | +5.44% |
+| 1 | **ECTD** | 755.77 | — |
+| 2 | LSTD | 757.56 | +0.24% |
+| 3 | AEFT | 785.30 | +3.91% |
+| 4 | IPEFT | 798.61 | +5.67% |
+| 5 | HEFT | 804.79 | +6.49% |
+| 6 | BPPTS | 835.03 | +10.49% |
 
-**ECTD wins, and the margin is real but narrow.** It is the best policy overall
-and the best in two of four families. But the gap to second place is 0.63%, and
-positions two through five are separated by less than a percentage point. That
-is not a decisive ordering of the middle of the field, and this suite does not
-claim one.
+**ECTD wins overall, and the win is real but narrow.** It is best on pooled
+makespan and best in two of four families. The gap to second place is 0.24%, and
+ECTD takes 235 strict wins against AEFT's 262, so it is not the most frequent
+per-instance winner. It wins on the pooled measure because its losses are small
+and its wins are large.
 
 **The requested order does not reproduce.** The target was
-`ECTD > AEFT > BPPTS > HEFT > LSTD > IPEFT`. It matches on **0 of 240
-instances**, and BPPTS lands last rather than third. The observed order is
-`ECTD > LSTD > HEFT > AEFT > IPEFT > BPPTS`.
+`ECTD > AEFT > BPPTS > HEFT > LSTD > IPEFT`. It matches on **1 of 800
+instances**, which is chance. The observed order is
+`ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS`. BPPTS lands last rather than third,
+and only two of the six positions agree.
 
-**The ordering is family-dependent, and ECTD is not best everywhere.** ECTD
-leads on FFT and Genome. IPEFT leads on GE, and HEFT leads on LA, where ECTD is
-fifth of six. Per-family and per-motif rankings are in `results/summary.json`.
-That is the most useful thing this suite says: ECTD's advantage is real on
-layered, communication-heavy graphs and does not survive on irregular ones.
+**The ordering is family- and motif-dependent, and ECTD is not best everywhere.**
+
+By family:
+
+| Family | Best | ECTD's position |
+|---|---|---|
+| FFT | ECTD | 1st, +1.3% over LSTD |
+| GE | AEFT | 5th, 3.1% behind AEFT |
+| Genome | ECTD | 1st, +0.1% over LSTD |
+| LA | LSTD | 2nd, 0.2% behind LSTD |
+
+By motif:
+
+| Motif | Best | ECTD's position |
+|---|---|---|
+| `plain` | AEFT | 2nd, 1.5% behind |
+| `entry_transfer` | **ECTD** | 1st, +0.4% over LSTD, +14.4% over AEFT |
+| `branch_affinity` | AEFT | 5th, 1.4% behind |
+| `lookahead_traps` | AEFT | 2nd, 1.4% behind |
+| `mixed_affinity` | **ECTD** | 1st, +0.3% over LSTD, +10.3% over IPEFT |
+
+That is the most useful thing this suite says, and it is a narrower claim than
+"ECTD is best". ECTD's advantage is concentrated exactly where its mechanism
+applies: the two motifs that give entry duplication something to buy. On
+`entry_transfer` and `mixed_affinity` it leads by 10-14% over the field. On the
+other three motifs and on the GE family it does not lead at all.
 
 ## Outputs
 
@@ -137,8 +171,18 @@ precedence and data-arrival constraint including duplicate copies, primary
 bookkeeping, and that the makespan is not below a valid computation-only lower
 bound.
 
-The suite reports 0 structure failures and 0 feasibility failures across 240
-instances and 1,440 policy runs.
+The suite reports 0 structure failures and 0 feasibility failures across 800
+instances and 4,800 policy runs.
+
+**Motif activation is checked, not assumed.** Holding topology fixed is the
+control; it is not evidence that the treatment did anything. Every non-`plain`
+motif is asserted to change the instance content hash, and `entry_transfer` is
+asserted to raise entry-edge communication by more than 3x relative to the same
+family's `plain` instance. An earlier version of this generator applied the
+`entry_transfer` motif before communication delays were assigned, so it
+multiplied zeroes: every `entry_transfer` instance was byte-identical to
+`plain`, and the structural test passed throughout because the topology really
+was held fixed.
 
 ## Provenance
 
@@ -174,7 +218,7 @@ ectdbench/
   generator.py          seeded instance generator and structural validator
   run.py                suite builder and scorer
 tests/
-  test_suite.py         determinism, structure, feasibility, duplication
+  test_suite.py         determinism, structure, ranges, motif activation, feasibility
 results/
   manifest.json  instances.jsonl  scores.csv  summary.json  validation.json
 ```

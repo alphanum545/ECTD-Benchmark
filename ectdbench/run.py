@@ -52,12 +52,25 @@ def geometric_mean(values):
     return math.exp(sum(math.log(v) for v in values) / len(values))
 
 
-def build_suite(seeds):
-    """Yield every instance for the given seed range, in a fixed order."""
-    for seed in seeds:
+def build_suite(seeds, target=None):
+    """Yield every instance for the given seed range, in a fixed order.
+
+    With ``target`` set, keep advancing the seed until that many instances have
+    been produced. The order is deterministic either way: seed, then family,
+    then group.
+    """
+    produced = 0
+    seed = seeds[0]
+    while True:
         for family in FAMILIES:
             for group in GROUPS:
+                if target is not None and produced >= target:
+                    return
                 yield build_instance(family, group, seed)
+                produced += 1
+        seed += 1
+        if target is None and seed > seeds[-1]:
+            return
 
 
 def score_instance(instance, policies, placement):
@@ -82,6 +95,8 @@ def main(argv=None):
     parser.add_argument("--out", default="results", help="output directory")
     parser.add_argument("--seeds", type=int, default=12, help="number of seeds per family")
     parser.add_argument("--seed-start", type=int, default=1, help="first seed value")
+    parser.add_argument("--instances", type=int, default=None,
+                        help="build exactly this many instances, advancing seeds as needed")
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args(argv)
 
@@ -94,7 +109,7 @@ def main(argv=None):
     score_rows = []
     validation = {"structure_failures": [], "feasibility_failures": [], "checked": 0}
 
-    for instance in build_suite(seeds):
+    for instance in build_suite(seeds, target=args.instances):
         structure = validate_structure(instance)
         if not structure["valid"]:
             validation["structure_failures"].append(
@@ -112,7 +127,6 @@ def main(argv=None):
                            "n": instance["n"], "p": instance["p"], "scores": row})
         if not args.quiet and len(instances) % 40 == 0:
             print("  scored %d instances" % len(instances), file=sys.stderr)
-
     elapsed = time.time() - started
 
     # ---- pooled geometric means, overall and per family ----

@@ -7,7 +7,7 @@ against the family's canonical form by ``validate_structure``.
 
 Families
 --------
-FFT      Fast Fourier Transform: k+1 layers of 2^k tasks, butterfly edges
+FFT      Fast Fourier Transform: layers of 2^k tasks, butterfly edges
          (outdegree 2), the canonical layered-communication workload.
 GE       Gaussian elimination: the triangular task graph of matrix elimination,
          n = m(m-1)/2, edges (i,j)->(i,j+1) and (i,j)->(i+1,j).
@@ -15,6 +15,13 @@ Genome   Gene sequencing: a wide independent first stage, a dependent second
          stage, and a reduction tail. High parallelism, shallow depth.
 LA       Linear algebra: irregular layered graph with a declared layer count and
          variable outdegree, the least regular of the four.
+
+Size
+----
+Every family is parameterised by a target node count. FFT and GE are quantised
+by their structure (FFT to multiples of its width, GE to triangular numbers);
+Genome and LA are close to continuous. The finished instance, including the
+entry and exit super-nodes, is always inside ``NODE_RANGE``.
 
 Groups (structural motifs layered on the base topology)
 ------------------------------------------------------
@@ -32,10 +39,20 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import random
 
 FAMILIES = ("FFT", "GE", "Genome", "LA")
 GROUPS = ("plain", "entry_transfer", "branch_affinity", "lookahead_traps", "mixed_affinity")
+
+# The suite spans these ranges. Every generated instance is checked against them.
+NODE_RANGE = (50, 500)
+PROCESSOR_RANGE = (4, 64)
+
+# Processor counts are drawn from this ladder rather than uniformly, so the
+# suite covers the small- and large-machine regimes evenly instead of piling up
+# in the middle of the range.
+PROCESSOR_CHOICES = (4, 6, 8, 12, 16, 24, 32, 48, 64)
 
 
 def _hex12(text):
@@ -52,14 +69,27 @@ def _costs(rng, n, p, base_low, base_high, het_low, het_high):
     return costs
 
 
-def _fft(rng, p):
-    """Butterfly FFT: k+1 layers of 2^k tasks, outdegree 2 within and across layers."""
-    k = rng.choice((3, 4))
-    width = 1 << k
-    n = width * (k + 1)
+def _fft(rng, p, target_n):
+    """Butterfly FFT: layers of 2^k tasks, outdegree 2 within and across layers.
+
+    The width is a power of two and the layer count is chosen so that
+    ``width * layers`` lands as close to ``target_n`` as the family allows. When
+    there are more layers than butterfly stages the stride cycles, which keeps
+    the graph a valid layered DAG with outdegree at most 2.
+    """
+    best = None
+    for k in (4, 5, 6):
+        width = 1 << k
+        layers = int(round(float(target_n) / width))
+        layers = max(k + 1, min(layers, NODE_RANGE[1] // width))
+        n = width * layers
+        score = (abs(n - target_n), k)
+        if best is None or score < best[0]:
+            best = (score, k, width, layers, n)
+    _, k, width, layers, n = best
     edges = []
-    for layer in range(k):
-        stride = 1 << (k - 1 - layer)
+    for layer in range(layers - 1):
+        stride = 1 << ((k - 1 - layer) % k)
         for i in range(width):
             src = layer * width + i
             edges.append((src, (layer + 1) * width + i))
@@ -67,13 +97,14 @@ def _fft(rng, p):
             if partner != i:
                 edges.append((src, (layer + 1) * width + partner))
     costs = _costs(rng, n, p, 8.0, 40.0, 0.6, 1.6)
-    meta = {"family": "FFT", "k": k, "layers": k + 1, "width": width}
+    meta = {"family": "FFT", "k": k, "layers": layers, "width": width}
     return costs, edges, meta
 
 
-def _ge(rng, p):
+def _ge(rng, p, target_n):
     """Gaussian elimination: triangular task graph, n = m(m-1)/2."""
-    m = rng.choice((8, 9, 10))
+    m = int(round((1.0 + math.sqrt(1.0 + 8.0 * target_n)) / 2.0))
+    m = max(11, min(m, 32))
     index = {}
     tasks = []
     for i in range(m):
@@ -91,12 +122,13 @@ def _ge(rng, p):
     return costs, edges, meta
 
 
-def _genome(rng, p):
+def _genome(rng, p, target_n):
     """Gene sequencing: wide independent stage, dependent stage, reduction tail."""
-    width = rng.choice((16, 20, 24))
+    tail = rng.choice((3, 4, 5, 6))
+    width = int(round((target_n - tail) / 2.0))
+    width = max(22, min(width, (NODE_RANGE[1] - 2 - tail) // 2))
     stage1 = width
     stage2 = width
-    tail = 3
     n = stage1 + stage2 + tail
     edges = []
     for j in range(stage2):
@@ -114,15 +146,21 @@ def _genome(rng, p):
     for t in range(tail - 1):
         edges.append((tail_start + t, tail_start + t + 1))
     costs = _costs(rng, n, p, 6.0, 30.0, 0.5, 1.8)
-    meta = {"family": "Genome", "width": width, "layers": 3}
+    meta = {"family": "Genome", "width": width, "layers": 3, "tail": tail}
     return costs, edges, meta
 
 
-def _la(rng, p):
+def _la(rng, p, target_n):
     """Irregular layered linear-algebra graph with variable outdegree."""
-    layers = rng.choice((5, 6, 7))
-    per_layer = rng.choice((6, 8, 10))
-    n = layers * per_layer
+    best = None
+    for per_layer in (10, 12, 14, 16, 18, 20, 22, 24, 25):
+        layers = int(round(float(target_n) / per_layer))
+        layers = max(5, min(layers, NODE_RANGE[1] // per_layer))
+        n = layers * per_layer
+        score = (abs(n - target_n), per_layer)
+        if best is None or score < best[0]:
+            best = (score, layers, per_layer, n)
+    _, layers, per_layer, n = best
     edges = []
     for layer in range(layers - 1):
         for i in range(per_layer):
@@ -284,7 +322,7 @@ def _content_hash(costs, triples):
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
-def build_instance(family, group, seed, processors=None):
+def build_instance(family, group, seed, processors=None, nodes=None):
     """Build one instance deterministically from (family, group, seed).
 
     The base topology is drawn from a seed that depends only on
@@ -293,6 +331,10 @@ def build_instance(family, group, seed, processors=None):
     from a separate stream. That keeps a group comparison controlled: the motif
     is the only thing that changes between two instances of the same family and
     seed.
+
+    ``nodes`` is the target node count for the finished instance. Families that
+    are quantised by their structure (FFT, GE) land on the nearest shape their
+    topology allows; the achieved count is always inside ``NODE_RANGE``.
     """
     if family not in _BUILDERS:
         raise ValueError("unknown family %r" % (family,))
@@ -300,8 +342,18 @@ def build_instance(family, group, seed, processors=None):
         raise ValueError("unknown group %r" % (group,))
 
     base_rng = random.Random("%s|base|%d" % (family, seed))
-    p = processors if processors is not None else base_rng.choice((4, 6, 8))
-    costs, edges, meta = _BUILDERS[family](base_rng, p)
+    # Node count and processor count are drawn from the same base stream that
+    # the family topology uses, so every group of one (family, seed) shares
+    # them and a group comparison differs only in the motif.
+    if processors is None:
+        processors = base_rng.choice(PROCESSOR_CHOICES)
+    p = max(PROCESSOR_RANGE[0], min(processors, PROCESSOR_RANGE[1]))
+    if nodes is None:
+        nodes = base_rng.randint(NODE_RANGE[0], NODE_RANGE[1])
+    # Reserve room for the entry and exit super-nodes so the finished instance,
+    # not just the base topology, lands inside NODE_RANGE.
+    target_n = max(NODE_RANGE[0] - 2, min(nodes, NODE_RANGE[1] - 2))
+    costs, edges, meta = _BUILDERS[family](base_rng, p, target_n)
 
     # One real entry and one real exit, as in the canonical workflow graphs.
     costs, edges, endpoint_info = _augment_endpoints(costs, _as_triples(edges))
@@ -311,8 +363,13 @@ def build_instance(family, group, seed, processors=None):
     meta["exit"] = len(costs) - 1
 
     group_rng = random.Random("%s|%s|%d" % (family, group, seed))
-    costs, edges = _apply_group(group_rng, costs, edges, group, p)
+    # Communication delays are assigned BEFORE the motif is layered on. The
+    # motifs scale existing delays (entry_transfer multiplies entry edges by
+    # 6-12x), so applying a motif to the 0.0 placeholders the base topology
+    # carries would multiply zero and leave the motif inert.
     triples = _assign_communication(group_rng, _as_triples(edges), 1.0, 20.0)
+    costs, triples = _apply_group(group_rng, costs, triples, group, p)
+    triples = _as_triples(triples)
 
     digest = _content_hash(costs, triples)
     structure = _hex12(json.dumps(meta, sort_keys=True))
@@ -416,9 +473,11 @@ def validate_structure(instance):
 
     if family == "FFT":
         k = structure.get("k")
-        if k is not None:
-            if base_n != (1 << k) * (k + 1):
-                problems.append("FFT base node count does not match k=%d" % k)
+        layers = structure.get("layers")
+        if k is not None and layers is not None:
+            if base_n != (1 << k) * layers:
+                problems.append(
+                    "FFT base node count does not match k=%d, layers=%d" % (k, layers))
             if base_outdeg and max(base_outdeg) > 2:
                 problems.append("FFT base outdegree exceeds 2")
     if family == "GE":
@@ -445,6 +504,14 @@ def validate_structure(instance):
         problems.append("expected one entry task, found %d" % len(roots))
     if len(sinks) != 1:
         problems.append("expected one exit task, found %d" % len(sinks))
+
+    # Declared suite ranges. These are the contract the suite advertises, so
+    # they are checked per instance rather than assumed.
+    if not (NODE_RANGE[0] <= n <= NODE_RANGE[1]):
+        problems.append("node count %d outside declared range %s" % (n, NODE_RANGE))
+    if not (PROCESSOR_RANGE[0] <= instance["p"] <= PROCESSOR_RANGE[1]):
+        problems.append("processor count %d outside declared range %s"
+                        % (instance["p"], PROCESSOR_RANGE))
 
     return {
         "valid": not problems,

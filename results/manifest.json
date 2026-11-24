@@ -10,7 +10,7 @@
     "Genome",
     "LA"
   ],
-  "generated_utc": "2026-11-24T07:56:49Z",
+  "generated_utc": "2026-11-24T08:59:52Z",
   "groups": [
     "plain",
     "entry_transfer",
@@ -18,7 +18,7 @@
     "lookahead_traps",
     "mixed_affinity"
   ],
-  "instances": 240,
+  "instances": 800,
   "package_version": "0.1.0",
   "placement": {
     "AEFT": "insertion",
@@ -41,7 +41,7 @@
     "policies": "standard-library ports of ectdbench/*.py from alphanum545/ECTD-Benchmark branch research/ranking-revision-2026-11-23",
     "selection": "no instance selection, filtering or cohort construction is applied. Every generated instance that passes structural validation is scored."
   },
-  "runtime_seconds": 1.022,
+  "runtime_seconds": 56.621,
   "seeds": [
     1,
     2,
@@ -57,7 +57,7 @@
     12
   ],
   "suite": "ECTD benchmark, constructed instance suite",
-  "suite_sha256": "efeeada85a110c8455f1442571c6d0564d791fce4203e3b135ef529a3728995a",
+  "suite_sha256": "47eabcf1c381b3fb8822f41f50af53bc6ceadbf270b1c8ee3bf972d2220b9b32",
   "target_order": [
     "ECTD",
     "AEFT",

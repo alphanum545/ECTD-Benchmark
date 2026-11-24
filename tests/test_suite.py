@@ -5,6 +5,7 @@ Run with:  python3 -m unittest discover -s tests -v
 
 from __future__ import annotations
 
+import csv
 import json
 import os
 import sys
@@ -14,8 +15,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ectdbench import policy_table
 from ectdbench.engine import validate_schedule
-from ectdbench.generator import (FAMILIES, GROUPS, build_instance,
-                                 validate_structure)
+from ectdbench.generator import (FAMILIES, GROUPS, NODE_RANGE, PROCESSOR_RANGE,
+                                 build_instance, validate_structure)
 from ectdbench.model import Problem
 
 
@@ -52,6 +53,78 @@ class TestDeterminism(unittest.TestCase):
                                  "%s/%s changed processor count" % (family, group))
                 self.assertEqual(len(base["edges"]), len(other["edges"]),
                                  "%s/%s changed edge count" % (family, group))
+
+    def test_every_motif_actually_changes_the_instance(self):
+        """Each non-plain group must perturb something, not just hold shape.
+
+        Holding topology fixed is the control. This is the treatment check: a
+        motif that leaves the cost matrix and the communication delays exactly
+        as ``plain`` has them is inert, and any comparison against it is
+        measuring nothing. An earlier version of this generator applied the
+        entry_transfer motif before communication delays were assigned, so it
+        multiplied zeroes and every entry_transfer instance was byte-identical
+        to plain. The structural test above passed throughout, because the
+        topology really was held fixed.
+        """
+        for family in FAMILIES:
+            base = build_instance(family, "plain", 11)
+            for group in GROUPS:
+                if group == "plain":
+                    continue
+                other = build_instance(family, group, 11)
+                self.assertNotEqual(
+                    base["input_sha256"], other["input_sha256"],
+                    "%s/%s is byte-identical to plain: the motif is inert"
+                    % (family, group))
+
+    def test_entry_transfer_elevates_entry_delays(self):
+        """The entry_transfer motif must raise entry-edge delays well above the rest.
+
+        The comparison is relative to the same family's plain instance, because
+        the absolute entry/other ratio varies with how many former roots the
+        synthetic entry happens to fan out to.
+        """
+        for family in FAMILIES:
+            plain = build_instance(family, "plain", 11)
+            heavy = build_instance(family, "entry_transfer", 11)
+
+            def ratio(inst):
+                entry = [c for u, _, c in inst["edges"] if u == 0]
+                other = [c for u, _, c in inst["edges"] if u != 0]
+                return (sum(entry) / len(entry)) / (sum(other) / len(other))
+
+            plain_ratio = ratio(plain)
+            heavy_ratio = ratio(heavy)
+            self.assertGreater(
+                heavy_ratio, plain_ratio * 3.0,
+                "%s entry_transfer did not elevate entry delays: plain %.2fx, "
+                "entry_transfer %.2fx" % (family, plain_ratio, heavy_ratio))
+
+
+class TestRanges(unittest.TestCase):
+    def test_declared_ranges_hold(self):
+        """Node and processor counts must stay inside the advertised ranges."""
+        for family in FAMILIES:
+            for group in GROUPS:
+                for seed in (1, 2, 3):
+                    inst = build_instance(family, group, seed)
+                    self.assertGreaterEqual(inst["n"], NODE_RANGE[0])
+                    self.assertLessEqual(inst["n"], NODE_RANGE[1])
+                    self.assertGreaterEqual(inst["p"], PROCESSOR_RANGE[0])
+                    self.assertLessEqual(inst["p"], PROCESSOR_RANGE[1])
+
+    def test_size_range_is_spanned(self):
+        """The suite must actually reach both ends, not cluster in the middle."""
+        sizes = [build_instance(f, g, s)["n"]
+                 for f in FAMILIES for g in GROUPS for s in range(1, 6)]
+        self.assertLessEqual(min(sizes), NODE_RANGE[0] + 40)
+        self.assertGreaterEqual(max(sizes), NODE_RANGE[1] - 40)
+
+    def test_processor_range_is_spanned(self):
+        procs = {build_instance(f, g, s)["p"]
+                 for f in FAMILIES for g in GROUPS for s in range(1, 6)}
+        self.assertIn(PROCESSOR_RANGE[0], procs)
+        self.assertIn(PROCESSOR_RANGE[1], procs)
 
 
 class TestStructure(unittest.TestCase):
@@ -161,12 +234,29 @@ class TestResultsArtifacts(unittest.TestCase):
             self.skipTest("results not built")
         with open(path) as fh:
             summary = json.load(fh)
-        self.assertEqual(summary["instances"], 240)
+        self.assertGreaterEqual(summary["instances"], 700)
         self.assertEqual(len(summary["observed_rank"]), 6)
         self.assertEqual(sorted(summary["observed_rank"]),
                          sorted(summary["target_rank"]))
-        # No selection: every generated instance is scored.
+        # No selection: every generated instance is scored, and every instance
+        # is eligible for entry duplication (a single real entry).
         self.assertTrue(summary["entry_duplication_eligible"])
+        self.assertEqual(summary["single_entry_instances"], summary["instances"])
+
+    def test_scores_cover_the_declared_ranges(self):
+        base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        path = os.path.join(base, "results", "scores.csv")
+        if not os.path.exists(path):
+            self.skipTest("results not built")
+        with open(path) as fh:
+            rows = list(csv.DictReader(fh))
+        self.assertGreaterEqual(len(rows), 700)
+        sizes = [int(r["n"]) for r in rows]
+        procs = [int(r["p"]) for r in rows]
+        self.assertGreaterEqual(min(sizes), NODE_RANGE[0])
+        self.assertLessEqual(max(sizes), NODE_RANGE[1])
+        self.assertGreaterEqual(min(procs), PROCESSOR_RANGE[0])
+        self.assertLessEqual(max(procs), PROCESSOR_RANGE[1])
 
 
 if __name__ == "__main__":
