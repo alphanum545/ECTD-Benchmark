@@ -35,6 +35,27 @@ python3 -m unittest discover -s tests -v
 
 No dependencies. Python 3.8 or later, standard library only.
 
+### Sharded runs (CI fan-out)
+
+The suite can be split across many runners. Each shard scores a disjoint slice
+of the suite (by canonical instance index modulo the shard count), and a merge
+step reassembles the canonical `results/` artifacts. A merged run is
+byte-identical to a serial run for the same seed set.
+
+```bash
+# one job per shard (e.g. 20 shards, 4 vCPU each)
+python3 -m ectdbench.run --shard-id 0 --num-shards 20 \
+    --instances 800 --ccr --shard-dir shards --jobs 4
+
+# one job: merge every shard back into results/
+python3 -m ectdbench.run --merge shards --out results
+```
+
+This is what `.github/workflows/benchmark.yml` runs: 20 parallel shard jobs on
+4-vCPU `ubuntu-latest` runners, then a merge job that reassembles the suite and
+runs the test suite. Trigger it from the Actions tab (`workflow_dispatch`) and
+set the instance count, CCR stratification, and shard count as inputs.
+
 ## The six policies
 
 Ported from `ectdbench/*.py` on the research branch, which in turn reconstructs

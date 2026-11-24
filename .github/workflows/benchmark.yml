@@ -1,0 +1,111 @@
+name: benchmark
+
+# Fan the suite out across 20 parallel jobs, each on a 4-vCPU runner (the
+# standard GitHub-hosted linux runner size for free accounts), then merge the
+# shards back into the canonical results/ artifacts and run the test suite.
+#
+# The suite is sharded by canonical instance index modulo the shard count, so
+# the union of all shards is exactly the full suite with no overlap and no
+# gaps. A merged run is byte-identical to a serial run for the same seed set
+# (scores.csv, instances.jsonl, summary.json, validation.json all match).
+#
+# Tune the two env values below to scale the run:
+#   INSTANCES  how many instances the suite builds (default 800)
+#   CCR        "true" to stratify over CCR_LEVELS, "false" for native CCR
+#   SHARDS     number of parallel jobs; must equal the matrix length below
+
+on:
+  workflow_dispatch:
+    inputs:
+      instances:
+        description: "Number of instances to build and score"
+        type: number
+        default: 800
+      ccr:
+        description: "Stratify over CCR levels"
+        type: boolean
+        default: true
+      shards:
+        description: "Number of parallel shard jobs (1-20)"
+        type: number
+        default: 20
+  push:
+    branches:
+      - perch/b902dae8
+    paths:
+      - "ectdbench/**"
+      - "tests/**"
+      - ".github/workflows/benchmark.yml"
+
+env:
+  INSTANCES: ${{ github.event.inputs.instances || 800 }}
+  CCR: ${{ github.event.inputs.ccr || 'true' }}
+  SHARDS: ${{ github.event.inputs.shards || 20 }}
+
+jobs:
+  shard:
+    name: shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    # 4 vCPU is the standard GitHub-hosted linux runner size.
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Score shard ${{ matrix.shard }} of ${{ env.SHARDS }}
+        run: |
+          python3 -m ectdbench.run \
+            --shard-id "${{ matrix.shard }}" \
+            --num-shards "${{ env.SHARDS }}" \
+            --instances "${{ env.INSTANCES }}" \
+            ${{ env.CCR == 'true' && '--ccr' || '' }} \
+            --shard-dir shards \
+            --jobs 4 \
+            --quiet
+
+      - name: Upload shard ${{ matrix.shard }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shards/
+          retention-days: 7
+
+  merge:
+    name: merge and verify
+    runs-on: ubuntu-latest
+    needs: shard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download all shards
+        uses: actions/download-artifact@v4
+        with:
+          path: shards
+          pattern: shard-*
+
+      - name: Merge shards into results/
+        run: |
+          # download-artifact nests each artifact under shards/shard-N/. The
+          # merge step reads that nested layout directly (glob **), so no
+          # flatten step is needed and no file can be silently dropped.
+          python3 -m ectdbench.run --merge shards --out results --quiet
+
+      - name: Run test suite
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Upload merged results
+        uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: results/
+          retention-days: 7
