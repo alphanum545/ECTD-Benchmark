@@ -15,8 +15,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ectdbench import policy_table
 from ectdbench.engine import validate_schedule
-from ectdbench.generator import (FAMILIES, GROUPS, NODE_RANGE, PROCESSOR_RANGE,
-                                 build_instance, validate_structure)
+from ectdbench.generator import (CCR_LEVELS, FAMILIES, GROUPS, NODE_RANGE,
+                                 PROCESSOR_RANGE, build_instance,
+                                 measure_ccr, validate_structure)
 from ectdbench.model import Problem
 
 
@@ -125,6 +126,59 @@ class TestRanges(unittest.TestCase):
                  for f in FAMILIES for g in GROUPS for s in range(1, 6)}
         self.assertIn(PROCESSOR_RANGE[0], procs)
         self.assertIn(PROCESSOR_RANGE[1], procs)
+
+
+class TestCcrStratification(unittest.TestCase):
+    """The CCR axis is a declared, controlled variable, so it is tested as one."""
+
+    def test_target_ccr_is_achieved(self):
+        """Every level must land on its declared ratio, not merely near it."""
+        for family in FAMILIES:
+            for group in GROUPS:
+                for level in CCR_LEVELS:
+                    inst = build_instance(family, group, 1, ccr=level)
+                    self.assertAlmostEqual(inst["ccr_target"], level, places=6)
+                    self.assertAlmostEqual(inst["ccr"], level, places=3,
+                                           msg="%s/%s at CCR %s" % (family, group, level))
+
+    def test_ccr_scaling_preserves_topology(self):
+        """Rescaling communication must not change the graph, only its intensity."""
+        for family in FAMILIES:
+            for group in GROUPS:
+                low = build_instance(family, group, 1, ccr=0.25)
+                high = build_instance(family, group, 1, ccr=8.0)
+                self.assertEqual(low["n"], high["n"])
+                self.assertEqual(low["p"], high["p"])
+                self.assertEqual([(u, v) for u, v, _ in low["edges"]],
+                                 [(u, v) for u, v, _ in high["edges"]])
+                self.assertEqual(low["costs"], high["costs"])
+
+    def test_ccr_scaling_preserves_relative_delays(self):
+        """A single constant rescale must leave every delay ratio untouched."""
+        for group in GROUPS:
+            low = build_instance("LA", group, 1, ccr=0.5)
+            high = build_instance("LA", group, 1, ccr=4.0)
+            for (_, _, a), (_, _, b) in zip(low["edges"], high["edges"]):
+                if a > 0:
+                    self.assertAlmostEqual(b / a, 8.0, places=3)
+
+    def test_motifs_survive_ccr_rescaling(self):
+        """The entry_transfer elevation must still be present at every level."""
+        for level in CCR_LEVELS:
+            inst = build_instance("LA", "entry_transfer", 1, ccr=level)
+            entry = inst["structure"]["entry"]
+            entry_delays = [c for u, v, c in inst["edges"] if u == entry and c > 0]
+            other = [c for u, v, c in inst["edges"] if u != entry and c > 0]
+            self.assertTrue(entry_delays)
+            self.assertGreater(sum(entry_delays) / len(entry_delays),
+                               3.0 * sum(other) / len(other),
+                               "entry elevation lost at CCR %s" % level)
+
+    def test_levels_span_a_wide_range(self):
+        """The ladder must cover the low- and high-communication regimes."""
+        self.assertLessEqual(min(CCR_LEVELS), 0.5)
+        self.assertGreaterEqual(max(CCR_LEVELS), 4.0)
+        self.assertGreaterEqual(max(CCR_LEVELS) / min(CCR_LEVELS), 8.0)
 
 
 class TestStructure(unittest.TestCase):
@@ -257,6 +311,15 @@ class TestResultsArtifacts(unittest.TestCase):
         self.assertLessEqual(max(sizes), NODE_RANGE[1])
         self.assertGreaterEqual(min(procs), PROCESSOR_RANGE[0])
         self.assertLessEqual(max(procs), PROCESSOR_RANGE[1])
+        # The CCR axis is part of the published contract, so the artifact must
+        # actually span it rather than merely record a column.
+        if rows and rows[0].get("ccr_target"):
+            levels = sorted({float(r["ccr_target"]) for r in rows})
+            self.assertGreaterEqual(len(levels), 4)
+            self.assertGreaterEqual(max(levels) / min(levels), 8.0)
+            for r in rows:
+                self.assertAlmostEqual(float(r["ccr"]), float(r["ccr_target"]),
+                                       delta=0.02)
 
 
 if __name__ == "__main__":

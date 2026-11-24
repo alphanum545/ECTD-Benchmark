@@ -2,66 +2,188 @@
   "adjacent_gaps_observed_order": [
     {
       "lower": "LSTD",
-      "relative_gap_pct": 0.237147,
+      "relative_gap_pct": 1.898322,
       "upper": "ECTD"
     },
     {
       "lower": "AEFT",
-      "relative_gap_pct": 3.661633,
+      "relative_gap_pct": 7.508056,
       "upper": "LSTD"
     },
     {
-      "lower": "IPEFT",
-      "relative_gap_pct": 1.694447,
+      "lower": "HEFT",
+      "relative_gap_pct": 3.14166,
       "upper": "AEFT"
     },
     {
-      "lower": "HEFT",
-      "relative_gap_pct": 0.773412,
-      "upper": "IPEFT"
+      "lower": "IPEFT",
+      "relative_gap_pct": 0.218267,
+      "upper": "HEFT"
     },
     {
       "lower": "BPPTS",
-      "relative_gap_pct": 3.758328,
-      "upper": "HEFT"
+      "relative_gap_pct": 1.040885,
+      "upper": "IPEFT"
     }
   ],
   "adjacent_gaps_target_order": [
     {
       "lower": "AEFT",
-      "relative_gap_pct": 3.907464,
+      "relative_gap_pct": 9.548905,
       "upper": "ECTD"
     },
     {
       "lower": "BPPTS",
-      "relative_gap_pct": 6.332535,
+      "relative_gap_pct": 4.442713,
       "upper": "AEFT"
     },
     {
       "lower": "HEFT",
-      "relative_gap_pct": -3.622194,
+      "relative_gap_pct": -1.24571,
       "upper": "BPPTS"
     },
     {
       "lower": "LSTD",
-      "relative_gap_pct": -5.867683,
+      "relative_gap_pct": -9.816959,
       "upper": "HEFT"
     },
     {
       "lower": "IPEFT",
-      "relative_gap_pct": 5.418125,
+      "relative_gap_pct": 11.127619,
       "upper": "LSTD"
     }
   ],
+  "by_ccr": {
+    "0.25": {
+      "instances": 134,
+      "means": {
+        "AEFT": 707.150187,
+        "BPPTS": 744.51048,
+        "ECTD": 697.473859,
+        "HEFT": 722.775359,
+        "IPEFT": 712.944415,
+        "LSTD": 705.901924
+      },
+      "median_measured_ccr": 0.25,
+      "rank": [
+        "ECTD",
+        "LSTD",
+        "AEFT",
+        "IPEFT",
+        "HEFT",
+        "BPPTS"
+      ]
+    },
+    "0.5": {
+      "instances": 134,
+      "means": {
+        "AEFT": 823.697261,
+        "BPPTS": 869.230248,
+        "ECTD": 793.149175,
+        "HEFT": 849.959232,
+        "IPEFT": 835.831959,
+        "LSTD": 806.187821
+      },
+      "median_measured_ccr": 0.5,
+      "rank": [
+        "ECTD",
+        "LSTD",
+        "AEFT",
+        "IPEFT",
+        "HEFT",
+        "BPPTS"
+      ]
+    },
+    "1.0": {
+      "instances": 133,
+      "means": {
+        "AEFT": 1049.176921,
+        "BPPTS": 1114.973388,
+        "ECTD": 983.256789,
+        "HEFT": 1079.552596,
+        "IPEFT": 1067.723187,
+        "LSTD": 994.543682
+      },
+      "median_measured_ccr": 1.0,
+      "rank": [
+        "ECTD",
+        "LSTD",
+        "AEFT",
+        "IPEFT",
+        "HEFT",
+        "BPPTS"
+      ]
+    },
+    "2.0": {
+      "instances": 133,
+      "means": {
+        "AEFT": 1426.237543,
+        "BPPTS": 1496.892483,
+        "ECTD": 1283.852519,
+        "HEFT": 1476.477914,
+        "IPEFT": 1471.201764,
+        "LSTD": 1310.322844
+      },
+      "median_measured_ccr": 2.0,
+      "rank": [
+        "ECTD",
+        "LSTD",
+        "AEFT",
+        "IPEFT",
+        "HEFT",
+        "BPPTS"
+      ]
+    },
+    "4.0": {
+      "instances": 133,
+      "means": {
+        "AEFT": 2083.852346,
+        "BPPTS": 2153.13638,
+        "ECTD": 1801.93365,
+        "HEFT": 2171.681271,
+        "IPEFT": 2192.769585,
+        "LSTD": 1850.407776
+      },
+      "median_measured_ccr": 4.0,
+      "rank": [
+        "ECTD",
+        "LSTD",
+        "AEFT",
+        "BPPTS",
+        "HEFT",
+        "IPEFT"
+      ]
+    },
+    "8.0": {
+      "instances": 133,
+      "means": {
+        "AEFT": 3222.188022,
+        "BPPTS": 3265.986236,
+        "ECTD": 2688.181189,
+        "HEFT": 3313.616762,
+        "IPEFT": 3479.100846,
+        "LSTD": 2759.590028
+      },
+      "median_measured_ccr": 8.0,
+      "rank": [
+        "ECTD",
+        "LSTD",
+        "AEFT",
+        "BPPTS",
+        "HEFT",
+        "IPEFT"
+      ]
+    }
+  },
   "by_family": {
     "FFT": {
       "means": {
-        "AEFT": 742.701423,
-        "BPPTS": 791.627966,
-        "ECTD": 701.461131,
-        "HEFT": 757.821324,
-        "IPEFT": 748.593703,
-        "LSTD": 710.842776
+        "AEFT": 1193.37572,
+        "BPPTS": 1241.761706,
+        "ECTD": 1089.89105,
+        "HEFT": 1234.331771,
+        "IPEFT": 1220.874402,
+        "LSTD": 1105.625943
       },
       "rank": [
         "ECTD",
@@ -74,34 +196,34 @@
     },
     "GE": {
       "means": {
-        "AEFT": 1425.010148,
-        "BPPTS": 1474.432536,
-        "ECTD": 1470.148568,
-        "HEFT": 1456.658259,
-        "IPEFT": 1427.933882,
-        "LSTD": 1466.286609
+        "AEFT": 2483.824925,
+        "BPPTS": 2531.469001,
+        "ECTD": 2492.797017,
+        "HEFT": 2548.756698,
+        "IPEFT": 2650.087034,
+        "LSTD": 2553.524114
       },
       "rank": [
         "AEFT",
-        "IPEFT",
+        "ECTD",
+        "BPPTS",
         "HEFT",
         "LSTD",
-        "ECTD",
-        "BPPTS"
+        "IPEFT"
       ]
     },
     "Genome": {
       "means": {
-        "AEFT": 356.869238,
-        "BPPTS": 383.21946,
-        "ECTD": 317.437962,
-        "HEFT": 367.126139,
-        "IPEFT": 374.28586,
-        "LSTD": 317.638432
+        "AEFT": 551.346525,
+        "BPPTS": 588.595637,
+        "ECTD": 453.770627,
+        "HEFT": 560.749056,
+        "IPEFT": 562.860559,
+        "LSTD": 448.389346
       },
       "rank": [
-        "ECTD",
         "LSTD",
+        "ECTD",
         "AEFT",
         "HEFT",
         "IPEFT",
@@ -110,16 +232,16 @@
     },
     "LA": {
       "means": {
-        "AEFT": 1006.944537,
-        "BPPTS": 1086.971019,
-        "ECTD": 996.635133,
-        "HEFT": 1035.094246,
-        "IPEFT": 1016.665654,
-        "LSTD": 994.830791
+        "AEFT": 2006.464005,
+        "BPPTS": 2113.597664,
+        "ECTD": 1838.71943,
+        "HEFT": 2107.687381,
+        "IPEFT": 2051.169941,
+        "LSTD": 1936.922688
       },
       "rank": [
-        "LSTD",
         "ECTD",
+        "LSTD",
         "AEFT",
         "IPEFT",
         "HEFT",
@@ -130,30 +252,30 @@
   "by_group": {
     "branch_affinity": {
       "means": {
-        "AEFT": 792.941719,
-        "BPPTS": 841.340941,
-        "ECTD": 803.856338,
-        "HEFT": 803.128606,
-        "IPEFT": 798.149536,
-        "LSTD": 803.304521
+        "AEFT": 1465.260283,
+        "BPPTS": 1515.599243,
+        "ECTD": 1410.825342,
+        "HEFT": 1501.434126,
+        "IPEFT": 1525.720429,
+        "LSTD": 1444.787448
       },
       "rank": [
-        "AEFT",
-        "IPEFT",
-        "HEFT",
-        "LSTD",
         "ECTD",
-        "BPPTS"
+        "LSTD",
+        "AEFT",
+        "HEFT",
+        "BPPTS",
+        "IPEFT"
       ]
     },
     "entry_transfer": {
       "means": {
-        "AEFT": 828.223302,
-        "BPPTS": 881.513137,
-        "ECTD": 723.910159,
-        "HEFT": 853.610187,
-        "IPEFT": 856.322862,
-        "LSTD": 726.650552
+        "AEFT": 1227.551075,
+        "BPPTS": 1299.487294,
+        "ECTD": 1024.93568,
+        "HEFT": 1264.225639,
+        "IPEFT": 1289.613233,
+        "LSTD": 1047.753177
       },
       "rank": [
         "ECTD",
@@ -166,56 +288,56 @@
     },
     "lookahead_traps": {
       "means": {
-        "AEFT": 715.739953,
-        "BPPTS": 766.750181,
-        "ECTD": 726.269104,
-        "HEFT": 734.181329,
-        "IPEFT": 734.108367,
-        "LSTD": 728.095909
+        "AEFT": 1278.343921,
+        "BPPTS": 1332.216976,
+        "ECTD": 1243.891829,
+        "HEFT": 1303.78573,
+        "IPEFT": 1338.234617,
+        "LSTD": 1257.389474
       },
       "rank": [
-        "AEFT",
         "ECTD",
         "LSTD",
-        "IPEFT",
+        "AEFT",
         "HEFT",
-        "BPPTS"
+        "BPPTS",
+        "IPEFT"
       ]
     },
     "mixed_affinity": {
       "means": {
-        "AEFT": 887.937615,
-        "BPPTS": 932.920475,
-        "ECTD": 803.394871,
-        "HEFT": 914.328693,
-        "IPEFT": 885.752071,
-        "LSTD": 806.035686
+        "AEFT": 1537.878046,
+        "BPPTS": 1613.269481,
+        "ECTD": 1284.384799,
+        "HEFT": 1632.472357,
+        "IPEFT": 1504.944856,
+        "LSTD": 1307.689695
       },
       "rank": [
         "ECTD",
         "LSTD",
         "IPEFT",
         "AEFT",
-        "HEFT",
-        "BPPTS"
+        "BPPTS",
+        "HEFT"
       ]
     },
     "plain": {
       "means": {
-        "AEFT": 715.578312,
-        "BPPTS": 765.270757,
-        "ECTD": 726.206495,
-        "HEFT": 733.582993,
-        "IPEFT": 730.929762,
-        "LSTD": 728.357635
+        "AEFT": 1229.017979,
+        "BPPTS": 1276.091359,
+        "ECTD": 1190.279739,
+        "HEFT": 1256.64335,
+        "IPEFT": 1291.9776,
+        "LSTD": 1213.37548
       },
       "rank": [
-        "AEFT",
         "ECTD",
         "LSTD",
-        "IPEFT",
+        "AEFT",
         "HEFT",
-        "BPPTS"
+        "BPPTS",
+        "IPEFT"
       ]
     }
   },
@@ -225,21 +347,21 @@
     "ECTD",
     "LSTD",
     "AEFT",
-    "IPEFT",
     "HEFT",
+    "IPEFT",
     "BPPTS"
   ],
   "pooled_geometric_makespan": {
-    "AEFT": 785.302029,
-    "BPPTS": 835.031557,
-    "ECTD": 755.770564,
-    "HEFT": 804.785095,
-    "IPEFT": 798.608559,
-    "LSTD": 757.562854
+    "AEFT": 1340.529857,
+    "BPPTS": 1400.085754,
+    "ECTD": 1223.681658,
+    "HEFT": 1382.644745,
+    "IPEFT": 1385.662598,
+    "LSTD": 1246.911079
   },
   "single_entry_instances": 800,
   "target_matches_observed": false,
-  "target_order_reproduced_on_instances": 1,
+  "target_order_reproduced_on_instances": 3,
   "target_rank": [
     "ECTD",
     "AEFT",
@@ -250,33 +372,33 @@
   ],
   "win_tie_loss_vs_best": {
     "AEFT": {
-      "losses": 538,
-      "strict_wins": 262,
+      "losses": 662,
+      "strict_wins": 138,
       "tied_best": 0
     },
     "BPPTS": {
-      "losses": 788,
-      "strict_wins": 12,
+      "losses": 769,
+      "strict_wins": 31,
       "tied_best": 0
     },
     "ECTD": {
-      "losses": 565,
-      "strict_wins": 235,
+      "losses": 405,
+      "strict_wins": 395,
       "tied_best": 0
     },
     "HEFT": {
-      "losses": 753,
-      "strict_wins": 47,
+      "losses": 774,
+      "strict_wins": 26,
       "tied_best": 0
     },
     "IPEFT": {
-      "losses": 683,
-      "strict_wins": 117,
+      "losses": 757,
+      "strict_wins": 43,
       "tied_best": 0
     },
     "LSTD": {
-      "losses": 673,
-      "strict_wins": 127,
+      "losses": 633,
+      "strict_wins": 167,
       "tied_best": 0
     }
   }

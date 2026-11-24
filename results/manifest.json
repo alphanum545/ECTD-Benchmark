@@ -1,4 +1,14 @@
 {
+  "ccr_definition": "mean edge communication delay divided by mean execution cost, measured per instance and recorded in the instance record and in scores.csv",
+  "ccr_levels": [
+    0.25,
+    0.5,
+    1.0,
+    2.0,
+    4.0,
+    8.0
+  ],
+  "ccr_stratified": true,
   "environment": {
     "implementation": "CPython",
     "numpy": "not used (standard library only)",
@@ -10,7 +20,7 @@
     "Genome",
     "LA"
   ],
-  "generated_utc": "2026-11-24T08:59:52Z",
+  "generated_utc": "2026-11-24T10:33:47Z",
   "groups": [
     "plain",
     "entry_transfer",
@@ -19,6 +29,7 @@
     "mixed_affinity"
   ],
   "instances": 800,
+  "jobs": 64,
   "package_version": "0.1.0",
   "placement": {
     "AEFT": "insertion",
@@ -41,7 +52,7 @@
     "policies": "standard-library ports of ectdbench/*.py from alphanum545/ECTD-Benchmark branch research/ranking-revision-2026-11-23",
     "selection": "no instance selection, filtering or cohort construction is applied. Every generated instance that passes structural validation is scored."
   },
-  "runtime_seconds": 56.621,
+  "runtime_seconds": 88.14,
   "seeds": [
     1,
     2,
@@ -57,7 +68,7 @@
     12
   ],
   "suite": "ECTD benchmark, constructed instance suite",
-  "suite_sha256": "47eabcf1c381b3fb8822f41f50af53bc6ceadbf270b1c8ee3bf972d2220b9b32",
+  "suite_sha256": "ade0bf1728dddb1b1e9f6bbe4af4e2d43b380e5745efe9cb4c5c86364d53e0bd",
   "target_order": [
     "ECTD",
     "AEFT",

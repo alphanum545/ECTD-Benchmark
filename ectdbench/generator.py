@@ -54,6 +54,38 @@ PROCESSOR_RANGE = (4, 64)
 # in the middle of the range.
 PROCESSOR_CHOICES = (4, 6, 8, 12, 16, 24, 32, 48, 64)
 
+# Communication-to-computation ratio (CCR): the mean edge communication delay
+# divided by the mean execution cost. This is a property of the workload, not a
+# tuning knob, and it is declared here before any instance is generated.
+#
+# The suite spans it as an explicit axis rather than letting it land wherever the
+# generator happens to put it. At a low CCR the graph is computation-bound and
+# there is little communication for any scheduler to optimise; at a high CCR the
+# communication structure dominates and the choice of policy matters. A single
+# pooled number measured at one CCR cannot distinguish "ECTD is better" from
+# "ECTD is better here", so the ratio is stratified and reported per stratum.
+#
+# The levels form a geometric ladder spanning a factor of 32, which is the range
+# over which the scheduling literature reports qualitatively different behaviour.
+CCR_LEVELS = (0.25, 0.5, 1.0, 2.0, 4.0, 8.0)
+
+
+def measure_ccr(costs, triples, p):
+    """Mean edge communication delay divided by mean execution cost.
+
+    Every edge is counted, including the zero-delay entry and exit edges, because
+    those are real edges of the graph. The measure is a ratio of two means over
+    the same instance, so it is comparable across instances of different size.
+    """
+    n = len(costs)
+    mean_cost = sum(sum(row) / p for row in costs) / n if n else 0.0
+    if mean_cost <= 0:
+        return 0.0
+    delays = [c for _, _, c in triples]
+    if not delays:
+        return 0.0
+    return (sum(delays) / len(delays)) / mean_cost
+
 
 def _hex12(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
@@ -322,7 +354,7 @@ def _content_hash(costs, triples):
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
-def build_instance(family, group, seed, processors=None, nodes=None):
+def build_instance(family, group, seed, processors=None, nodes=None, ccr=None):
     """Build one instance deterministically from (family, group, seed).
 
     The base topology is drawn from a seed that depends only on
@@ -335,6 +367,14 @@ def build_instance(family, group, seed, processors=None, nodes=None):
     ``nodes`` is the target node count for the finished instance. Families that
     are quantised by their structure (FFT, GE) land on the nearest shape their
     topology allows; the achieved count is always inside ``NODE_RANGE``.
+
+    ``ccr`` is the target communication-to-computation ratio. When given, every
+    communication delay is multiplied by one constant so the finished instance
+    lands on that ratio. A single constant preserves every relative delay, so the
+    motif structure (entry_transfer's heavy entry edges, lookahead_traps'
+    inflated edges) survives untouched and only the overall communication
+    intensity changes. The achieved ratio is measured and recorded, never
+    assumed.
     """
     if family not in _BUILDERS:
         raise ValueError("unknown family %r" % (family,))
@@ -371,6 +411,16 @@ def build_instance(family, group, seed, processors=None, nodes=None):
     costs, triples = _apply_group(group_rng, costs, triples, group, p)
     triples = _as_triples(triples)
 
+    # Communication intensity is set last, by a single multiplicative constant,
+    # so the motif's relative structure is untouched.
+    achieved_ccr = measure_ccr(costs, triples, p)
+    if ccr is not None:
+        if achieved_ccr <= 0:
+            raise ValueError("cannot set a CCR on an instance with no communication")
+        factor = float(ccr) / achieved_ccr
+        triples = [(u, v, round(c * factor, 6)) for u, v, c in triples]
+        achieved_ccr = measure_ccr(costs, triples, p)
+
     digest = _content_hash(costs, triples)
     structure = _hex12(json.dumps(meta, sort_keys=True))
     instance_id = "synthetic/%s/%s/%s/seed_%d-%s" % (
@@ -383,6 +433,8 @@ def build_instance(family, group, seed, processors=None, nodes=None):
         "seed": seed,
         "n": len(costs),
         "p": p,
+        "ccr": round(achieved_ccr, 6),
+        "ccr_target": None if ccr is None else float(ccr),
         "costs": costs,
         "edges": [[u, v, c] for u, v, c in triples],
         "input_sha256": digest,

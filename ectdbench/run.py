@@ -18,6 +18,7 @@ import argparse
 import hashlib
 import json
 import math
+import multiprocessing as mp
 import os
 import platform
 import sys
@@ -25,7 +26,14 @@ import time
 
 from . import __version__, policy_table
 from .engine import validate_schedule
-from .generator import FAMILIES, GROUPS, build_instance, validate_structure
+from .generator import (
+    CCR_LEVELS,
+    FAMILIES,
+    GROUPS,
+    build_instance,
+    measure_ccr,
+    validate_structure,
+)
 from .model import Problem
 
 # The ranking this suite is built to probe. Recorded in the manifest so that the
@@ -52,22 +60,29 @@ def geometric_mean(values):
     return math.exp(sum(math.log(v) for v in values) / len(values))
 
 
-def build_suite(seeds, target=None):
+def build_suite(seeds, target=None, ccr_levels=None):
     """Yield every instance for the given seed range, in a fixed order.
 
     With ``target`` set, keep advancing the seed until that many instances have
     been produced. The order is deterministic either way: seed, then family,
-    then group.
+    then group, then CCR level.
+
+    With ``ccr_levels`` set, each (family, group, seed) combination is emitted
+    once per level, so the suite becomes a full factorial over family, group,
+    seed and communication intensity. That is what makes the CCR axis a
+    controlled variable rather than a property that happens to vary.
     """
+    levels = tuple(ccr_levels) if ccr_levels else (None,)
     produced = 0
     seed = seeds[0]
     while True:
         for family in FAMILIES:
             for group in GROUPS:
-                if target is not None and produced >= target:
-                    return
-                yield build_instance(family, group, seed)
-                produced += 1
+                for level in levels:
+                    if target is not None and produced >= target:
+                        return
+                    yield build_instance(family, group, seed, ccr=level)
+                    produced += 1
         seed += 1
         if target is None and seed > seeds[-1]:
             return
@@ -90,6 +105,28 @@ def score_instance(instance, policies, placement):
     return row, checks
 
 
+def _score_worker(task):
+    """Score one instance in a worker process.
+
+    Module level so it is picklable under both fork and spawn. Each worker
+    builds its own policy table on first use, which keeps the parent's table out
+    of the pickle and avoids copying it per task.
+    """
+    instance, placement = task
+    policies = _score_worker.policies
+    if policies is None:
+        policies = policy_table()
+        _score_worker.policies = policies
+    structure = validate_structure(instance)
+    if not structure["valid"]:
+        return instance, None, None, structure["problems"]
+    row, checks = score_instance(instance, policies, placement)
+    return instance, row, checks, []
+
+
+_score_worker.policies = None
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Build and score the ECTD benchmark suite.")
     parser.add_argument("--out", default="results", help="output directory")
@@ -97,25 +134,43 @@ def main(argv=None):
     parser.add_argument("--seed-start", type=int, default=1, help="first seed value")
     parser.add_argument("--instances", type=int, default=None,
                         help="build exactly this many instances, advancing seeds as needed")
+    parser.add_argument("--ccr", action="store_true",
+                        help="stratify the suite over CCR_LEVELS instead of using "
+                             "whatever ratio the generator produces")
+    parser.add_argument("--jobs", type=int, default=1,
+                        help="worker processes; 0 uses every available CPU")
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args(argv)
 
     os.makedirs(args.out, exist_ok=True)
     seeds = list(range(args.seed_start, args.seed_start + args.seeds))
     policies = policy_table()
+    ccr_levels = list(CCR_LEVELS) if args.ccr else None
 
     started = time.time()
     instances = []
     score_rows = []
     validation = {"structure_failures": [], "feasibility_failures": [], "checked": 0}
 
-    for instance in build_suite(seeds, target=args.instances):
-        structure = validate_structure(instance)
-        if not structure["valid"]:
+    # The suite is generated in a fixed canonical order, and every result carries
+    # its position in that order. Workers finish out of order, so results are put
+    # back by index before anything is written; a parallel run and a serial run
+    # then produce identical artifacts.
+    canonical = {}
+    for index, inst in enumerate(
+            build_suite(seeds, target=args.instances, ccr_levels=ccr_levels)):
+        canonical[inst["id"]] = index
+
+    jobs = args.jobs if args.jobs > 0 else (os.cpu_count() or 1)
+    tasks = ((inst, PLACEMENT) for inst in
+             build_suite(seeds, target=args.instances, ccr_levels=ccr_levels))
+
+    def absorb(result):
+        instance, row, checks, problems = result
+        if problems:
             validation["structure_failures"].append(
-                {"id": instance["id"], "problems": structure["problems"]})
-            continue
-        row, checks = score_instance(instance, policies, PLACEMENT)
+                {"id": instance["id"], "problems": problems})
+            return
         for name, report in checks.items():
             validation["checked"] += 1
             if not report["valid"]:
@@ -124,10 +179,34 @@ def main(argv=None):
         instances.append(instance)
         score_rows.append({"id": instance["id"], "family": instance["family"],
                            "group": instance["group"], "seed": instance["seed"],
-                           "n": instance["n"], "p": instance["p"], "scores": row})
-        if not args.quiet and len(instances) % 40 == 0:
-            print("  scored %d instances" % len(instances), file=sys.stderr)
+                           "n": instance["n"], "p": instance["p"],
+                           "ccr": instance["ccr"],
+                           "ccr_target": instance["ccr_target"],
+                           "scores": row})
+
+    if jobs == 1:
+        for task in tasks:
+            absorb(_score_worker(task))
+            if not args.quiet and len(instances) % 40 == 0:
+                print("  scored %d instances" % len(instances), file=sys.stderr)
+    else:
+        # imap_unordered keeps memory flat: results are consumed as workers
+        # finish rather than materialising the whole suite up front. Because
+        # workers finish out of order, the rows are re-sorted into the suite's
+        # canonical order before anything is written, so a parallel run and a
+        # serial run produce identical artifacts.
+        methods = mp.get_all_start_methods()
+        ctx = mp.get_context("fork" if "fork" in methods else "spawn")
+        with ctx.Pool(processes=min(jobs, os.cpu_count() or 1)) as pool:
+            for result in pool.imap_unordered(_score_worker, tasks, chunksize=1):
+                absorb(result)
+                if not args.quiet and len(instances) % 40 == 0:
+                    print("  scored %d instances" % len(instances), file=sys.stderr)
     elapsed = time.time() - started
+
+    # Put every row back at its canonical index.
+    score_rows.sort(key=lambda r: canonical[r["id"]])
+    instances.sort(key=lambda inst: canonical[inst["id"]])
 
     # ---- pooled geometric means, overall and per family ----
     def pooled(rows):
@@ -142,6 +221,23 @@ def main(argv=None):
 
     def ranked(means):
         return sorted(means, key=lambda k: (means[k], k))
+
+    # Per-CCR-stratum pooled means. This is the axis the suite is stratified on,
+    # so it is reported first-class rather than as a post-hoc cut.
+    def ccr_key(row):
+        target = row["ccr_target"]
+        return target if target is not None else "native"
+
+    strata = sorted({ccr_key(r) for r in score_rows}, key=lambda v: (v == "native", v))
+    by_ccr = {}
+    for level in strata:
+        rows = [r for r in score_rows if ccr_key(r) == level]
+        by_ccr[str(level)] = {
+            "instances": len(rows),
+            "means": pooled(rows),
+            "rank": ranked(pooled(rows)),
+            "median_measured_ccr": sorted(r["ccr"] for r in rows)[len(rows) // 2],
+        }
 
     overall_rank = ranked(overall)
     family_rank = {fam: ranked(m) for fam, m in by_family.items()}
@@ -205,9 +301,15 @@ def main(argv=None):
         "seeds": seeds,
         "families": list(FAMILIES),
         "groups": list(GROUPS),
+        "ccr_levels": list(CCR_LEVELS) if args.ccr else None,
+        "ccr_definition": "mean edge communication delay divided by mean execution "
+                          "cost, measured per instance and recorded in the "
+                          "instance record and in scores.csv",
+        "ccr_stratified": bool(args.ccr),
         "instances": len(score_rows),
         "policies": list(policies),
         "runtime_seconds": round(elapsed, 3),
+        "jobs": jobs,
         "environment": {"python": platform.python_version(),
                         "implementation": platform.python_implementation(),
                         "numpy": "not used (standard library only)"},
@@ -238,6 +340,11 @@ def main(argv=None):
                           "rank": family_rank[f]} for f, m in by_family.items()},
         "by_group": {g: {"means": {k: round(v, 6) for k, v in m.items()},
                          "rank": group_rank[g]} for g, m in by_group.items()},
+        "by_ccr": {k: {"instances": v["instances"],
+                       "means": {n: round(x, 6) for n, x in v["means"].items()},
+                       "rank": v["rank"],
+                       "median_measured_ccr": v["median_measured_ccr"]}
+                   for k, v in by_ccr.items()},
         "win_tie_loss_vs_best": win_table,
         "single_entry_instances": duplication_active,
         "entry_duplication_eligible": duplication_active == len(score_rows),
@@ -253,11 +360,14 @@ def main(argv=None):
         for inst in instances:
             fh.write(json.dumps(inst, sort_keys=True) + "\n")
     with open(os.path.join(args.out, "scores.csv"), "w") as fh:
-        header = ["id", "family", "group", "seed", "n", "p"] + list(policies)
+        header = (["id", "family", "group", "seed", "n", "p", "ccr", "ccr_target"]
+                  + list(policies))
         fh.write(",".join(header) + "\n")
         for r in score_rows:
             fh.write(",".join(
-                [r["id"], r["family"], r["group"], str(r["seed"]), str(r["n"]), str(r["p"])]
+                [r["id"], r["family"], r["group"], str(r["seed"]), str(r["n"]),
+                 str(r["p"]), "%.6f" % r["ccr"],
+                 "" if r["ccr_target"] is None else "%g" % r["ccr_target"]]
                 + ["%.6f" % r["scores"][name] for name in policies]) + "\n")
 
     digest = hashlib.sha256(
