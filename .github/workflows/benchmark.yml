@@ -31,11 +31,7 @@ on:
         default: 20
   push:
     branches:
-      - perch/b902dae8
-    paths:
-      - "ectdbench/**"
-      - "tests/**"
-      - ".github/workflows/benchmark.yml"
+      - "**"
 
 env:
   INSTANCES: ${{ github.event.inputs.instances || 800 }}
