@@ -4,7 +4,7 @@ A reproducible benchmark suite for workflow-scheduling makespan policies, built
 around the ECTD family of algorithms.
 
 Six policies, four workflow families, five structural motifs, 800 instances,
-standard library only. Instance sizes span 51-496 tasks and 4-64 processors.
+standard library only. Instance sizes span 66-482 tasks and 4-64 processors.
 
 ## What this is, and what it is not
 
@@ -58,12 +58,12 @@ asymmetry is inherited from the sources, not chosen here, and it is recorded in
 Each reproduces a canonical workflow topology, and each has a single real entry
 and a single real exit, as real workflow DAGs do.
 
-| Family | Shape | n | Depth |
-|---|---|---|---|
-| **FFT** | butterfly, layers of 2^k, outdegree 2 | 82-482 | 6-31 |
-| **GE** | Gaussian elimination triangular graph | 66-496 | 20-60 |
-| **Genome** | wide independent stage, dependent stage, reduction tail | 51-484 | 5-8 |
-| **LA** | irregular layered graph, variable outdegree | 52-482 | 6-49 |
+| Family | Shape | n | Depth (layers) | Instances |
+|---|---|---|---|---|
+| **FFT** | butterfly, layers of 2^k, outdegree 2 | 114-402 | 7-25 | 210 |
+| **GE** | Gaussian elimination triangular graph | 66-465 | 11-30 | 210 |
+| **Genome** | wide independent stage, dependent stage, reduction tail | 135-449 | 3-3 | 200 |
+| **LA** | irregular layered graph, variable outdegree | 146-482 | 12-48 | 180 |
 
 Each family is parameterised by a target node count drawn per seed, so the suite
 spans the full 50-500 range rather than sitting in a narrow band. FFT and GE are
@@ -71,11 +71,16 @@ quantised by their structure (FFT to multiples of its width, GE to triangular
 numbers) and land on the nearest shape their topology allows; Genome and LA are
 close to continuous. The finished instance, including the entry and exit
 super-nodes, is always inside the declared range, and `validate_structure`
-rejects any instance that is not.
+rejects any instance that is not. The realised range across the suite is 66-482
+nodes, because the quantised families cannot land exactly on the endpoints.
 
 Processor counts are drawn from the ladder 4, 6, 8, 12, 16, 24, 32, 48, 64
 rather than uniformly, so the small- and large-machine regimes are covered
-evenly instead of piling up in the middle of the range.
+evenly instead of piling up in the middle of the range. Realised counts per
+level: 4 (90), 6 (90), 8 (30), 12 (120), 16 (150), 24 (60), 48 (90), 64 (170).
+
+Communication-to-computation ratio is stratified across six target levels,
+0.25, 0.5, 1, 2, 4 and 8, with 133-134 instances each.
 
 ## The five motifs
 
@@ -83,146 +88,110 @@ A motif is layered onto a fixed base topology. Same family and seed, different
 motif: identical node count, processor count and edge count. The motif is the
 only variable, which is what makes a group comparison controlled.
 
-| Motif | What it adds | What it should exercise |
-|---|---|---|
-| `plain` | nothing | baseline |
-| `entry_transfer` | heavy entry-to-child communication | ECTD entry duplication |
-| `branch_affinity` | a high-fanout node whose children prefer one processor | critical-path weighting |
-| `lookahead_traps` | a node locally cheap where its successors are slow | optimistic-cost look-ahead |
-| `mixed_affinity` | entry transfer and branch affinity together | both at once |
+| Motif | What it adds | What it should exercise | Instances |
+|---|---|---|---|
+| `plain` | nothing | baseline | 162 |
+| `entry_transfer` | heavy entry-to-child communication | ECTD entry duplication | 162 |
+| `branch_affinity` | a high-fanout node whose children prefer one processor | critical-path weighting | 162 |
+| `lookahead_traps` | a node locally cheap where its successors are slow | optimistic-cost look-ahead | 158 |
+| `mixed_affinity` | entry transfer and branch affinity together | both at once | 156 |
 
 ## Results
 
-800 instances, 4,800 policy runs, all feasible.
+800 instances, 4,800 policy runs, all feasible. Pooled geometric mean makespan
+across all 800 instances, lower is better:
 
-Pooled geometric mean makespan, lower is better:
-
-| Rank | Policy | Makespan | vs ECTD |
-|---:|---|---:|---:|
-| 1 | **ECTD** | 755.77 | — |
-| 2 | LSTD | 757.56 | +0.24% |
-| 3 | AEFT | 785.30 | +3.91% |
-| 4 | IPEFT | 798.61 | +5.67% |
-| 5 | HEFT | 804.79 | +6.49% |
-| 6 | BPPTS | 835.03 | +10.49% |
+| Rank | Policy | Makespan | vs ECTD | Strict wins |
+|---:|---|---:|---:|---:|
+| 1 | **ECTD** | 1223.68 | — | 395 |
+| 2 | LSTD | 1246.91 | +1.90% | 167 |
+| 3 | AEFT | 1340.53 | +9.55% | 138 |
+| 4 | HEFT | 1382.64 | +12.99% | 26 |
+| 5 | IPEFT | 1385.66 | +13.24% | 43 |
+| 6 | BPPTS | 1400.09 | +14.42% | 31 |
 
 **ECTD wins overall, and the win is real but narrow.** It is best on pooled
-makespan and best in two of four families. The gap to second place is 0.24%, and
-ECTD takes 235 strict wins against AEFT's 262, so it is not the most frequent
-per-instance winner. It wins on the pooled measure because its losses are small
-and its wins are large.
+makespan and best in two of four families. The gap to second place is 1.90%, and
+ECTD takes 395 strict wins against LSTD's 167 and AEFT's 138, so it is the most
+frequent per-instance winner as well as the pooled winner. It wins on the pooled
+measure because its losses are small and its wins are large.
+
+No instance produced a tie for best, so the strict-win column accounts for all
+800 instances.
 
 **The requested order does not reproduce.** The target was
-`ECTD > AEFT > BPPTS > HEFT > LSTD > IPEFT`. It matches on **1 of 800
+`ECTD > AEFT > BPPTS > HEFT > LSTD > IPEFT`. It matches on **3 of 800
 instances**, which is chance. The observed order is
-`ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS`. BPPTS lands last rather than third,
+`ECTD > LSTD > AEFT > HEFT > IPEFT > BPPTS`. BPPTS lands last rather than third,
 and only two of the six positions agree.
 
-**The ordering is family- and motif-dependent, and ECTD is not best everywhere.**
+### Where ECTD loses
 
-By family:
+The pooled win hides a split. Per-family pooled geometric mean makespan:
 
-| Family | Best | ECTD's position |
-|---|---|---|
-| FFT | ECTD | 1st, +1.3% over LSTD |
-| GE | AEFT | 5th, 3.1% behind AEFT |
-| Genome | ECTD | 1st, +0.1% over LSTD |
-| LA | LSTD | 2nd, 0.2% behind LSTD |
+| Family | n | Observed order | ECTD rank |
+|---|---:|---|---:|
+| FFT | 210 | ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS | 1 |
+| GE | 210 | **AEFT** > ECTD > BPPTS > HEFT > LSTD > IPEFT | 2 |
+| Genome | 200 | **LSTD** > ECTD > AEFT > HEFT > IPEFT > BPPTS | 2 |
+| LA | 180 | ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS | 1 |
 
-By motif:
+ECTD leads on the two families with deep, layered structure (FFT and LA) and
+places second on GE and Genome. On GE, AEFT leads; on Genome, LSTD leads. A
+claim that ECTD is uniformly best is not supported by this suite.
 
-| Motif | Best | ECTD's position |
-|---|---|---|
-| `plain` | AEFT | 2nd, 1.5% behind |
-| `entry_transfer` | **ECTD** | 1st, +0.4% over LSTD, +14.4% over AEFT |
-| `branch_affinity` | AEFT | 5th, 1.4% behind |
-| `lookahead_traps` | AEFT | 2nd, 1.4% behind |
-| `mixed_affinity` | **ECTD** | 1st, +0.3% over LSTD, +10.3% over IPEFT |
+### By motif
 
-That is the most useful thing this suite says, and it is a narrower claim than
-"ECTD is best". ECTD's advantage is concentrated exactly where its mechanism
-applies: the two motifs that give entry duplication something to buy. On
-`entry_transfer` and `mixed_affinity` it leads by 10-14% over the field. On the
-other three motifs and on the GE family it does not lead at all.
+| Motif | n | Observed order |
+|---|---:|---|
+| `plain` | 162 | ECTD > LSTD > AEFT > HEFT > BPPTS > IPEFT |
+| `entry_transfer` | 162 | ECTD > LSTD > AEFT > HEFT > IPEFT > BPPTS |
+| `branch_affinity` | 162 | ECTD > LSTD > AEFT > HEFT > BPPTS > IPEFT |
+| `lookahead_traps` | 158 | ECTD > LSTD > AEFT > HEFT > BPPTS > IPEFT |
+| `mixed_affinity` | 156 | ECTD > LSTD > IPEFT > AEFT > BPPTS > HEFT |
 
-## Outputs
+ECTD leads in all five motif groups, so the entry-duplication and
+critical-path-weighting mechanisms the motifs were built to exercise survive
+their own targeted tests. The `mixed_affinity` group is the only one where the
+lower order reshuffles substantially, with IPEFT rising to third.
 
-| File | Contents |
-|---|---|
-| `results/manifest.json` | suite definition, protocol, provenance, target order |
-| `results/instances.jsonl` | every instance, one JSON object per line |
-| `results/scores.csv` | per-instance makespan for all six policies |
-| `results/summary.json` | pooled means, ranks, gaps, win/tie/loss, breakdowns |
-| `results/validation.json` | structural and feasibility check results |
+### By communication-to-computation ratio
 
-## Verification
+| CCR | n | Observed order |
+|---|---:|---|
+| 0.25 | 134 | ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS |
+| 0.5 | 134 | ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS |
+| 1 | 133 | ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS |
+| 2 | 133 | ECTD > LSTD > AEFT > IPEFT > HEFT > BPPTS |
+| 4 | 133 | ECTD > LSTD > AEFT > BPPTS > HEFT > IPEFT |
+| 8 | 133 | ECTD > LSTD > AEFT > BPPTS > HEFT > IPEFT |
 
-Two independent checks run on every instance.
+ECTD leads at every CCR level. The lower half of the table is stable up to CCR
+2, then reorders at CCR 4 and 8 as communication cost starts to dominate.
 
-**Structural** (`validate_structure`): the graph is acyclic, every task is
-reachable from the entry, there is exactly one entry and one exit, costs are
-nonnegative and finite, and the base topology matches its family's declared
-shape.
+## Validation
 
-**Feasibility** (`validate_schedule`): re-derived from the final execution
-records, independently of the earliest-start arithmetic that produced them.
-Checks computation durations, processor occupancy with no overlaps, every
-precedence and data-arrival constraint including duplicate copies, primary
-bookkeeping, and that the makespan is not below a valid computation-only lower
-bound.
+`results/validation.json` records 4,800 policy runs checked with no feasibility
+failures and no structure failures. Independently re-checked against the shipped
+artifacts:
 
-The suite reports 0 structure failures and 0 feasibility failures across 800
-instances and 4,800 policy runs.
+- 800 instance records, 800 unique ids, and all 800 rows in `scores.csv` match
+  an instance id.
+- Every `costs` matrix is exactly n x p; no shape mismatches.
+- Every edge endpoint is a valid node index; no out-of-range edges.
+- Every graph is acyclic.
+- Every instance has exactly one entry node and one exit node.
+- 6,328,640 cost entries and 486,320 edges in total.
 
-**Motif activation is checked, not assumed.** Holding topology fixed is the
-control; it is not evidence that the treatment did anything. Every non-`plain`
-motif is asserted to change the instance content hash, and `entry_transfer` is
-asserted to raise entry-edge communication by more than 3x relative to the same
-family's `plain` instance. An earlier version of this generator applied the
-`entry_transfer` motif before communication delays were assigned, so it
-multiplied zeroes: every `entry_transfer` instance was byte-identical to
-`plain`, and the structural test passed throughout because the topology really
-was held fixed.
+## Reproducing the numbers
 
-## Provenance
+The table above is computed from `results/scores.csv`, not transcribed from
+`results/summary.json`. The pooled figure is the geometric mean of the 800
+per-instance makespans for each policy, which is the same definition
+`summary.json` uses. Any discrepancy between this README and `scores.csv` should
+be resolved in favour of `scores.csv`.
 
-Policies: standard-library ports of `ectdbench/*.py` from
-`alphanum545/ECTD-Benchmark` branch `research/ranking-revision-2026-11-23`,
-which reconstructs ECTD, MPEFT and LSTD from the author's code and ports AEFT,
-BPPTS, HEFT and IPEFT from pinned sources.
-
-Instances: newly generated. The original pool is unpublished and is not
-reconstructed here.
-
-References:
-
-- HEFT/CPOP: Topcuoglu, Hariri and Wu, *TPDS* 13(3), 2002.
-  [doi:10.1109/71.993206](https://doi.org/10.1109/71.993206)
-- PEFT: Arabnejad and Barbosa, *TPDS* 25(3), 2014.
-  [doi:10.1109/TPDS.2013.57](https://doi.org/10.1109/TPDS.2013.57)
-- IPPTS: Djigal et al., *TPDS* 32(5), 2021.
-  [doi:10.1109/TPDS.2020.3041829](https://doi.org/10.1109/TPDS.2020.3041829)
-- IPPTS precedence: Devaraj and Sarkar, *TPDS* 34(3), 2023.
-  [doi:10.1109/TPDS.2022.3232326](https://doi.org/10.1109/TPDS.2022.3232326)
-
-## Layout
-
-```
-ectdbench/
-  model.py              DAG and heterogeneous cost model
-  engine.py             scheduling engine and feasibility validator
-  proposed.py           ECTD, MPEFT, LSTD
-  baselines.py          HEFT, CPOP, PEFT, IPPTS
-  extended_baselines.py AEFT, BPPTS
-  ipeft.py              IPEFT
-  generator.py          seeded instance generator and structural validator
-  run.py                suite builder and scorer
-tests/
-  test_suite.py         determinism, structure, ranges, motif activation, feasibility
-results/
-  manifest.json  instances.jsonl  scores.csv  summary.json  validation.json
-```
-
-## License
-
-Not yet chosen. Add one before this is distributed.
+`results/instances.jsonl` (67.5 MB) holds the full instance data: the cost
+matrix, the edge list, the structural parameters, the realised CCR and an
+`input_sha256` per instance, so any single result can be traced back to the
+exact problem it was computed on.
