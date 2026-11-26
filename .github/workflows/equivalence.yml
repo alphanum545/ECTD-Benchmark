@@ -34,6 +34,11 @@ on:
         description: "instances per (family, nodes, processors) cell"
         required: false
         default: "1"
+      write_baseline:
+        description: "regenerate the baseline from THIS commit (only from a known-good tree)"
+        type: boolean
+        required: false
+        default: false
   push:
     branches: [main, "bench/**"]
     paths:
@@ -42,7 +47,7 @@ on:
       - ".github/workflows/equivalence.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   DATASET_REPO: ${{ github.event.inputs.dataset_repo || 'Techietal/Task-Scheduling-Dataset' }}
@@ -75,11 +80,30 @@ jobs:
           ECTD_DATA_ROOT: ${{ github.workspace }}/corpus
         run: |
           set -euo pipefail
-          python3 scripts/check_equivalence.py \
-            --data-root corpus \
-            --per-cell "$PER_CELL" \
-            --baseline docs/benchmark/equivalence_baseline.json \
-            --out equivalence-report.json
+          ARGS="--data-root corpus --per-cell $PER_CELL --baseline docs/benchmark/equivalence_baseline.json --out equivalence-report.json"
+          if [ "${{ github.event.inputs.write_baseline }}" = "true" ]; then
+            ARGS="$ARGS --write-baseline"
+          fi
+          python3 scripts/check_equivalence.py $ARGS
+
+      # Only runs when write_baseline was requested. The baseline is the
+      # contract every later refactor is checked against, so it has to be
+      # produced from a tree that is known good. Generating it from a patched
+      # tree would encode the new behaviour as the specification and make the
+      # check vacuous.
+      - name: Commit baseline
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.write_baseline }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/benchmark/equivalence_baseline.json
+          if git diff --cached --quiet; then
+            echo "baseline unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Record equivalence baseline from run ${{ github.run_id }}"
+          git push origin "HEAD:${{ github.ref_name }}"
 
       - name: Upload report
         if: always()
