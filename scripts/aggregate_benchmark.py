@@ -225,7 +225,13 @@ def main():
                 return margins[min(len(margins) - 1, int(f * len(margins)))]
             print("\nmargin over next best (%%): min %.2f  q1 %.2f  median %.2f  q3 %.2f  max %.2f"
                   % (margins[0], q(0.25), q(0.5), q(0.75), margins[-1]))
-            print("sole leader (margin > 0): %d" % sum(1 for m in margins if m > 0))
+            # margin is measured against the next-best policy, so it is
+            # positive by construction on every leader row. Counting it would
+            # always return the row count and say nothing. Report the split
+            # that actually distinguishes rows instead.
+            print("outright win (no tie): %d   tied: %d"
+                  % (sum(1 for d in ectd if not d["shared"]),
+                     sum(1 for d in ectd if d["shared"])))
         print("\ntop 10 by margin:")
         for d in sorted(ectd, key=lambda d: -(d["margin_pct"] or 0))[:10]:
             print("  %-46s %8.2f  +%.2f%%  %s"
