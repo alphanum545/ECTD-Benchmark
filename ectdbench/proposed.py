@@ -18,24 +18,39 @@ def descendant_ranks(problem):
     DCT is minimum execution time plus outgoing edge communication time. Bit
     sets implement descendant unions without counting a shared descendant
     repeatedly when several paths reach it.
+
+    The set bits are read by scanning the mask as bytes rather than by peeling
+    one bit at a time. Both visit the bits in ascending order, so the float
+    accumulation is bit-identical; only the cost changes. Peeling costs
+    O(n/w) word operations per set bit, because each ``bits & -bits`` and
+    ``bits ^= low`` touches the whole n-bit value, which makes the walk
+    O(n^2 * n/w) over all tasks. A byte is a fixed-width unit, so scanning
+    costs O(n/8) per task no matter how many bits are set.
     """
-    dct = [float(problem.min_w[i]) for i in range(problem.n)]
-    for task in range(problem.n):
+    n = problem.n
+    dct = [float(problem.min_w[i]) for i in range(n)]
+    for task in range(n):
         dct[task] += sum(problem.edges[task, child] for child in problem.succ[task])
 
-    descendants = [0] * problem.n
-    ranks = [0.0] * problem.n
+    descendants = [0] * n
+    ranks = [0.0] * n
+    nbytes = (n + 7) // 8
     for task in reversed(problem.topo):
         bits = 0
         for child in problem.succ[task]:
             bits |= (1 << child) | descendants[child]
         descendants[task] = bits
         total = float(dct[task])
-        while bits:
-            lowest = bits & -bits
-            child = lowest.bit_length() - 1
-            total += float(dct[child])
-            bits ^= lowest
+        if bits:
+            for byte_index, byte in enumerate(bits.to_bytes(nbytes, "little")):
+                if not byte:
+                    continue
+                base = byte_index << 3
+                while byte:
+                    if byte & 1:
+                        total += float(dct[base])
+                    byte >>= 1
+                    base += 1
         ranks[task] = total
     return ranks
 
