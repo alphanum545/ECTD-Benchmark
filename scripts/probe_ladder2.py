@@ -4,8 +4,14 @@ import sys, os, json, random, math, glob, collections
 from multiprocessing import Pool
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, os.path.join(ROOT, "ECTD-Benchmark"))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+import _paths                                            # noqa: E402
+
+ROOT = _paths.REPO_ROOT
+sys.path.insert(0, _paths.find_package_root())
+DATA_ROOT = _paths.find_data_root()
 
 from ectdbench import policy_table
 from ectdbench.model import Problem
@@ -91,12 +97,12 @@ def probe(job):
 
 
 def main():
-    prev = json.load(open(os.path.join(ROOT, "scripts", "out", "ladder_probe.json")))
+    prev = json.load(open(os.path.join(_paths.OUT_DIR, "ladder_probe.json")))
     stuck = [(x["family"], x["level"], x["p"]) for x in prev if x["step"] == 0]
     jobs = []
     for fam, lv, p in stuck:
         fs = sorted(glob.glob(os.path.join(
-            ROOT, "scheduling-benchmark", "data", fam, lv, "*", "*.txt")))
+            DATA_ROOT, fam, lv, "*", "*.txt")))
         if fs:
             jobs.append((fam, lv, p, fs[0]))
 
@@ -113,7 +119,7 @@ def main():
         if step == 0:
             print("     %s %s p=%s" % (fam, lv, p))
 
-    dest = os.path.join(ROOT, "scripts", "out", "ladder_probe2.json")
+    dest = os.path.join(_paths.OUT_DIR, "ladder_probe2.json")
     with open(dest, "w") as fh:
         json.dump([{"family": f, "level": l, "p": p, "step": s,
                     "wins": w, "cand": c} for f, l, p, s, w, c in res],
