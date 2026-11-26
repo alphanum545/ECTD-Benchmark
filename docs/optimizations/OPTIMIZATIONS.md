@@ -33,6 +33,11 @@ build rather than being quietly softened in the prose.
 | Read the descendant bitmask by bytes instead of peeling set bits | refactor | ACCEPTED | n/a | n/a |
 | Locate the insertion gap by bisecting instead of scanning from zero | refactor | ACCEPTED | n/a | n/a |
 | Apply damping above outdegree p instead of p+1 | algorithm | INCONCLUSIVE | -0.04% | +6.14% |
+| ECTD rank with own-cost weight gamma=0.5, beta=0.5 | algorithm | PROPOSED | -7.21% | -1.47% |
+| ECTD rank with own-cost weight gamma=1, beta=0.5 | algorithm | PROPOSED | -7.13% | -1.39% |
+| ECTD rank with own-cost weight gamma=2, beta=0.5 | algorithm | PROPOSED | -6.56% | -0.78% |
+| ECTD rank with own-cost weight gamma=0, beta=0.375 | algorithm | PROPOSED | -7.00% | -1.25% |
+| ECTD rank with own-cost weight gamma=0, beta=0.625 | algorithm | PROPOSED | -7.00% | -1.25% |
 | Replace descendant ranks with HEFT upward rank | algorithm | PROPOSED | -6.89% | -1.14% |
 | Replace descendant ranks with LSTD rank | algorithm | PROPOSED | -7.01% | -1.26% |
 | Replace descendant ranks with AEFT mean IOCT | algorithm | PROPOSED | -6.08% | -0.27% |
@@ -353,6 +358,161 @@ It must not be adopted on this basis, and it must not be adopted in combination 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
 
 ## Proposed, not yet measured
+
+### `ectd_succ_own_g0p5` — ECTD rank with own-cost weight gamma=0.5, beta=0.5
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p5_g0p5` = 1360.64 pooled, -7.21% vs `ECTD`, -1.47% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+gamma=0 is the control and reproduces the current best exactly, so the family contains its own baseline. beta is held at 0.5, the measured optimum, so gamma is the only thing varied in the main sweep.
+
+Stopping rule: if no gamma beats 1362.58, the own-cost principle has nothing left to give the rank and we stop with v:ectd_succ_max_0p5.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_own_g1` — ECTD rank with own-cost weight gamma=1, beta=0.5
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p5_g1` = 1361.85 pooled, -7.13% vs `ECTD`, -1.39% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected better than gamma=0.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+gamma=0 is the control and reproduces the current best exactly, so the family contains its own baseline. beta is held at 0.5, the measured optimum, so gamma is the only thing varied in the main sweep.
+
+Stopping rule: if no gamma beats 1362.58, the own-cost principle has nothing left to give the rank and we stop with v:ectd_succ_max_0p5.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_own_g2` — ECTD rank with own-cost weight gamma=2, beta=0.5
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p5_g2` = 1370.25 pooled, -6.56% vs `ECTD`, -0.78% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+gamma=0 is the control and reproduces the current best exactly, so the family contains its own baseline. beta is held at 0.5, the measured optimum, so gamma is the only thing varied in the main sweep.
+
+Stopping rule: if no gamma beats 1362.58, the own-cost principle has nothing left to give the rank and we stop with v:ectd_succ_max_0p5.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_own_b0p375` — ECTD rank with own-cost weight gamma=0, beta=0.375
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p375g0` = 1363.68 pooled, -7.00% vs `ECTD`, -1.25% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+gamma=0 is the control and reproduces the current best exactly, so the family contains its own baseline. beta is held at 0.5, the measured optimum, so gamma is the only thing varied in the main sweep.
+
+Stopping rule: if no gamma beats 1362.58, the own-cost principle has nothing left to give the rank and we stop with v:ectd_succ_max_0p5.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_own_b0p625` — ECTD rank with own-cost weight gamma=0, beta=0.625
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p625g0` = 1363.77 pooled, -7.00% vs `ECTD`, -1.25% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+gamma=0 is the control and reproduces the current best exactly, so the family contains its own baseline. beta is held at 0.5, the measured optimum, so gamma is the only thing varied in the main sweep.
+
+Stopping rule: if no gamma beats 1362.58, the own-cost principle has nothing left to give the rank and we stop with v:ectd_succ_max_0p5.
+
+**Evidence:** `docs/COMPLEXITY.md`
 
 ### `rank_heft` — Replace descendant ranks with HEFT upward rank
 
