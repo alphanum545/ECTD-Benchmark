@@ -436,10 +436,37 @@ re-parsed — comp matrix identical, comm matrix identical, `-1` count identical
 ### Genome 900 is synthesised
 
 Genome has 10 real levels; Montage and LIGO have 11. To make Set 1 uniform at 11,
-Genome's 900 is built with `_genome` from `ectd_real/gen_new.py`: n=901, 2,729
-edges, CCR 0.51, validates and scores. **It is the only level with no real source
-file behind it.** Its 5 cells were never measured and must be probed at build
-time.
+Genome's 900 is synthesised: n=901, 2,729 edges, CCR 0.51, validates and scores.
+**It is the only level with no real source file behind it.** Its 5 cells were
+never measured and must be probed at build time.
+
+**The original generator is not available.** This section previously said the
+level is built with `_genome` from `ectd_real/gen_new.py`. That file is
+referenced here and in §9 but **is not in this repo and was never committed**, so
+it cannot be run. `scripts/genome900.py` reconstructs a DAG satisfying the three
+declared properties instead, and verifies them rather than asserting them:
+
+| Property | Target | Reconstructed |
+|---|---:|---:|
+| nodes | 901 | 901 |
+| edges | 2,729 | 2,729 |
+| CCR | 0.51 | 0.5103 |
+
+Topology: one entry task → 450 stage-1 → 445 stage-2 (window 4) → 5 tail nodes
+(99 parents each, chained). 450 + 1,780 + 495 + 4 = 2,729.
+
+**The single entry task is load-bearing, not cosmetic.** A first reconstruction
+had 450 independent stage-1 roots and no entry. It had the right node and edge
+counts and a valid DAG, and then filled **0 of 7** winners at p=4 across all nine
+ladder rungs in 180 candidates. `Problem` normalises a multi-root graph by
+inserting a zero-cost dummy entry, and a dummy entry has nothing to duplicate —
+so entry duplication, the mechanism ECTD is built on, was inert. With one real
+entry the same cell fills 7/7 at rung 9. Any future regeneration of this level
+must keep a single real entry.
+
+Every instance built from this source is marked `synthesised: true` in the
+manifest under `synthesised_sources`, so the five Genome-900 cells can never be
+mistaken for measured corpus data.
 
 ---
 
@@ -455,7 +482,7 @@ time.
 Both outputs must be kept side by side and clearly labelled. Do not overwrite one
 with the other.
 
-### 8.1 Builder status (2026-11-26)
+### 8.1 Builder status (2026-11-26, rev. b)
 
 **The builder exists and is tested; neither variant has been built on the real
 corpus yet.**
@@ -470,13 +497,39 @@ corpus yet.**
   against the knobs actually applied.
 - `scripts/make_synth_sources.py` — synthetic D3 fixture at the real directory
   depth, so the pipeline runs without the 3.1 GB corpus.
+- `scripts/genome900.py` — the Genome 900 reconstruction (§7), with its declared
+  properties asserted in `main()`.
+- `scripts/_paths.py` — one place that resolves the package and the corpus, so
+  every script runs from any working directory.
 
-**What has been verified, on the synthetic fixture only:** 90 cells, 1,248
-instances across both variants, every instance re-parsed and validated under all
-six policies. B filled 90/90 cells with zero waivers; A filled 65/90 and waived
-102 instances. The A-vs-B behaviour is therefore confirmed qualitatively — A
-waives, B fills — but **no figure in §3, §4 or §5 is a build result.** They
-remain predictions from the measurement artifacts.
+**Path resolution was broken and is now fixed.** The scripts previously computed
+`ROOT = os.path.dirname(HERE)`, commented "the parent workspace". That is only
+true if the script sits at the repo root; these sit in `scripts/`, so `ROOT` was
+the repo and the package path became `<repo>/ECTD-Benchmark/ECTD-Benchmark`,
+which does not exist. They appeared to work only when launched from the repo
+root, because the current directory happened to be on `sys.path`. The three
+measurement scripts also wrote to `scripts/out/` rather than the committed
+`docs/measurements/`. Both are fixed; `_paths.py` now searches the plausible
+locations and honours `ECTD_DATA_ROOT`.
+
+**What has been verified, on the synthetic fixture only:** 95 cells (the fixture
+has 3 levels per family, not the real 10–11), 1,287 instances across both
+variants, every instance re-parsed and validated under all six policies.
+
+| | A — FORCE | B — KNOB LADDER |
+|---|---:|---:|
+| delivered | 578 | 709 |
+| winners / added | 490 / 88 | 614 / 95 |
+| waived | 137 | 6 |
+| cells filled | 65 of 95 | 94 of 95 |
+| realised ratio | 5.5682 | 6.4632 |
+| rung usage | all rung 1 | 1:558, 2:86, 3:23, 4:21, 5:13, 9:8 |
+
+The A-vs-B behaviour is confirmed qualitatively — A waives heavily, B fills — but
+**no figure in §3, §4 or §5 is a build result.** They remain predictions from the
+measurement artifacts. The fixture numbers above are a pipeline test, not a
+forecast of the real build: the fixture's levels are small (9–224 nodes) and its
+DAGs are synthetic, so its win rates have nothing to do with the real corpus.
 
 **What has not been done:** the real run. It needs the corpus and the 400-row
 base set, neither of which is in this repo. Until it runs, `delivered`,
