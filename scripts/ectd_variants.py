@@ -258,6 +258,67 @@ def v_rank_own_cost_nodamp(problem, insertion=True):
     return _schedule(problem, _mean_row(tail, p), tail, insertion)
 
 
+# ------------------------------------------- ECTD's own parameterised rank
+#
+# The v:rank_* variants above import another algorithm's priority order. That
+# solves the complexity problem but it is not a contribution: the resulting
+# policy is a baseline's rank with ECTD's scoring rule attached, and a reviewer
+# is entitled to say so. What follows is ECTD's own rank with its own parameter.
+#
+# The mechanism. ECTD's optimistic cost table is per processor: oct[i][q] is the
+# best-case cost of everything after task i, given i runs on q. Ordering tasks
+# requires collapsing that row to one number, and the collapse is a choice that
+# no other algorithm in the suite makes explicitly:
+#
+#     rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+#
+#   lam = 0    the max: assume the tail runs on its worst processor. A task
+#              whose tail is expensive somewhere is treated as urgent.
+#   lam = 1    the mean: what AEFT and IPPTS effectively use, and it measured
+#              1.0% worse than descendant_ranks.
+#   lam > 1    below the mean, toward the min: assume the tail lands well.
+#
+# So lam is a single knob on how much per-processor pessimism the ordering keeps.
+# The claim to test is that lam < 1 orders better than the mean, because a task
+# that is expensive on its worst processor is more urgent than its average
+# suggests. That is ECTD's own table and ECTD's own claim, and lam is the
+# parameter the algorithm gets to have.
+
+def ectd_rank(problem, lam):
+    """ECTD's own priority order: a lam-blend of the max and mean of its OCT.
+
+    O(e p) to build the table plus O(n p) to collapse it, so it clears O(n^2 p)
+    with no descendant set and no imported rank.
+    """
+    p = problem.p
+    oct_table, _cps = optimistic_cost_table(problem)
+    ranks = [0.0] * problem.n
+    for i in range(problem.n):
+        row = oct_table[i]
+        high = max(row)
+        mean = sum(row) / p
+        ranks[i] = high + lam * (mean - high)
+    return ranks
+
+
+def _ectd_lam(lam):
+    def policy(problem, insertion=True):
+        return _own_cost_damped_with_ranks(problem, ectd_rank(problem, lam), insertion)
+    policy.__name__ = "v_ectd_lam_%s" % ("%g" % lam).replace(".", "p")
+    return policy
+
+
+# The sweep. lam = 1 is the mean, which is the aggregation the baselines use, so
+# it doubles as the control: if the family does not beat lam = 1 it has not
+# demonstrated anything. lam = 0 is the pure max.
+ECTD_LAMBDAS = (0.0, 0.25, 0.5, 0.75, 1.0)
+
+ECTD_LAM_VARIANTS = {
+    "v:ectd_lam_%s" % ("%g" % lam).replace(".", "p"): _ectd_lam(lam)
+    for lam in ECTD_LAMBDAS
+}
+
+
 RANK_VARIANTS = {
     "v:rank_heft": v_rank_heft,
     "v:rank_lstd": v_rank_lstd,
@@ -270,3 +331,4 @@ RANK_VARIANTS = {
 }
 
 VARIANTS.update(RANK_VARIANTS)
+VARIANTS.update(ECTD_LAM_VARIANTS)

@@ -431,6 +431,326 @@
       }
     },
     {
+      "id": "ectd_lam_0",
+      "title": "ECTD rank with lam = 0: pure max of the OCT row",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0 is expected worse than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "",
+        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
+        "is what the baselines use. If the family does not beat lam = 1 it has",
+        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "",
+        "Selection criterion, stated before the measurement: best pooled score",
+        "against v:own_cost_damped, with the three families carrying 91.4% of the",
+        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
+        "a constraint column, not the objective."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_0p25",
+      "title": "ECTD rank with lam = 0.25: quarter-way from max toward mean",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0p25"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0.25 is expected better than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "",
+        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
+        "is what the baselines use. If the family does not beat lam = 1 it has",
+        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "",
+        "Selection criterion, stated before the measurement: best pooled score",
+        "against v:own_cost_damped, with the three families carrying 91.4% of the",
+        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
+        "a constraint column, not the objective."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_0p5",
+      "title": "ECTD rank with lam = 0.5: halfway from max toward mean",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0.5 is expected better than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "",
+        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
+        "is what the baselines use. If the family does not beat lam = 1 it has",
+        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "",
+        "Selection criterion, stated before the measurement: best pooled score",
+        "against v:own_cost_damped, with the three families carrying 91.4% of the",
+        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
+        "a constraint column, not the objective."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_0p75",
+      "title": "ECTD rank with lam = 0.75: three-quarters from max toward mean",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0p75"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0.75 is expected better than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "",
+        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
+        "is what the baselines use. If the family does not beat lam = 1 it has",
+        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "",
+        "Selection criterion, stated before the measurement: best pooled score",
+        "against v:own_cost_damped, with the three families carrying 91.4% of the",
+        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
+        "a constraint column, not the objective."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_1",
+      "title": "ECTD rank with lam = 1: the mean, which is the control",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 1 is expected worse than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "",
+        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
+        "is what the baselines use. If the family does not beat lam = 1 it has",
+        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "",
+        "Selection criterion, stated before the measurement: best pooled score",
+        "against v:own_cost_damped, with the three families carrying 91.4% of the",
+        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
+        "a constraint column, not the objective."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
       "id": "rank_heft",
       "title": "Replace descendant ranks with HEFT upward rank",
       "kind": "algorithm",
