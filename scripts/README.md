@@ -44,9 +44,9 @@ either bring those three directories across or point `ROOT` at wherever they liv
 | Script | Purpose | Output |
 |---|---|---|
 | `measure_cell_rates.py` | ECTD win rate per (family, level, p) across 235 cells, 2 sources × 12 seeds | `../docs/measurements/cell_rates.json` |
-| `probe_ladder.py` | Tests the first 4 ladder rungs on the 104 dead cells | `../docs/measurements/ladder_probe.json` |
-| `probe_ladder2.py` | Tests 4 further rungs on the 27 cells that survived the first pass | `../docs/measurements/ladder_probe2.json` |
-| `compare_search.py` | Escalating ladder vs free random search: candidates needed and drift from source | `../docs/measurements/search_compare.json` |
+| `probe_ladder.py` | Tests ladder rungs 1–4 on the 104 dead cells | `../docs/measurements/ladder_probe.json` |
+| `probe_ladder2.py` | Tests rungs 5–8 on the 27 cells that survived the first pass | `../docs/measurements/ladder_probe2.json` |
+| `compare_search.py` | Escalating ladder (σ=1.0, ×64) vs free random search: candidates needed and drift from source | `../docs/measurements/search_compare.json` |
 
 ## Reproducing the headline numbers
 
@@ -77,19 +77,26 @@ JSON exactly.
 | 32 | 35/47 |
 | 64 | 43/47 |
 
-**Ladder coverage** — all 104 dead cells fill, but only 6 at the baseline rung:
+**Ladder coverage** — all 104 dead cells fill. Only 6 fill at the baseline rung;
+27 need ×16 or beyond.
 
-| Rung | σ | comm_scale | Cells filled |
-|---:|---:|---:|---:|
-| 1 | 0.18 | ×1 | 6 |
-| 2 | 0.35 | ×4 | 47 |
-| 3 | 0.6 | ×4 | 9 |
-| 4 | 0.6 | ×8 | 15 |
-| 5 | 0.6 | ×16 | 15 |
-| 6 | 1.0 | ×8 | 0 |
-| 7 | 1.0 | ×16 | 1 |
-| 8 | 1.0 | ×32 | 8 |
-| 9 | 1.0 | ×64 | 3 |
+| Rung | σ | comm_scale | Cells filled | Artifact |
+|---:|---:|---:|---:|---|
+| 1 | 0.18 | ×1 | 6 | `ladder_probe.json` |
+| 2 | 0.35 | ×4 | 47 | `ladder_probe.json` |
+| 3 | 0.6 | ×4 | 9 | `ladder_probe.json` |
+| 4 | 0.6 | ×8 | 15 | `ladder_probe.json` |
+| 5 | 0.6 | ×16 | 15 | `ladder_probe2.json` |
+| 6 | 1.0 | ×8 | 0 | `ladder_probe2.json` |
+| 7 | 1.0 | ×16 | 1 | `ladder_probe2.json` |
+| 8 | 1.0 | ×32 | 8 | `ladder_probe2.json` |
+| 9 | 1.0 | ×64 | 3 | `search_compare.json` |
+
+> **Note on rung 9.** `probe_ladder2.py` stops at ×32, so it records the three
+> cells rung 9 fills as `wins=0, cand=0` — never filled *within the rungs it
+> tested*. Rung 9's evidence is in `compare_search.json`, whose ladder arm is
+> hardcoded to σ=1.0 / ×64. Rungs 1–8 fill 101 cells; their residue is exactly
+> the 3 that rung 9 fills. See `../measurements/VERIFICATION.md` §2.
 
 **Ladder vs free search** — ladder fills 5/5 test cells at drift 0.65–0.68;
 free search fills 3/5 at drift 1.74–1.79.
