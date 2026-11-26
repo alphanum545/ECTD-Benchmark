@@ -249,6 +249,94 @@ def main():
             ) + "\n")
         print("\nwrote %s (%d rows)"
               % (os.path.join(args.out, "winners_ectd.csv"), len(ectd)))
+
+        # Ranking of all six policies restricted to the instances ECTD is
+        # at-or-best on. This is a CONDITIONAL slice, not a global ranking:
+        # the set is selected by ECTD's own result, so ECTD leads by
+        # construction. What it measures is the gap to each rival inside
+        # ECTD's winning regime, which is what "who is second" means here.
+        win_ids = {d["id"] for d in ectd}
+        subset = [r for r in scored if r["id"] in win_ids]
+        sub_pooled = {p: geomean([r["makespan"][p] for r in subset
+                                  if r["makespan"].get(p) and r["valid"].get(p)])
+                      for p in policies}
+        sub_ranked = sorted((p for p in policies if sub_pooled[p]),
+                            key=lambda p: sub_pooled[p])
+        sub_best = sub_pooled[sub_ranked[0]] if sub_ranked else None
+
+        rank_rows = []
+        rank_sum = collections.Counter()
+        second = collections.Counter()
+        dist = {p: collections.Counter() for p in policies}
+        for r in subset:
+            live = {p: r["makespan"][p] for p in policies
+                    if r["makespan"].get(p) and r["valid"].get(p)}
+            if not live:
+                continue
+            order = sorted(live, key=lambda p: (live[p], p))
+            for i, p in enumerate(order):
+                rank_sum[p] += i + 1
+                dist[p][i + 1] += 1
+                if i == 1:
+                    second[p] += 1
+            rank_rows.append((r, live, order))
+        n_rows = len(rank_rows) or 1
+
+        print("\n=== Ranking on the %d instances where ECTD is at-or-best ===" % len(ectd))
+        print("conditional slice: ECTD is at-or-best on every row by construction")
+        print("%-8s %12s %10s %10s %6s" % ("policy", "pooled", "vs ECTD", "mean rank", "2nd"))
+        for p in sub_ranked:
+            gap = 100.0 * (sub_pooled[p] - sub_best) / sub_best if sub_best else 0.0
+            print("%-8s %12.2f %9.2f%% %10.3f %6d"
+                  % (p, sub_pooled[p], gap, rank_sum[p] / float(n_rows), second[p]))
+
+        print("\nrank distribution (1=best) on the subset:")
+        print("  %-8s %s" % ("policy", " ".join("%5d" % k for k in range(1, len(policies) + 1))))
+        for p in sub_ranked:
+            print("  %-8s %s" % (p, " ".join("%5d" % dist[p].get(k, 0)
+                                              for k in range(1, len(policies) + 1))))
+
+        for label, key in (("family", "family"), ("processors", "p")):
+            print("\nby %s (pooled order on the subset):" % label)
+            groups = sorted({str(r.get(key, "")) for r, _, _ in rank_rows})
+            for g in groups:
+                g_rows = [r for r, _, _ in rank_rows if str(r.get(key, "")) == g]
+                gp = {p: geomean([r["makespan"][p] for r in g_rows
+                                  if r["makespan"].get(p) and r["valid"].get(p)])
+                      for p in policies}
+                go = sorted((p for p in policies if gp[p]), key=lambda p: gp[p])
+                print("  %-10s n=%-4d %s" % (g, len(g_rows),
+                      " > ".join("%s(%.1f)" % (p, gp[p]) for p in go)))
+
+        # Per-instance table: the order string plus every makespan, so the
+        # ranking above is reproducible from one small file.
+        rank_header = (["id", "family", "level", "p", "order"]
+                       + ["%s_makespan" % p for p in sub_ranked])
+        rank_lines = [",".join(rank_header)]
+        for r, live, order in sorted(rank_rows, key=lambda t: (t[0].get("family", ""),
+                                                              str(t[0].get("level", "")),
+                                                              t[0].get("p", 0), t[0]["id"])):
+            rank_lines.append(",".join(
+                [str(r["id"]), r.get("family", ""), str(r.get("level", "")),
+                 str(r.get("p", "")), ">".join(order)]
+                + ["%.6f" % live[p] if p in live else "" for p in sub_ranked]))
+        with open(os.path.join(args.out, "ranking_on_ectd_wins.csv"), "w") as fh:
+            fh.write("\n".join(rank_lines) + "\n")
+        print("\nwrote %s (%d rows)"
+              % (os.path.join(args.out, "ranking_on_ectd_wins.csv"), len(rank_rows)))
+
+        summary["ectd_wins_slice"] = {
+            "instances": len(rank_rows),
+            "note": "conditional slice: ECTD is at-or-best on every row by construction",
+            "ranking": sub_ranked,
+            "pooled_geomean_makespan": {p: round(sub_pooled[p], 2) for p in sub_ranked},
+            "pct_over_ectd": {p: round(100.0 * (sub_pooled[p] - sub_best) / sub_best, 2)
+                              for p in sub_ranked if sub_best},
+            "mean_rank": {p: round(rank_sum[p] / float(n_rows), 4) for p in sub_ranked},
+            "rank2_count": {p: second.get(p, 0) for p in sub_ranked},
+        }
+        with open(os.path.join(args.out, "summary.json"), "w") as fh:
+            json.dump(summary, fh, indent=1, sort_keys=True)
     return 0
 
 
