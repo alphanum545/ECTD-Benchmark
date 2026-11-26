@@ -434,7 +434,7 @@
       "id": "ectd_succ_max_0p25",
       "title": "ECTD successor accumulation (max, beta=0.25)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "accepted",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -471,20 +471,20 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "better",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1365.27, better than descendant_ranks 1366.94 (-0.122%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1365.27 against descendant_ranks 1366.94.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -494,7 +494,7 @@
       "id": "ectd_succ_max_0p5",
       "title": "ECTD successor accumulation (max, beta=0.5)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "accepted",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -531,20 +531,47 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "better",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1362.58, better than descendant_ranks 1366.94 (-0.319%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Accepted. Best pooled result measured on this corpus: 1362.58, which is",
+        "-0.319% vs descendant_ranks, -1.353% vs AEFT, and better than the",
+        "borrowed LSTD rank at 1363.59. It also clears O(n^2 p) worst case in n,",
+        "so the complexity requirement and the quality objective agree.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The mechanism survived. lam varied the LEVEL of one OCT row and failed;",
+        "beta varies downstream influence and works. The max form at beta=0.5",
+        "beats the mean control (lam=1, 1369.78) by 0.53% and descendant_ranks",
+        "by 0.32%. So what descendant_ranks was buying is downstream influence,",
+        "and a cheap OCT-weighted critical-successor recurrence recovers most of",
+        "it without a transitive closure.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "The curve has an interior optimum: beta=0.25 gives 1365.27, beta=0.5",
+        "gives 1362.58, beta=1 gives 1365.48, beta=2 gives 1370.01. That shape",
+        "is what a real effect looks like; a lucky point would not have smooth",
+        "neighbours on both sides. The optimum being near 0.5 rather than 1",
+        "says the base OCT already carries much of the influence, so adding all",
+        "of the successor rank overshoots.",
+        "",
+        "The sum form is rejected at every beta (1372-1377): double-counting",
+        "shared successors is too crude. That is informative. It means the",
+        "distinctness that descendant_ranks pays O(n^3/w) for is partly real,",
+        "but the max form captures enough of it at O(e p).",
+        "",
+        "Per family vs descendant_ranks: Montage +0.31%, Genome -0.21%, LIGO",
+        "-0.65%, FFT -0.09%, GE -2.26%, LA -2.79%. Instance-weighted over the",
+        "three families carrying 91.4% of the corpus, that is -0.185%, so the",
+        "gain is on the bulk of the corpus and not bought by sacrificing it.",
+        "",
+        "Caveat: 41 strict wins versus 70 for descendant_ranks. The pooled gain",
+        "comes from many small improvements rather than more outright wins, and",
+        "the shared-win count falls accordingly. That is worth stating in the",
+        "paper rather than quoting only the pooled number.",
+        "",
+        "This is ECTD's own parameter: the node weight is ECTD's OCT table and",
+        "beta is new. Nothing is imported from another algorithm."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -554,7 +581,7 @@
       "id": "ectd_succ_max_1",
       "title": "ECTD successor accumulation (max, beta=1)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "accepted",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -591,20 +618,20 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "better",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1365.48, better than descendant_ranks 1366.94 (-0.107%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1365.48 against descendant_ranks 1366.94.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -614,7 +641,7 @@
       "id": "ectd_succ_max_2",
       "title": "ECTD successor accumulation (max, beta=2)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -651,20 +678,20 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1370.01, worse than descendant_ranks 1366.94 (+0.225%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1370.01 against descendant_ranks 1366.94.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -674,7 +701,7 @@
       "id": "ectd_succ_sum_0p25",
       "title": "ECTD successor accumulation (sum, beta=0.25)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -711,20 +738,20 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1376.64, worse than descendant_ranks 1366.94 (+0.710%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1376.64 against descendant_ranks 1366.94.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -734,7 +761,7 @@
       "id": "ectd_succ_sum_0p5",
       "title": "ECTD successor accumulation (sum, beta=0.5)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -771,20 +798,20 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1375.50, worse than descendant_ranks 1366.94 (+0.626%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1375.50 against descendant_ranks 1366.94.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -794,7 +821,7 @@
       "id": "ectd_succ_sum_1",
       "title": "ECTD successor accumulation (sum, beta=1)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -831,20 +858,20 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1372.07, worse than descendant_ranks 1366.94 (+0.375%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1372.07 against descendant_ranks 1366.94.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -854,7 +881,7 @@
       "id": "ectd_succ_sum_2",
       "title": "ECTD successor accumulation (sum, beta=2)",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_successor_rank",
@@ -891,20 +918,20 @@
         "statement": "Expected to beat descendant_ranks by restoring downstream influence."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1372.75, worse than descendant_ranks 1366.94 (+0.425%)."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1372.75 against descendant_ranks 1366.94.",
         "",
-        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
-        "graphs, so the family contains its own baseline. max and sum differ as",
-        "expected. The orderings change with beta.",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
         "",
-        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
-        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
-        "ECTD's contribution is the scoring rule and not the ordering."
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"

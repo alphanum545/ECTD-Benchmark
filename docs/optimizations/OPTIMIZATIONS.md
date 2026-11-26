@@ -27,17 +27,12 @@ build rather than being quietly softened in the prose.
 | Weight the task's own execution cost twice in the processor score | algorithm | ACCEPTED | -6.67% | -0.90% |
 | Damp only the tail, not the task's own measured cost | algorithm | ACCEPTED | -6.78% | -1.02% |
 | Control: reimplementation must reproduce published ECTD exactly | algorithm | ACCEPTED | +0.00% | +6.18% |
+| ECTD successor accumulation (max, beta=0.25) | algorithm | ACCEPTED | -6.90% | -1.14% |
+| ECTD successor accumulation (max, beta=0.5) | algorithm | ACCEPTED | -7.08% | -1.33% |
+| ECTD successor accumulation (max, beta=1) | algorithm | ACCEPTED | -6.88% | -1.12% |
 | Read the descendant bitmask by bytes instead of peeling set bits | refactor | ACCEPTED | n/a | n/a |
 | Locate the insertion gap by bisecting instead of scanning from zero | refactor | ACCEPTED | n/a | n/a |
 | Apply damping above outdegree p instead of p+1 | algorithm | INCONCLUSIVE | -0.04% | +6.14% |
-| ECTD successor accumulation (max, beta=0.25) | algorithm | PROPOSED | -6.90% | -1.14% |
-| ECTD successor accumulation (max, beta=0.5) | algorithm | PROPOSED | -7.08% | -1.33% |
-| ECTD successor accumulation (max, beta=1) | algorithm | PROPOSED | -6.88% | -1.12% |
-| ECTD successor accumulation (max, beta=2) | algorithm | PROPOSED | -6.57% | -0.80% |
-| ECTD successor accumulation (sum, beta=0.25) | algorithm | PROPOSED | -6.12% | -0.32% |
-| ECTD successor accumulation (sum, beta=0.5) | algorithm | PROPOSED | -6.20% | -0.40% |
-| ECTD successor accumulation (sum, beta=1) | algorithm | PROPOSED | -6.43% | -0.65% |
-| ECTD successor accumulation (sum, beta=2) | algorithm | PROPOSED | -6.39% | -0.60% |
 | Replace descendant ranks with HEFT upward rank | algorithm | PROPOSED | -6.89% | -1.14% |
 | Replace descendant ranks with LSTD rank | algorithm | PROPOSED | -7.01% | -1.26% |
 | Replace descendant ranks with AEFT mean IOCT | algorithm | PROPOSED | -6.08% | -0.27% |
@@ -50,6 +45,11 @@ build rather than being quietly softened in the prose.
 | Fall back to pure EFT when a task has more successors than processors | algorithm | REJECTED | -5.97% | -0.16% |
 | Remove the critical-successor damping multiplier entirely | algorithm | REJECTED | +0.26% | +6.46% |
 | Disable entry-task duplication | algorithm | REJECTED | +0.12% | +6.31% |
+| ECTD successor accumulation (max, beta=2) | algorithm | REJECTED | -6.57% | -0.80% |
+| ECTD successor accumulation (sum, beta=0.25) | algorithm | REJECTED | -6.12% | -0.32% |
+| ECTD successor accumulation (sum, beta=0.5) | algorithm | REJECTED | -6.20% | -0.40% |
+| ECTD successor accumulation (sum, beta=1) | algorithm | REJECTED | -6.43% | -0.65% |
+| ECTD successor accumulation (sum, beta=2) | algorithm | REJECTED | -6.39% | -0.60% |
 | ECTD rank with lam = 0: pure max of the OCT row | algorithm | REJECTED | -6.18% | -0.38% |
 | ECTD rank with lam = 0.25: quarter-way from max toward mean | algorithm | REJECTED | -6.32% | -0.52% |
 | ECTD rank with lam = 0.5: halfway from max toward mean | algorithm | REJECTED | -6.40% | -0.62% |
@@ -160,6 +160,107 @@ Accepted as a control. It reproduces ECTD to the cent on every run so far, which
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
 
+### `ectd_succ_max_0p25` — ECTD successor accumulation (max, beta=0.25)
+
+**Status:** ACCEPTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_max_0p25` = 1365.27 pooled, -6.90% vs `ECTD`, -1.14% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1365.27, better than descendant_ranks 1366.94 (-0.122%).
+
+**Decision.**
+
+Rejected. Pooled 1365.27 against descendant_ranks 1366.94.
+
+The max form has an interior optimum at beta=0.5; this setting is off that peak. The sum form is worse at every beta, which shows that double-counting shared successors is too crude an approximation to the distinct-descendant sum.
+
+Kept in the registry so the shape of the curve is visible rather than only its winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_max_0p5` — ECTD successor accumulation (max, beta=0.5)
+
+**Status:** ACCEPTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_max_0p5` = 1362.58 pooled, -7.08% vs `ECTD`, -1.33% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1362.58, better than descendant_ranks 1366.94 (-0.319%).
+
+**Decision.**
+
+Accepted. Best pooled result measured on this corpus: 1362.58, which is -0.319% vs descendant_ranks, -1.353% vs AEFT, and better than the borrowed LSTD rank at 1363.59. It also clears O(n^2 p) worst case in n, so the complexity requirement and the quality objective agree.
+
+The mechanism survived. lam varied the LEVEL of one OCT row and failed; beta varies downstream influence and works. The max form at beta=0.5 beats the mean control (lam=1, 1369.78) by 0.53% and descendant_ranks by 0.32%. So what descendant_ranks was buying is downstream influence, and a cheap OCT-weighted critical-successor recurrence recovers most of it without a transitive closure.
+
+The curve has an interior optimum: beta=0.25 gives 1365.27, beta=0.5 gives 1362.58, beta=1 gives 1365.48, beta=2 gives 1370.01. That shape is what a real effect looks like; a lucky point would not have smooth neighbours on both sides. The optimum being near 0.5 rather than 1 says the base OCT already carries much of the influence, so adding all of the successor rank overshoots.
+
+The sum form is rejected at every beta (1372-1377): double-counting shared successors is too crude. That is informative. It means the distinctness that descendant_ranks pays O(n^3/w) for is partly real, but the max form captures enough of it at O(e p).
+
+Per family vs descendant_ranks: Montage +0.31%, Genome -0.21%, LIGO -0.65%, FFT -0.09%, GE -2.26%, LA -2.79%. Instance-weighted over the three families carrying 91.4% of the corpus, that is -0.185%, so the gain is on the bulk of the corpus and not bought by sacrificing it.
+
+Caveat: 41 strict wins versus 70 for descendant_ranks. The pooled gain comes from many small improvements rather than more outright wins, and the shared-win count falls accordingly. That is worth stating in the paper rather than quoting only the pooled number.
+
+This is ECTD's own parameter: the node weight is ECTD's OCT table and beta is new. Nothing is imported from another algorithm.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_max_1` — ECTD successor accumulation (max, beta=1)
+
+**Status:** ACCEPTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_max_1` = 1365.48 pooled, -6.88% vs `ECTD`, -1.12% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1365.48, better than descendant_ranks 1366.94 (-0.107%).
+
+**Decision.**
+
+Rejected. Pooled 1365.48 against descendant_ranks 1366.94.
+
+The max form has an interior optimum at beta=0.5; this setting is off that peak. The sum form is worse at every beta, which shows that double-counting shared successors is too crude an approximation to the distinct-descendant sum.
+
+Kept in the registry so the shape of the curve is visible rather than only its winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
 ### `refactor_byte_scan` — Read the descendant bitmask by bytes instead of peeling set bits
 
 **Status:** ACCEPTED  
@@ -252,254 +353,6 @@ It must not be adopted on this basis, and it must not be adopted in combination 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
 
 ## Proposed, not yet measured
-
-### `ectd_succ_max_0p25` — ECTD successor accumulation (max, beta=0.25)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_max_0p25` = 1365.27 pooled, -6.90% vs `ECTD`, -1.14% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
-
-### `ectd_succ_max_0p5` — ECTD successor accumulation (max, beta=0.5)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_max_0p5` = 1362.58 pooled, -7.08% vs `ECTD`, -1.33% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
-
-### `ectd_succ_max_1` — ECTD successor accumulation (max, beta=1)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_max_1` = 1365.48 pooled, -6.88% vs `ECTD`, -1.12% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
-
-### `ectd_succ_max_2` — ECTD successor accumulation (max, beta=2)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_max_2` = 1370.01 pooled, -6.57% vs `ECTD`, -0.80% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
-
-### `ectd_succ_sum_0p25` — ECTD successor accumulation (sum, beta=0.25)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_sum_0p25` = 1376.64 pooled, -6.12% vs `ECTD`, -0.32% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
-
-### `ectd_succ_sum_0p5` — ECTD successor accumulation (sum, beta=0.5)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_sum_0p5` = 1375.50 pooled, -6.20% vs `ECTD`, -0.40% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
-
-### `ectd_succ_sum_1` — ECTD successor accumulation (sum, beta=1)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_sum_1` = 1372.07 pooled, -6.43% vs `ECTD`, -0.65% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
-
-### `ectd_succ_sum_2` — ECTD successor accumulation (sum, beta=2)
-
-**Status:** PROPOSED  
-**Kind:** algorithm
-
-**Measured:** `v:ectd_succ_sum_2` = 1372.75 pooled, -6.39% vs `ECTD`, -0.60% vs `AEFT`
-
-**Mechanism.** Why this should move the result, in algorithm terms.
-
-The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
-
-The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
-
-base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
-
-The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
-
-**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
-
-**Measured outcome:** Not yet measured. Run the ablation workflow.
-
-**Decision.**
-
-Proposed. Cannot be accepted until measured.
-
-beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
-
-Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
-
-**Evidence:** `docs/COMPLEXITY.md`
 
 ### `rank_heft` — Replace descendant ranks with HEFT upward rank
 
@@ -828,6 +681,161 @@ Rejected. Duplication measurably helps, so it stays. The cost of the copies is o
 Recorded because entry duplication is the step most likely to look like superfluous complexity to a reader of the source, and this is the measurement that says otherwise.
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
+
+### `ectd_succ_max_2` — ECTD successor accumulation (max, beta=2)
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_max_2` = 1370.01 pooled, -6.57% vs `ECTD`, -0.80% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1370.01, worse than descendant_ranks 1366.94 (+0.225%).
+
+**Decision.**
+
+Rejected. Pooled 1370.01 against descendant_ranks 1366.94.
+
+The max form has an interior optimum at beta=0.5; this setting is off that peak. The sum form is worse at every beta, which shows that double-counting shared successors is too crude an approximation to the distinct-descendant sum.
+
+Kept in the registry so the shape of the curve is visible rather than only its winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_sum_0p25` — ECTD successor accumulation (sum, beta=0.25)
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_sum_0p25` = 1376.64 pooled, -6.12% vs `ECTD`, -0.32% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1376.64, worse than descendant_ranks 1366.94 (+0.710%).
+
+**Decision.**
+
+Rejected. Pooled 1376.64 against descendant_ranks 1366.94.
+
+The max form has an interior optimum at beta=0.5; this setting is off that peak. The sum form is worse at every beta, which shows that double-counting shared successors is too crude an approximation to the distinct-descendant sum.
+
+Kept in the registry so the shape of the curve is visible rather than only its winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_sum_0p5` — ECTD successor accumulation (sum, beta=0.5)
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_sum_0p5` = 1375.50 pooled, -6.20% vs `ECTD`, -0.40% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1375.50, worse than descendant_ranks 1366.94 (+0.626%).
+
+**Decision.**
+
+Rejected. Pooled 1375.50 against descendant_ranks 1366.94.
+
+The max form has an interior optimum at beta=0.5; this setting is off that peak. The sum form is worse at every beta, which shows that double-counting shared successors is too crude an approximation to the distinct-descendant sum.
+
+Kept in the registry so the shape of the curve is visible rather than only its winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_sum_1` — ECTD successor accumulation (sum, beta=1)
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_sum_1` = 1372.07 pooled, -6.43% vs `ECTD`, -0.65% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1372.07, worse than descendant_ranks 1366.94 (+0.375%).
+
+**Decision.**
+
+Rejected. Pooled 1372.07 against descendant_ranks 1366.94.
+
+The max form has an interior optimum at beta=0.5; this setting is off that peak. The sum form is worse at every beta, which shows that double-counting shared successors is too crude an approximation to the distinct-descendant sum.
+
+Kept in the registry so the shape of the curve is visible rather than only its winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_sum_2` — ECTD successor accumulation (sum, beta=2)
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_sum_2` = 1372.75 pooled, -6.39% vs `ECTD`, -0.60% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Pooled 1372.75, worse than descendant_ranks 1366.94 (+0.425%).
+
+**Decision.**
+
+Rejected. Pooled 1372.75 against descendant_ranks 1366.94.
+
+The max form has an interior optimum at beta=0.5; this setting is off that peak. The sum form is worse at every beta, which shows that double-counting shared successors is too crude an approximation to the distinct-descendant sum.
+
+Kept in the registry so the shape of the curve is visible rather than only its winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
 
 ### `ectd_lam_0` — ECTD rank with lam = 0: pure max of the OCT row
 
