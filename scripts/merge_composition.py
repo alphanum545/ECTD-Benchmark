@@ -137,7 +137,7 @@ def main():
     ap.add_argument("--variant", choices=("A", "B", "both"), default="both")
     args = ap.parse_args()
 
-    shard_dirs = sorted(glob.glob(os.path.join(args.shards, "shard-*")))
+    shard_dirs = sorted(glob.glob(os.path.join(args.shards, "comp-shard-*")))
     if len(shard_dirs) != args.expected_shards:
         raise SystemExit("expected %d shard dirs, found %d"
                          % (args.expected_shards, len(shard_dirs)))
