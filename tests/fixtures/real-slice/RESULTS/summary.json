@@ -1,0 +1,134 @@
+{
+ "by_family": {
+  "GE": {
+   "instances": 6,
+   "pooled": {
+    "AEFT": 297.48489004200803,
+    "BPPTS": 303.5717275204781,
+    "ECTD": 276.2147788058002,
+    "HEFT": 303.11116108919924,
+    "IPEFT": 288.75648991354194,
+    "LSTD": 285.33717882977584
+   },
+   "wins": {
+    "AEFT": 2,
+    "BPPTS": 0,
+    "ECTD": 4,
+    "HEFT": 1,
+    "IPEFT": 2,
+    "LSTD": 2
+   }
+  },
+  "LA": {
+   "instances": 6,
+   "pooled": {
+    "AEFT": 274.5228511608472,
+    "BPPTS": 264.1840800676693,
+    "ECTD": 258.5865121129875,
+    "HEFT": 284.21925952309977,
+    "IPEFT": 279.93915475537636,
+    "LSTD": 291.18198327149696
+   },
+   "wins": {
+    "AEFT": 1,
+    "BPPTS": 2,
+    "ECTD": 3,
+    "HEFT": 2,
+    "IPEFT": 1,
+    "LSTD": 0
+   }
+  }
+ },
+ "by_processors": {
+  "2": {
+   "instances": 4,
+   "pooled": {
+    "AEFT": 326.62622547771736,
+    "BPPTS": 347.63955618347154,
+    "ECTD": 318.78309621612664,
+    "HEFT": 333.48982654019613,
+    "IPEFT": 331.0729501608344,
+    "LSTD": 341.5246332999339
+   }
+  },
+  "4": {
+   "instances": 4,
+   "pooled": {
+    "AEFT": 292.6071478120928,
+    "BPPTS": 285.505811399602,
+    "ECTD": 274.5740068389059,
+    "HEFT": 307.1955729401794,
+    "IPEFT": 293.84134061124456,
+    "LSTD": 284.1035465829383
+   }
+  },
+  "8": {
+   "instances": 4,
+   "pooled": {
+    "AEFT": 244.19070897444067,
+    "BPPTS": 228.8272853092302,
+    "ECTD": 218.0843314028586,
+    "HEFT": 246.82298780090105,
+    "IPEFT": 236.24167098480345,
+    "LSTD": 246.82298780090105
+   }
+  }
+ },
+ "errors": [],
+ "instances_failed": 0,
+ "instances_scored": 12,
+ "invalid_schedules": {
+  "AEFT": 0,
+  "BPPTS": 0,
+  "ECTD": 0,
+  "HEFT": 0,
+  "IPEFT": 0,
+  "LSTD": 0
+ },
+ "pct_over_best": {
+  "AEFT": 6.93,
+  "BPPTS": 5.96,
+  "ECTD": 0.0,
+  "HEFT": 9.83,
+  "IPEFT": 6.38,
+  "LSTD": 7.85
+ },
+ "policies": [
+  "AEFT",
+  "BPPTS",
+  "ECTD",
+  "HEFT",
+  "IPEFT",
+  "LSTD"
+ ],
+ "pooled_geomean_makespan": {
+  "AEFT": 285.77,
+  "BPPTS": 283.19,
+  "ECTD": 267.26,
+  "HEFT": 293.51,
+  "IPEFT": 284.31,
+  "LSTD": 288.24
+ },
+ "ranking": [
+  "ECTD",
+  "BPPTS",
+  "IPEFT",
+  "AEFT",
+  "LSTD",
+  "HEFT"
+ ],
+ "shared_wins": {
+  "BPPTS": 1,
+  "ECTD": 6,
+  "HEFT": 2,
+  "IPEFT": 3,
+  "LSTD": 2
+ },
+ "strict_wins": {
+  "AEFT": 3,
+  "BPPTS": 1,
+  "ECTD": 1,
+  "HEFT": 1
+ },
+ "title": "ECTD benchmark on the real six-family corpus"
+}
