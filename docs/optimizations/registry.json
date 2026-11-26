@@ -431,6 +431,291 @@
       }
     },
     {
+      "id": "ectd_succ_own_g0p5",
+      "title": "ECTD rank with own-cost weight gamma=0.5, beta=0.5",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p5_g0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "gamma=0 is the control and reproduces the current best exactly, so the",
+        "family contains its own baseline. beta is held at 0.5, the measured",
+        "optimum, so gamma is the only thing varied in the main sweep.",
+        "",
+        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
+        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_g1",
+      "title": "ECTD rank with own-cost weight gamma=1, beta=0.5",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p5_g1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected better than gamma=0."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "gamma=0 is the control and reproduces the current best exactly, so the",
+        "family contains its own baseline. beta is held at 0.5, the measured",
+        "optimum, so gamma is the only thing varied in the main sweep.",
+        "",
+        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
+        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_g2",
+      "title": "ECTD rank with own-cost weight gamma=2, beta=0.5",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p5_g2"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "gamma=0 is the control and reproduces the current best exactly, so the",
+        "family contains its own baseline. beta is held at 0.5, the measured",
+        "optimum, so gamma is the only thing varied in the main sweep.",
+        "",
+        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
+        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_b0p375",
+      "title": "ECTD rank with own-cost weight gamma=0, beta=0.375",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p375g0"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "gamma=0 is the control and reproduces the current best exactly, so the",
+        "family contains its own baseline. beta is held at 0.5, the measured",
+        "optimum, so gamma is the only thing varied in the main sweep.",
+        "",
+        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
+        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_b0p625",
+      "title": "ECTD rank with own-cost weight gamma=0, beta=0.625",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p625g0"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "gamma=0 is the control and reproduces the current best exactly, so the",
+        "family contains its own baseline. beta is held at 0.5, the measured",
+        "optimum, so gamma is the only thing varied in the main sweep.",
+        "",
+        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
+        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
       "id": "ectd_succ_max_0p25",
       "title": "ECTD successor accumulation (max, beta=0.25)",
       "kind": "algorithm",

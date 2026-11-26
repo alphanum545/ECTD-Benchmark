@@ -374,6 +374,63 @@ for _form in ("max", "sum"):
         ECTD_SUCC_VARIANTS[_name] = _ectd_succ(_beta, _form)
 
 
+# ------------------------------- own-cost-weighted successor rank (gamma)
+#
+# The successor family won with a node base of mean_q oct[i][q]: the tail only.
+# But the scoring rule that won earlier established that the task's OWN cost
+# deserves extra weight (self_weight = 2). The rank is currently ignoring that
+# principle. This family applies it to the ordering:
+#
+#     base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]
+#     rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+#
+# gamma = 0 reproduces the current best exactly (v:ectd_succ_max_0p5).
+# gamma = 1 makes the base the mean of the own-cost table, i.e. IOCT.
+# gamma = 2 matches the scoring rule's double weight on own cost.
+#
+# This also partly recovers what descendant_ranks had and the cheap OCT base
+# lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost
+# quantity. So gamma is the knob that asks how much of that the rank needs.
+#
+# beta is held at 0.5, the measured optimum, so gamma is the only thing varied.
+# Two beta refinements at gamma=0 check whether 0.5 is really the peak.
+
+def ectd_succ_own_rank(problem, beta, gamma):
+    """Own-cost-weighted successor accumulation. O(e p)."""
+    p = problem.p
+    oct_table, _cps = optimistic_cost_table(problem)
+    base = [sum(oct_table[i][q] + gamma * problem.w[i][q]
+                for q in range(p)) / p for i in range(problem.n)]
+    ranks = [0.0] * problem.n
+    for i in reversed(problem.topo):
+        children = problem.succ[i]
+        if not children:
+            ranks[i] = base[i]
+            continue
+        acc = max(problem.edges[i, c] + ranks[c] for c in children)
+        ranks[i] = base[i] + beta * acc
+    return ranks
+
+
+def _ectd_succ_own(beta, gamma):
+    def policy(problem, insertion=True):
+        ranks = ectd_succ_own_rank(problem, beta, gamma)
+        return _own_cost_damped_with_ranks(problem, ranks, insertion)
+    policy.__name__ = "v_ectd_succ_own_b%sg%s" % (
+        ("%g" % beta).replace(".", "p"), ("%g" % gamma).replace(".", "p"))
+    return policy
+
+
+# gamma sweep at the known beta optimum; beta refinement at gamma=0
+ECTD_SUCC_OWN_VARIANTS = {}
+for _gamma in (0.5, 1.0, 2.0):
+    _n = "v:ectd_succ_own_b0p5_g%s" % ("%g" % _gamma).replace(".", "p")
+    ECTD_SUCC_OWN_VARIANTS[_n] = _ectd_succ_own(0.5, _gamma)
+for _beta in (0.375, 0.625):
+    _n = "v:ectd_succ_own_b%sg0" % ("%g" % _beta).replace(".", "p")
+    ECTD_SUCC_OWN_VARIANTS[_n] = _ectd_succ_own(_beta, 0.0)
+
+
 RANK_VARIANTS = {
     "v:rank_heft": v_rank_heft,
     "v:rank_lstd": v_rank_lstd,
@@ -388,3 +445,4 @@ RANK_VARIANTS = {
 VARIANTS.update(RANK_VARIANTS)
 VARIANTS.update(ECTD_LAM_VARIANTS)
 VARIANTS.update(ECTD_SUCC_VARIANTS)
+VARIANTS.update(ECTD_SUCC_OWN_VARIANTS)
