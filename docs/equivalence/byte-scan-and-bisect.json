@@ -1,0 +1,19 @@
+{
+ "instances": 282,
+ "invalid_schedules": [],
+ "per_cell": 1,
+ "provenance": {
+  "head_sha": "216565c",
+  "run_id": 45816937015,
+  "run_id_url": "https://github.com/alphanum545/ECTD-Benchmark/actions/runs/45816937015"
+ },
+ "rank_equality": {
+  "checked": 482,
+  "failures": []
+ },
+ "schedule_equality": {
+  "compared": 282,
+  "differences": []
+ },
+ "verdict": "EQUIVALENT"
+}

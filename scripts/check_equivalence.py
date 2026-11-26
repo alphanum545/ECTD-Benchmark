@@ -257,6 +257,7 @@ def main():
         print("    invalid: %s" % item)
 
     report = {
+        "verdict": None,  # set below, once every check has run
         "per_cell": args.per_cell,
         "instances": len(records),
         "rank_equality": {
@@ -273,6 +274,7 @@ def main():
             json.dump(payload, fh, indent=1, sort_keys=True)
         print("\nwrote baseline %s (%d instances)" % (args.baseline, len(current)))
         report["baseline_written"] = args.baseline
+        report["verdict"] = "BASELINE_WRITTEN"
         with open(args.out, "w") as fh:
             json.dump(report, fh, indent=1, sort_keys=True)
         return 0
@@ -292,11 +294,15 @@ def main():
         "differences": schedule_failures,
     }
 
+    ok = not ranks["failures"] and not schedule_failures and not invalid
+    # The verdict is written into the report so a committed report is
+    # self-describing. A reader, or the optimization gate, can check one field
+    # instead of re-deriving the conclusion from three empty lists.
+    report["verdict"] = "EQUIVALENT" if ok else "NOT_EQUIVALENT"
+
     with open(args.out, "w") as fh:
         json.dump(report, fh, indent=1, sort_keys=True)
-
-    ok = not ranks["failures"] and not schedule_failures and not invalid
-    print("\n%s" % ("EQUIVALENT" if ok else "NOT EQUIVALENT"))
+    print("\n%s" % report["verdict"])
     if not ok:
         print("  rank failures: %d" % len(ranks["failures"]))
         print("  schedule differences: %d" % len(schedule_failures))

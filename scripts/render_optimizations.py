@@ -53,7 +53,55 @@ def pct_delta(value, reference):
     return 100.0 * (value - reference) / reference
 
 
-def check_claim(entry, summary, baseline_key, reference_key):
+def check_equivalence(entry, root):
+    """Verify a refactor entry against its committed equivalence report.
+
+    A refactor has no policy key and no makespan, so it cannot be checked
+    against the benchmark artifact the way an algorithm change is. Its evidence
+    is a report committed to the tree, produced by scripts/check_equivalence.py.
+    Requiring the report to exist and to record EQUIVALENT is the whole point:
+    without it, a refactor entry is an assertion with nothing behind it, and the
+    gate would pass it vacuously.
+
+    Returns (ok, detail).
+    """
+    block = entry.get("equivalence") or {}
+    report_path = block.get("report")
+    if not report_path:
+        return False, "refactor entry has no equivalence.report"
+
+    full = os.path.join(root, report_path)
+    if not os.path.exists(full):
+        return False, "equivalence report not committed: %s" % report_path
+
+    try:
+        report = load_json(full)
+    except Exception as exc:
+        return False, "equivalence report unreadable: %s" % exc
+
+    verdict = report.get("verdict")
+    if verdict != "EQUIVALENT":
+        return False, "report verdict is %r, not EQUIVALENT" % verdict
+
+    # A report that claims EQUIVALENT while carrying failures is contradictory.
+    rank_failures = (report.get("rank_equality") or {}).get("failures") or []
+    schedule_diffs = (report.get("schedule_equality") or {}).get("differences") or []
+    invalid = report.get("invalid_schedules") or []
+    if rank_failures or schedule_diffs or invalid:
+        return False, ("report says EQUIVALENT but records %d rank failures, "
+                       "%d schedule differences, %d invalid schedules"
+                       % (len(rank_failures), len(schedule_diffs), len(invalid)))
+
+    compared = (report.get("schedule_equality") or {}).get("compared")
+    checked = (report.get("rank_equality") or {}).get("checked")
+    if not compared or not checked:
+        return False, "report records no comparisons"
+
+    return True, "%s: %d rank cases, %d instances, EQUIVALENT" % (
+        report_path, checked, compared)
+
+
+def check_claim(entry, summary, baseline_key, reference_key, root):
     """Verify the entry's recorded OUTCOME against the artifact.
 
     The gate is the outcome, not the claim. A rejected entry is precisely one
@@ -64,11 +112,20 @@ def check_claim(entry, summary, baseline_key, reference_key):
 
     Returns (ok, detail, prediction_held).
     """
+    kind = entry.get("kind", "algorithm")
+    if kind == "refactor":
+        ok, detail = check_equivalence(entry, root)
+        return ok, detail, None
+    if kind != "algorithm":
+        return False, "unknown entry kind %r" % kind, None
+
     claim = entry.get("outcome") or {}
     code = entry.get("code") or {}
     key = code.get("policy_key")
+    # An algorithm entry without a policy key has no measurement behind it. This
+    # used to return ok=True, which let an unmeasured entry clear the gate.
     if not key:
-        return True, "no policy key; nothing to check", None
+        return False, "algorithm entry has no code.policy_key", None
 
     mine = pooled_of(summary, key)
     if mine is None:
@@ -186,18 +243,24 @@ def render(registry, summary):
 
     add("## Summary")
     add("")
-    add("| Change | Status | vs `%s` | vs `%s` |" % (baseline_key, reference_key))
-    add("|---|---|---:|---:|")
+    add("| Change | Kind | Status | vs `%s` | vs `%s` |" % (baseline_key, reference_key))
+    add("|---|---|---|---:|---:|")
     for status in STATUS_ORDER:
         for e in by_status.get(status, []):
             key = (e.get("code") or {}).get("policy_key")
             val = pooled_of(summary, key) if key else None
-            add("| %s | %s | %s | %s |" % (
+            kind = e.get("kind", "algorithm")
+            add("| %s | %s | %s | %s | %s |" % (
                 e["title"],
+                kind,
                 STATUS_LABEL.get(status, status.upper()),
                 fmt_pct(pct_delta(val, base_val)),
                 fmt_pct(pct_delta(val, ref_val)),
             ))
+    add("")
+    add("A refactor row has no makespan by design: it is required to change no")
+    add("schedule at all, so its evidence is an equivalence report rather than a")
+    add("delta. See the entry for the committed report.")
     add("")
 
     add("## The scoring rule these changes act on")
@@ -228,15 +291,24 @@ def render(registry, summary):
         for e in group:
             key = (e.get("code") or {}).get("policy_key")
             val = pooled_of(summary, key) if key else None
+            kind = e.get("kind", "algorithm")
             add("### `%s` — %s" % (e["id"], e["title"]))
             add("")
-            add("**Status:** %s" % STATUS_LABEL.get(status, status.upper()))
+            add("**Status:** %s  " % STATUS_LABEL.get(status, status.upper()))
+            add("**Kind:** %s" % kind)
             if key:
                 add("")
                 add("**Measured:** `%s` = %s pooled, %s vs `%s`, %s vs `%s`" % (
                     key, fmt_num(val),
                     fmt_pct(pct_delta(val, base_val)), baseline_key,
                     fmt_pct(pct_delta(val, ref_val)), reference_key))
+            if kind == "refactor":
+                block = e.get("equivalence") or {}
+                add("")
+                add("**Equivalence:** `%s`" % block.get("report", "(none)"))
+                if block.get("scope"):
+                    add("")
+                    add("Scope: %s" % block["scope"])
             add("")
             add("**Mechanism.** Why this should move the result, in algorithm terms.")
             add("")
@@ -259,6 +331,9 @@ def render(registry, summary):
 
     add("## How to add an entry")
     add("")
+    add("An **algorithm** entry changes what the policy computes, so it is judged on")
+    add("quality and needs a measured delta:")
+    add("")
     add("1. Add the variant to `scripts/ectd_variants.py` (or a new module) and give")
     add("   it a `v:` prefixed name so it cannot be mistaken for a published policy.")
     add("2. Add an entry to `registry.json` with `status: \"proposed\"`, the mechanism,")
@@ -269,6 +344,20 @@ def render(registry, summary):
     add("5. Set the status to `accepted`, `rejected` or `inconclusive` and record the")
     add("   reasoning in `decision`. Rejected entries stay: they are the record of")
     add("   what has already been ruled out.")
+    add("")
+    add("A **refactor** entry changes how the policy is computed but not what it")
+    add("computes, so it is judged on identity and needs no delta:")
+    add("")
+    add("1. Set `kind: \"refactor\"` and give an `equivalence` block naming a report")
+    add("   committed to the tree, plus a `scope` line saying what the change does")
+    add("   and does not buy. A refactor that claims a bound improvement it does not")
+    add("   deliver is the failure mode this field exists to prevent.")
+    add("2. Run the equivalence workflow. It writes `equivalence-report.json`.")
+    add("3. Commit that report to the path the entry names. The gate requires the")
+    add("   file to exist and to record `verdict: EQUIVALENT` with no failures.")
+    add("")
+    add("The gate rejects an algorithm entry with no `code.policy_key` and a refactor")
+    add("entry with no committed report. Neither can pass on prose alone.")
     add("")
 
     return "\n".join(lines).rstrip() + "\n"
@@ -293,7 +382,7 @@ def main():
     print("%-24s %-13s %-6s %-9s %s" % (
         "entry", "status", "gate", "predicted", "measured"))
     for e in registry["entries"]:
-        ok, detail, held = check_claim(e, summary, baseline_key, reference_key)
+        ok, detail, held = check_claim(e, summary, baseline_key, reference_key, ROOT)
         mark = "ok" if ok else "FAIL"
         pred = {True: "held", False: "missed", None: "-"}[held]
         print("%-24s %-13s %-6s %-9s %s" % (

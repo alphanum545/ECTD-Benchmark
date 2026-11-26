@@ -39,6 +39,15 @@ on:
         type: boolean
         required: false
         default: false
+      commit_report:
+        description: "commit the equivalence report so the registry can cite it"
+        type: boolean
+        required: false
+        default: false
+      report_path:
+        description: "where to commit the report"
+        required: false
+        default: "docs/equivalence/equivalence-report.json"
   push:
     branches: [main, "bench/**"]
     paths:
@@ -104,6 +113,44 @@ jobs:
           fi
           git commit -m "Record equivalence baseline from run ${{ github.run_id }}"
           git push origin "HEAD:${{ github.ref_name }}"
+
+      # The report is committed, not only uploaded. An artifact expires after
+      # 30 days; the optimization registry points at a path in the tree, so the
+      # evidence has to live in the tree or the entry becomes an assertion with
+      # nothing behind it.
+      - name: Commit report
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_report }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p docs/equivalence
+          python3 - <<'PY'
+          import json, os, sys
+          src = "equivalence-report.json"
+          with open(src) as fh:
+              report = json.load(fh)
+          report["provenance"] = {
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_url": ("https://github.com/%s/actions/runs/%s"
+                          % (os.environ["GITHUB_REPOSITORY"], os.environ["GITHUB_RUN_ID"])),
+              "head_sha": os.environ["GITHUB_SHA"],
+          }
+          out = os.environ["REPORT_PATH"]
+          os.makedirs(os.path.dirname(out), exist_ok=True)
+          with open(out, "w") as fh:
+              json.dump(report, fh, indent=1, sort_keys=True)
+          print("wrote %s: verdict=%s" % (out, report.get("verdict")))
+          PY
+          git add "$REPORT_PATH"
+          if git diff --cached --quiet; then
+            echo "report unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Record equivalence report from run ${{ github.run_id }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+        env:
+          REPORT_PATH: ${{ github.event.inputs.report_path || 'docs/equivalence/equivalence-report.json' }}
 
       - name: Upload report
         if: always()

@@ -22,16 +22,22 @@ build rather than being quietly softened in the prose.
 
 ## Summary
 
-| Change | Status | vs `ECTD` | vs `AEFT` |
-|---|---|---:|---:|
-| Weight the task's own execution cost twice in the processor score | ACCEPTED | -6.67% | -0.90% |
-| Damp only the tail, not the task's own measured cost | ACCEPTED | -6.78% | -1.02% |
-| Control: reimplementation must reproduce published ECTD exactly | ACCEPTED | +0.00% | +6.18% |
-| Apply damping above outdegree p instead of p+1 | INCONCLUSIVE | -0.04% | +6.14% |
-| Replace descendant ranks with mean own-cost-plus-tail priority | REJECTED | -5.98% | -0.16% |
-| Fall back to pure EFT when a task has more successors than processors | REJECTED | -5.97% | -0.16% |
-| Remove the critical-successor damping multiplier entirely | REJECTED | +0.26% | +6.46% |
-| Disable entry-task duplication | REJECTED | +0.12% | +6.31% |
+| Change | Kind | Status | vs `ECTD` | vs `AEFT` |
+|---|---|---|---:|---:|
+| Weight the task's own execution cost twice in the processor score | algorithm | ACCEPTED | -6.67% | -0.90% |
+| Damp only the tail, not the task's own measured cost | algorithm | ACCEPTED | -6.78% | -1.02% |
+| Control: reimplementation must reproduce published ECTD exactly | algorithm | ACCEPTED | +0.00% | +6.18% |
+| Read the descendant bitmask by bytes instead of peeling set bits | refactor | ACCEPTED | n/a | n/a |
+| Locate the insertion gap by bisecting instead of scanning from zero | refactor | ACCEPTED | n/a | n/a |
+| Apply damping above outdegree p instead of p+1 | algorithm | INCONCLUSIVE | -0.04% | +6.14% |
+| Replace descendant ranks with mean own-cost-plus-tail priority | algorithm | REJECTED | -5.98% | -0.16% |
+| Fall back to pure EFT when a task has more successors than processors | algorithm | REJECTED | -5.97% | -0.16% |
+| Remove the critical-successor damping multiplier entirely | algorithm | REJECTED | +0.26% | +6.46% |
+| Disable entry-task duplication | algorithm | REJECTED | +0.12% | +6.31% |
+
+A refactor row has no makespan by design: it is required to change no
+schedule at all, so its evidence is an equivalence report rather than a
+delta. See the entry for the committed report.
 
 ## The scoring rule these changes act on
 
@@ -50,7 +56,8 @@ comparable rather than being unrelated tweaks.
 
 ### `own_cost` — Weight the task's own execution cost twice in the processor score
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
+**Kind:** algorithm
 
 **Measured:** `v:own_cost` = 1368.61 pooled, -6.67% vs `ECTD`, -0.90% vs `AEFT`
 
@@ -80,7 +87,8 @@ self_weight = 0.0 is worth keeping in mind as a sanity check on the whole harnes
 
 ### `own_cost_damped` — Damp only the tail, not the task's own measured cost
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
+**Kind:** algorithm
 
 **Measured:** `v:own_cost_damped` = 1366.94 pooled, -6.78% vs `ECTD`, -1.02% vs `AEFT`
 
@@ -110,7 +118,8 @@ Still open: the per-family picture is unchanged. This configuration beats AEFT o
 
 ### `baseline_control` — Control: reimplementation must reproduce published ECTD exactly
 
-**Status:** ACCEPTED
+**Status:** ACCEPTED  
+**Kind:** algorithm
 
 **Measured:** `v:baseline` = 1466.38 pooled, +0.00% vs `ECTD`, +6.18% vs `AEFT`
 
@@ -130,11 +139,76 @@ Accepted as a control. It reproduces ECTD to the cent on every run so far, which
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
 
+### `refactor_byte_scan` — Read the descendant bitmask by bytes instead of peeling set bits
+
+**Status:** ACCEPTED  
+**Kind:** refactor
+
+**Equivalence:** `docs/equivalence/byte-scan-and-bisect.json`
+
+Scope: Removes the per-set-bit walk from the rank. Does NOT remove the per-edge big-integer union, which is the other O(n^3/w) term, so it does not by itself put ECTD under O(n^2 p) on a dense graph.
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+descendant_ranks peeled one set bit at a time with `bits & -bits` and `bits ^= low`. Each of those touches the whole n-bit value, so one iteration costs O(n/w) word operations. The loop runs once per distinct descendant, which is Theta(n^2) over all tasks, so the walk was O(n^3/w).
+
+The loop only accumulates a sum, so the order of visitation does not matter. Scanning the mask as bytes costs O(n/8) per task regardless of popcount, which is O(n^2/8) for the walk.
+
+Equality is exact rather than approximate because both routines visit set bits in ascending order, so the floats are accumulated in the same order. That matters downstream: the rank feeds a heap key in ready_order and a ceil-to-a-tenth boundary in critical_path_weights, where a reordering could flip a tie and change the schedule.
+
+**Claim before measuring:** Bit-identical ranks and bit-identical schedules; only the cost changes.
+
+**Measured outcome:** 482 rank cases and 282 instances x 14 policies compared, zero differences. 400/400 synthetic graphs bit-identical under exact ==, not a tolerance.
+
+**Decision.**
+
+Accepted on proof, not on a benchmark. A refactor that changes no output cannot be judged by a quality delta, and does not need to be: it is judged by identity, which is a stronger claim.
+
+Measured speedup on the rank phase alone: 3.4x at n=500 and 3.9x at n=4000 on sparse graphs, 2.4x at n=4000 on dense. Those are observations, not the justification. The justification is the equivalence report.
+
+Scope, and this is the part that must not get lost: the rank after this change is O(e*n/w + n^2). It meets O(n^2 p) when e = O(n*p*w), which holds on this corpus (e/n ~ 1.41) and fails on a dense DAG. The remaining obstacle is the union at proposed.py:31, which this does not touch.
+
+**Evidence:** `docs/equivalence/byte-scan-and-bisect.json`; `docs/COMPLEXITY.md`
+
+### `refactor_calendar_bisect` — Locate the insertion gap by bisecting instead of scanning from zero
+
+**Status:** ACCEPTED  
+**Kind:** refactor
+
+**Equivalence:** `docs/equivalence/byte-scan-and-bisect.json`
+
+Scope: Removes a linear scan from placement. Placement was already inside O(n^2 p), so this is a low-order and constant-factor win, not a bound fix. It changes no exponent anywhere.
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+earliest_slots walked every event on a processor from index 0 for every (task, processor) pair, and place located its insertion point with a linear `next(...)` over the calendar. Both were O(n) per call, so placement carried an O(n^2) term unrelated to the algorithm.
+
+Events on one processor never overlap, so their start times and their finish times are both ascending. Two consequences:
+
+In place, the insertion index is bisect_right over the start times, which returns the first index whose start is strictly greater, exactly what the linear `next(...)` returned.
+
+In earliest_slots, any event finishing at or before the candidate is a no-op: its start is also <= candidate, so it cannot trigger the break and it cannot raise the candidate. Skipping them is equivalent to walking from index 0. bisect_right over the finishes finds the first event that can still matter, and the scan re-bisects whenever the candidate moves forward.
+
+**Claim before measuring:** Bit-identical schedules; only the cost changes.
+
+**Measured outcome:** 282 instances x 14 policies compared, zero differences, zero invalid schedules. The 23-test suite passes.
+
+**Decision.**
+
+Accepted on proof. Same reasoning as the byte-scan: identity is the claim, and the equivalence report is the evidence.
+
+self.events stays a list of per-processor lists in the same order, because tests/test_suite.py:263 reads it directly. The bisect index is a parallel pair of lists updated at the single write site, so it cannot drift from the calendars.
+
+Scope: this changes no exponent. It is worth having because placement is the phase that carries the O(n^2 p) term for every policy, so its constant factor is paid six times over on every benchmark run.
+
+**Evidence:** `docs/equivalence/byte-scan-and-bisect.json`; `docs/COMPLEXITY.md`
+
 ## Inconclusive
 
 ### `damp_threshold_p` — Apply damping above outdegree p instead of p+1
 
-**Status:** INCONCLUSIVE
+**Status:** INCONCLUSIVE  
+**Kind:** algorithm
 
 **Measured:** `v:damp_threshold_p` = 1465.73 pooled, -0.04% vs `ECTD`, +6.14% vs `AEFT`
 
@@ -160,7 +234,8 @@ It must not be adopted on this basis, and it must not be adopted in combination 
 
 ### `own_cost_aeft_ranks` — Replace descendant ranks with mean own-cost-plus-tail priority
 
-**Status:** REJECTED
+**Status:** REJECTED  
+**Kind:** algorithm
 
 **Measured:** `v:own_cost_aeft_ranks` = 1378.76 pooled, -5.98% vs `ECTD`, -0.16% vs `AEFT`
 
@@ -184,7 +259,8 @@ Worth noting it is the best policy on FFT and GE, the two families where own_cos
 
 ### `own_cost_pure_eft` — Fall back to pure EFT when a task has more successors than processors
 
-**Status:** REJECTED
+**Status:** REJECTED  
+**Kind:** algorithm
 
 **Measured:** `v:own_cost_pure_eft` = 1378.79 pooled, -5.97% vs `ECTD`, -0.16% vs `AEFT`
 
@@ -208,7 +284,8 @@ It does have the most shared wins of any policy (323), which means it is often t
 
 ### `no_damping` — Remove the critical-successor damping multiplier entirely
 
-**Status:** REJECTED
+**Status:** REJECTED  
+**Kind:** algorithm
 
 **Measured:** `v:no_damping` = 1470.19 pooled, +0.26% vs `ECTD`, +6.46% vs `AEFT`
 
@@ -236,7 +313,8 @@ Conclusion: keep damping, because at the operating point it is a small win, but 
 
 ### `no_dup` — Disable entry-task duplication
 
-**Status:** REJECTED
+**Status:** REJECTED  
+**Kind:** algorithm
 
 **Measured:** `v:no_dup` = 1468.11 pooled, +0.12% vs `ECTD`, +6.31% vs `AEFT`
 
@@ -260,6 +338,9 @@ Recorded because entry duplication is the step most likely to look like superflu
 
 ## How to add an entry
 
+An **algorithm** entry changes what the policy computes, so it is judged on
+quality and needs a measured delta:
+
 1. Add the variant to `scripts/ectd_variants.py` (or a new module) and give
    it a `v:` prefixed name so it cannot be mistaken for a published policy.
 2. Add an entry to `registry.json` with `status: "proposed"`, the mechanism,
@@ -270,3 +351,17 @@ Recorded because entry duplication is the step most likely to look like superflu
 5. Set the status to `accepted`, `rejected` or `inconclusive` and record the
    reasoning in `decision`. Rejected entries stay: they are the record of
    what has already been ruled out.
+
+A **refactor** entry changes how the policy is computed but not what it
+computes, so it is judged on identity and needs no delta:
+
+1. Set `kind: "refactor"` and give an `equivalence` block naming a report
+   committed to the tree, plus a `scope` line saying what the change does
+   and does not buy. A refactor that claims a bound improvement it does not
+   deliver is the failure mode this field exists to prevent.
+2. Run the equivalence workflow. It writes `equivalence-report.json`.
+3. Commit that report to the path the entry names. The gate requires the
+   file to exist and to record `verdict: EQUIVALENT` with no failures.
+
+The gate rejects an algorithm entry with no `code.policy_key` and a refactor
+entry with no committed report. Neither can pass on prose alone.
