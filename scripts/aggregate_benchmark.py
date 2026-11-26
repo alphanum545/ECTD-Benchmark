@@ -231,6 +231,18 @@ def main():
             print("  %-46s %8.2f  +%.2f%%  %s"
                   % (d["id"], d["makespan"], d["margin_pct"] or 0.0,
                      "shared" if d["shared"] else "sole"))
+
+        # ECTD-only slice. winners.csv carries every policy and is too large to
+        # fetch in one read; this holds just the ECTD rows so the list of
+        # winning instances can actually be retrieved and inspected.
+        with open(os.path.join(args.out, "winners_ectd.csv"), "w") as fh:
+            fh.write("\n".join(
+                leader_lines[0:1]
+                + [line for line, d in zip(leader_lines[1:], leader_rows)
+                   if d["policy"] == "ECTD"]
+            ) + "\n")
+        print("\nwrote %s (%d rows)"
+              % (os.path.join(args.out, "winners_ectd.csv"), len(ectd)))
     return 0
 
 
