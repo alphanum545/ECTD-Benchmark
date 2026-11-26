@@ -30,6 +30,14 @@ build rather than being quietly softened in the prose.
 | Read the descendant bitmask by bytes instead of peeling set bits | refactor | ACCEPTED | n/a | n/a |
 | Locate the insertion gap by bisecting instead of scanning from zero | refactor | ACCEPTED | n/a | n/a |
 | Apply damping above outdegree p instead of p+1 | algorithm | INCONCLUSIVE | -0.04% | +6.14% |
+| Replace descendant ranks with HEFT upward rank | algorithm | PROPOSED | -6.89% | -1.14% |
+| Replace descendant ranks with LSTD rank | algorithm | PROPOSED | -7.01% | -1.26% |
+| Replace descendant ranks with AEFT mean IOCT | algorithm | PROPOSED | -6.08% | -0.27% |
+| Replace descendant ranks with mean own-cost-plus-tail | algorithm | PROPOSED | -6.08% | -0.27% |
+| Replace descendant ranks with BPPTS BPCM mean | algorithm | PROPOSED | -6.00% | -0.19% |
+| Replace descendant ranks with IPEFT PCT rank | algorithm | PROPOSED | -6.70% | -0.93% |
+| Replace descendant ranks with IPPTS PCM rank | algorithm | PROPOSED | -5.64% | +0.19% |
+| Control: mean own-cost rank with damping off | algorithm | PROPOSED | -5.98% | -0.16% |
 | Replace descendant ranks with mean own-cost-plus-tail priority | algorithm | REJECTED | -5.98% | -0.16% |
 | Fall back to pure EFT when a task has more successors than processors | algorithm | REJECTED | -5.97% | -0.16% |
 | Remove the critical-successor damping multiplier entirely | algorithm | REJECTED | +0.26% | +6.46% |
@@ -229,6 +237,230 @@ Inconclusive. The measured move is a fraction of a percent, which is inside what
 It must not be adopted on this basis, and it must not be adopted in combination with own_cost either: the two were never measured together, and damping interacts with the tail that own_cost reweights. Testing that combination is a legitimate next step and needs its own entry.
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
+
+## Proposed, not yet measured
+
+### `rank_heft` — Replace descendant ranks with HEFT upward rank
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_heft` = 1365.31 pooled, -6.89% vs `ECTD`, -1.14% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+HEFT's upward rank is mean compute plus the max over successors of edge delay plus successor rank. One reverse-topological pass, no set.
+
+The argument for it: it is the cheapest rank in the suite and the one the most baselines already use, so it is the natural floor. If it costs little quality, the complexity problem is solved for free.
+
+**Claim before measuring:** Expected worse than descendant_ranks; the question is by how much.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `rank_lstd` — Replace descendant ranks with LSTD rank
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_lstd` = 1363.59 pooled, -7.01% vs `ECTD`, -1.26% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+LSTD ranks by a weighted max over successors, where the weight is min_w*(max_w-min_w)/max_w. One reverse-topological pass, no set.
+
+The argument for it: it encodes processor heterogeneity in the weight, which descendant_ranks does not. That may matter on families where the per-processor cost spread is large.
+
+**Claim before measuring:** Expected worse than descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `rank_aeft` — Replace descendant ranks with AEFT mean IOCT
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_aeft` = 1377.25 pooled, -6.08% vs `ECTD`, -0.27% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+Mean over processors of own-cost-plus-tail. This is the rank AEFT uses, and AEFT is the strongest published baseline.
+
+Already measured in an undamped form as v:own_cost_aeft_ranks: 0.74% worse than v:own_cost. This entry is the damped configuration, which was never measured, so the interaction between the rank and the damping weights is still unknown.
+
+**Claim before measuring:** Expected slightly worse pooled, better on GE and LA.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `rank_own_cost` — Replace descendant ranks with mean own-cost-plus-tail
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_own_cost` = 1377.25 pooled, -6.08% vs `ECTD`, -0.27% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+Mean over processors of the own-cost table. Same shape as AEFT's IOCT rank because the own-cost table is IOCT; kept separate to confirm the two agree and to catch any discrepancy in the table construction.
+
+**Claim before measuring:** Expected to match v:rank_aeft closely.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `rank_bppts` — Replace descendant ranks with BPPTS BPCM mean
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_bppts` = 1378.43 pooled, -6.00% vs `ECTD`, -0.19% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+Mean over processors of the BPCM table, which includes sink costs and uses mean compute per task rather than per-processor compute.
+
+**Claim before measuring:** Expected worse than descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `rank_ipeft` — Replace descendant ranks with IPEFT PCT rank
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_ipeft` = 1368.16 pooled, -6.70% vs `ECTD`, -0.93% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+IPEFT's PCT recurrence uses max over processors rather than min, which is a pessimistic rather than optimistic tail. Different failure mode from the other candidates, so worth measuring rather than assuming.
+
+**Claim before measuring:** Expected worse; the pessimistic tail should under-order.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `rank_ippts` — Replace descendant ranks with IPPTS PCM rank
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_ippts` = 1383.67 pooled, -5.64% vs `ECTD`, +0.19% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+IPPTS's PCM table scaled by outdegree, as the source does. The outdegree scaling is the closest any baseline rank gets to rewarding fan-out, which is part of what descendant_ranks does by summing over descendants.
+
+**Claim before measuring:** Expected worse, but the closest structural match to descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `rank_own_cost_nodamp` — Control: mean own-cost rank with damping off
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:rank_own_cost_nodamp` = 1378.76 pooled, -5.98% vs `ECTD`, -0.16% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.
+
+Not a candidate. This is the control that separates the rank change from the damping coupling: critical_path_weights takes ranks as an argument, so changing the order also changes the damping weights. Comparing this against v:rank_own_cost isolates how much of the delta is the rank and how much is the damping reacting to it.
+
+**Claim before measuring:** Control; expected to bracket v:rank_own_cost.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it and the outcome above is replaced with the measured direction.
+
+Why it is in the candidate set at all: every rank here is O(n + e) or O(e p), so every one of them clears O(n^2 p) worst case in n. That is the constraint that forces a replacement. descendant_ranks is the only rank in the suite that needs a descendant set, and the set is what costs O(e n/w).
+
+Selection criterion: whichever candidate loses least against v:own_cost_damped on the three families that carry 91.4% of the corpus (Montage, Genome, LIGO). GE and LA are a constraint column, not the objective: together they are 120 of 2094 instances, so fixing both to AEFT parity is worth 0.125% globally.
+
+**Evidence:** `docs/COMPLEXITY.md`
 
 ## Rejected
 
