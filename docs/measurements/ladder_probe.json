@@ -1,0 +1,834 @@
+[
+ {
+  "family": "FFT",
+  "level": "1152Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "1152Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "1152Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "FFT",
+  "level": "1152Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "224Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "224Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 7,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "512Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 8,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "512Nodes",
+  "p": 4,
+  "step": 4,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "512Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "FFT",
+  "level": "96Nodes",
+  "p": 4,
+  "step": 1,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "GE",
+  "level": "2079Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "GE",
+  "level": "2079Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 8,
+  "cand": 10
+ },
+ {
+  "family": "GE",
+  "level": "527Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "1000Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "1000Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "1000Nodes",
+  "p": 8,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "100Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 8,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "200Nodes",
+  "p": 4,
+  "step": 4,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "200Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "300Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "300Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "400Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "400Nodes",
+  "p": 8,
+  "step": 3,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "500Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 7,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "500Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "500Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "600Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "600Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "600Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 5,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "700Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "700Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "700Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "800Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 9,
+  "cand": 10
+ },
+ {
+  "family": "Genome",
+  "level": "800Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Genome",
+  "level": "800Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "LA",
+  "level": "11Nodes",
+  "p": 64,
+  "step": 1,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "LA",
+  "level": "137Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "LA",
+  "level": "2081Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 6,
+  "cand": 10
+ },
+ {
+  "family": "LA",
+  "level": "2081Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LA",
+  "level": "2081Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "LA",
+  "level": "529Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 3,
+  "cand": 10
+ },
+ {
+  "family": "LA",
+  "level": "529Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 7,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "1000Nodes",
+  "p": 16,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "1000Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 3,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "1000Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "1000Nodes",
+  "p": 8,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "200Nodes",
+  "p": 4,
+  "step": 4,
+  "wins": 5,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "200Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 5,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "300Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "300Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "400Nodes",
+  "p": 16,
+  "step": 3,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "400Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "400Nodes",
+  "p": 8,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "500Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 3,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "500Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "500Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "500Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "600Nodes",
+  "p": 16,
+  "step": 3,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "600Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "600Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "600Nodes",
+  "p": 8,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "700Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "700Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 8,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "700Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "700Nodes",
+  "p": 8,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "800Nodes",
+  "p": 16,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "800Nodes",
+  "p": 32,
+  "step": 3,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "800Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "800Nodes",
+  "p": 8,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "900Nodes",
+  "p": 16,
+  "step": 3,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "900Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 5,
+  "cand": 10
+ },
+ {
+  "family": "LIGO",
+  "level": "900Nodes",
+  "p": 4,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "LIGO",
+  "level": "900Nodes",
+  "p": 8,
+  "step": 0,
+  "wins": 0,
+  "cand": 0
+ },
+ {
+  "family": "Montage",
+  "level": "1000Nodes",
+  "p": 16,
+  "step": 4,
+  "wins": 5,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "1000Nodes",
+  "p": 32,
+  "step": 3,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "1000Nodes",
+  "p": 4,
+  "step": 3,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "1000Nodes",
+  "p": 64,
+  "step": 1,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "1000Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "100Nodes",
+  "p": 16,
+  "step": 1,
+  "wins": 3,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "100Nodes",
+  "p": 8,
+  "step": 1,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "300Nodes",
+  "p": 8,
+  "step": 1,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "400Nodes",
+  "p": 16,
+  "step": 3,
+  "wins": 3,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "400Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "400Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "400Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "500Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "500Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "600Nodes",
+  "p": 16,
+  "step": 4,
+  "wins": 3,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "600Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "600Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "600Nodes",
+  "p": 64,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "600Nodes",
+  "p": 8,
+  "step": 4,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "700Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "700Nodes",
+  "p": 32,
+  "step": 3,
+  "wins": 6,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "700Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "700Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "800Nodes",
+  "p": 16,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "800Nodes",
+  "p": 4,
+  "step": 4,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "800Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 3,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "900Nodes",
+  "p": 16,
+  "step": 4,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "900Nodes",
+  "p": 32,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "900Nodes",
+  "p": 4,
+  "step": 2,
+  "wins": 2,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "900Nodes",
+  "p": 64,
+  "step": 2,
+  "wins": 4,
+  "cand": 10
+ },
+ {
+  "family": "Montage",
+  "level": "900Nodes",
+  "p": 8,
+  "step": 2,
+  "wins": 1,
+  "cand": 10
+ }
+]
