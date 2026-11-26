@@ -210,24 +210,38 @@ def check_schedules(records):
 
 
 def compare(baseline, current):
-    """Exact comparison of two makespan maps."""
+    """Exact comparison of two makespan maps.
+
+    The baseline is a contract for refactors, so the comparison is asymmetric:
+
+    - A policy present in the baseline but missing from the current run is a
+      failure. Something that used to be measured has stopped being measured,
+      which is how a refactor silently drops a code path.
+    - A policy present in the current run but not in the baseline is reported
+      separately and is not a failure. Adding a variant is a legitimate change
+      and must not be blocked by a contract that predates it.
+    - A policy in both must match exactly.
+    """
     failures = []
+    added = []
     missing = sorted(set(baseline) - set(current))
-    added = sorted(set(current) - set(baseline))
     for instance in missing:
         failures.append({"instance": instance, "reason": "missing from current run"})
-    for instance in added:
-        failures.append({"instance": instance, "reason": "not in baseline"})
+
     for instance in sorted(set(baseline) & set(current)):
         want, got = baseline[instance], current[instance]
-        for policy in sorted(set(want) | set(got)):
-            a, b = want.get(policy), got.get(policy)
+        for policy in sorted(set(want)):
+            a = want.get(policy)
+            b = got.get(policy)
             if a != b:
                 failures.append({
                     "instance": instance, "policy": policy,
                     "baseline": a, "current": b,
                 })
-    return failures
+        for policy in sorted(set(got) - set(want)):
+            added.append({"instance": instance, "policy": policy})
+
+    return failures, added
 
 
 def main():
@@ -284,14 +298,19 @@ def main():
     with open(args.baseline) as fh:
         baseline = json.load(fh)["makespans"]
 
-    schedule_failures = compare(baseline, current)
+    schedule_failures, added = compare(baseline, current)
     print("  compared %d instances, %d differences"
           % (len(current), len(schedule_failures)))
+    if added:
+        new_policies = sorted({a["policy"] for a in added})
+        print("  %d policy/policies not in the baseline (informational): %s"
+              % (len(new_policies), ", ".join(new_policies)))
     for failure in schedule_failures[:5]:
         print("    %s" % json.dumps(failure, sort_keys=True))
     report["schedule_equality"] = {
         "compared": len(current),
         "differences": schedule_failures,
+        "policies_added": sorted({a["policy"] for a in added}),
     }
 
     ok = not ranks["failures"] and not schedule_failures and not invalid

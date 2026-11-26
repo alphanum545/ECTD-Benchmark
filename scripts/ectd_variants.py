@@ -16,10 +16,14 @@ confused with a published baseline.
 """
 import math
 
+from ectdbench.baselines import compute_ippts_pcm, upward_ranks
 from ectdbench.engine import Schedule, optimistic_cost_table, ready_order
+from ectdbench.extended_baselines import aeft_ioct, bppts_bpcm
+from ectdbench.ipeft import tables as ipeft_tables
 from ectdbench.proposed import (
     descendant_ranks,
     critical_path_weights,
+    lstd_ranks,
     _place_entry,
     _place_scored,
 )
@@ -78,6 +82,30 @@ def _damped_tail(problem, threshold_offset):
             weights[task][q] = min(1.0, math.ceil(10.0 * ratio) / 10.0)
     return ranks, [[oct_table[i][q] * weights[i][q] for q in range(p)]
                    for i in range(problem.n)]
+
+
+def _own_cost_damped_with_ranks(problem, ranks, insertion=True):
+    """The winning scoring rule, with the priority order supplied from outside.
+
+    ``v_own_cost_damped`` fixes both the scoring rule and the rank. This splits
+    them: the tail and the damping are held constant and only ``ranks`` varies,
+    so the cost of a rank functional can be read off on its own.
+
+    One coupling to be aware of: ``critical_path_weights`` takes ``ranks`` as an
+    argument, so changing the order also changes the damping weights. That is
+    the configuration we would actually ship, so it is measured as-is rather
+    than isolated. ``v_rank_*_nodamp`` variants exist for the cases where the
+    interaction is worth separating.
+    """
+    oct_table, cps = optimistic_cost_table(problem)
+    weights = critical_path_weights(problem, ranks, cps)
+    tail = [[problem.w[i][q] + oct_table[i][q] * weights[i][q]
+             for q in range(problem.p)] for i in range(problem.n)]
+    return _schedule(problem, ranks, tail, insertion)
+
+
+def _mean_row(table, p):
+    return [sum(row) / p for row in table]
 
 
 # --------------------------------------------------------------- variants
@@ -168,3 +196,77 @@ VARIANTS = {
     "v:damp_threshold_p": v_damp_threshold_p,
     "v:no_dup": v_no_dup,
 }
+
+
+# ------------------------------------------------- rank-functional sweep
+#
+# The complexity requirement is O(n^2 p) worst case in n. ECTD misses it on one
+# term only: descendant_ranks needs the weighted sum over DISTINCT descendants,
+# which is transitive-closure shaped and costs O(e n/w) for the union, i.e.
+# O(n^3/w) on a dense DAG. Every rank below is O(n + e) or O(e p), so every one
+# of them clears the bound. The question is only what each costs in quality.
+#
+# All of these hold the winning scoring rule fixed (own-cost tail, damped
+# continuation) so the delta is attributable to the rank alone.
+
+def v_rank_heft(problem, insertion=True):
+    """HEFT upward rank. O(n + e)."""
+    return _own_cost_damped_with_ranks(problem, upward_ranks(problem), insertion)
+
+
+def v_rank_lstd(problem, insertion=True):
+    """LSTD rank. O(n + e)."""
+    return _own_cost_damped_with_ranks(problem, lstd_ranks(problem), insertion)
+
+
+def v_rank_aeft(problem, insertion=True):
+    """AEFT mean IOCT. O(e p)."""
+    return _own_cost_damped_with_ranks(
+        problem, _mean_row(aeft_ioct(problem), problem.p), insertion)
+
+
+def v_rank_own_cost(problem, insertion=True):
+    """Mean own-cost-plus-tail. O(e p)."""
+    return _own_cost_damped_with_ranks(
+        problem, _mean_row(own_cost_table(problem), problem.p), insertion)
+
+
+def v_rank_bppts(problem, insertion=True):
+    """BPPTS BPCM mean. O(e p)."""
+    return _own_cost_damped_with_ranks(
+        problem, _mean_row(bppts_bpcm(problem), problem.p), insertion)
+
+
+def v_rank_ipeft(problem, insertion=True):
+    """IPEFT PCT-based rank. O(e p)."""
+    ranks, _cnp, _cnct, _cn = ipeft_tables(problem)
+    return _own_cost_damped_with_ranks(problem, ranks, insertion)
+
+
+def v_rank_ippts(problem, insertion=True):
+    """IPPTS PCM rank, scaled by outdegree as the source does. O(e p)."""
+    p = problem.p
+    pcm = compute_ippts_pcm(problem)
+    ranks = [sum(pcm[i]) / p * len(problem.succ[i]) for i in range(problem.n)]
+    return _own_cost_damped_with_ranks(problem, ranks, insertion)
+
+
+def v_rank_own_cost_nodamp(problem, insertion=True):
+    """Control: mean own-cost rank with damping off, to separate the coupling."""
+    p = problem.p
+    tail = own_cost_table(problem)
+    return _schedule(problem, _mean_row(tail, p), tail, insertion)
+
+
+RANK_VARIANTS = {
+    "v:rank_heft": v_rank_heft,
+    "v:rank_lstd": v_rank_lstd,
+    "v:rank_aeft": v_rank_aeft,
+    "v:rank_own_cost": v_rank_own_cost,
+    "v:rank_bppts": v_rank_bppts,
+    "v:rank_ipeft": v_rank_ipeft,
+    "v:rank_ippts": v_rank_ippts,
+    "v:rank_own_cost_nodamp": v_rank_own_cost_nodamp,
+}
+
+VARIANTS.update(RANK_VARIANTS)
