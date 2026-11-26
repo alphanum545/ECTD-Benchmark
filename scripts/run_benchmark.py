@@ -42,6 +42,7 @@ import os
 import re
 import sys
 import time
+from multiprocessing import Pool
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
@@ -155,6 +156,28 @@ def score_one(record, table, validate=True):
     }
 
 
+# Worker state. Instances are independent and score_one is pure, so the shard
+# can be fanned out across the runner's cores. The table is a dict of
+# module-level functions, so it pickles by reference rather than by value.
+_WORKER_TABLE = None
+_WORKER_VALIDATE = True
+
+
+def _init_worker(table, validate):
+    global _WORKER_TABLE, _WORKER_VALIDATE
+    _WORKER_TABLE = table
+    _WORKER_VALIDATE = validate
+
+
+def _score_task(record):
+    return score_one(record, _WORKER_TABLE, validate=_WORKER_VALIDATE)
+
+
+def default_workers():
+    """Four cores is the shape this was tuned for; never oversubscribe."""
+    return max(1, min(4, os.cpu_count() or 1))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", required=True,
@@ -164,7 +187,11 @@ def main():
     ap.add_argument("--out", default="bench-out")
     ap.add_argument("--limit", type=int, default=0, help="score only the first N files")
     ap.add_argument("--no-validate", action="store_true")
+    ap.add_argument("--workers", type=int, default=0,
+                    help="parallel worker processes (0 = auto, capped at 4)")
     args = ap.parse_args()
+
+    workers = args.workers if args.workers > 0 else default_workers()
 
     if not os.path.isdir(args.data_root):
         raise SystemExit("not a directory: %s" % args.data_root)
@@ -177,6 +204,9 @@ def main():
     if args.limit:
         mine = mine[:args.limit]
 
+    # No point starting more processes than there are instances to score.
+    workers = max(1, min(workers, len(mine) or 1))
+
     os.makedirs(args.out, exist_ok=True)
     table = policy_table()
     tag = "shard_%02d" % args.shard
@@ -187,22 +217,46 @@ def main():
     print("weight   %d of %d (%.1f%%)" % (loads[args.shard], sum(loads),
                                           100.0 * loads[args.shard] / max(sum(loads), 1)))
     print("policies %s" % ", ".join(table))
+    print("workers  %d" % workers)
 
     started = time.time()
     written = 0
     failures = 0
+    validate = not args.no_validate
+
+    def tally(row):
+        nonlocal written, failures
+        written += 1
+        if "error" in row or not all(row.get("valid", {}).values()):
+            failures += 1
+
     with open(jsonl_path, "w") as fh:
-        for i, record in enumerate(mine, 1):
-            row = score_one(record, table, validate=not args.no_validate)
-            fh.write(json.dumps(row, sort_keys=True) + "\n")
-            fh.flush()
-            written += 1
-            if "error" in row or not all(row.get("valid", {}).values()):
-                failures += 1
-            if i % 25 == 0 or i == len(mine):
-                rate = (time.time() - started) / i
-                print("  %4d/%d  %.1fs elapsed  %.2fs/file  eta %.0fs"
-                      % (i, len(mine), time.time() - started, rate, rate * (len(mine) - i)))
+        if workers <= 1:
+            rows = (score_one(r, table, validate=validate) for r in mine)
+            for i, row in enumerate(rows, 1):
+                fh.write(json.dumps(row, sort_keys=True) + "\n")
+                fh.flush()
+                tally(row)
+                if i % 25 == 0 or i == len(mine):
+                    rate = (time.time() - started) / i
+                    print("  %4d/%d  %.1fs elapsed  %.2fs/file  eta %.0fs"
+                          % (i, len(mine), time.time() - started, rate,
+                             rate * (len(mine) - i)))
+        else:
+            # imap keeps input order, so the jsonl is byte-identical to a
+            # serial run for the same shard. chunksize=1 keeps the progress
+            # line responsive instead of batching the whole shard up front.
+            with Pool(workers, initializer=_init_worker,
+                      initargs=(table, validate)) as pool:
+                for i, row in enumerate(pool.imap(_score_task, mine, chunksize=1), 1):
+                    fh.write(json.dumps(row, sort_keys=True) + "\n")
+                    fh.flush()
+                    tally(row)
+                    if i % 25 == 0 or i == len(mine):
+                        rate = (time.time() - started) / i
+                        print("  %4d/%d  %.1fs elapsed  %.2fs/file  eta %.0fs"
+                              % (i, len(mine), time.time() - started, rate,
+                                 rate * (len(mine) - i)))
 
     summary = {
         "shard": args.shard, "shards": args.shards,
@@ -210,6 +264,7 @@ def main():
         "weight": loads[args.shard], "weight_total": sum(loads),
         "failures": failures,
         "elapsed_seconds": round(time.time() - started, 2),
+        "workers": workers,
         "data_root": os.path.abspath(args.data_root),
     }
     with open(os.path.join(args.out, tag + ".json"), "w") as fh:
