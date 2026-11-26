@@ -155,6 +155,22 @@ jobs:
           echo "--- summary.csv ---"
           cat docs/benchmark/summary.csv
 
+      # The gate. Every policy change must carry a mechanism and a recorded
+      # outcome in docs/optimizations/registry.json, and the recorded outcome
+      # must match the artifact. A variant that appears in the results without
+      # an entry fails here, so an optimization cannot be merged on the
+      # strength of its own argument or on a number nobody wrote down.
+      - name: Verify every variant is documented
+        run: |
+          set -euo pipefail
+          python3 scripts/render_optimizations.py
+          if ! git diff --quiet -- docs/optimizations/OPTIMIZATIONS.md; then
+            echo "::error::OPTIMIZATIONS.md is stale; run scripts/render_optimizations.py and commit it"
+            git --no-pager diff --stat -- docs/optimizations/OPTIMIZATIONS.md
+            exit 1
+          fi
+          echo "optimization log is current and every recorded outcome holds"
+
       - name: Upload summary
         uses: actions/upload-artifact@v4
         with:
@@ -168,7 +184,8 @@ jobs:
           set -euo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/benchmark/summary.json docs/benchmark/summary.csv
+          git add docs/benchmark/summary.json docs/benchmark/summary.csv \
+                  docs/optimizations/OPTIMIZATIONS.md
           if git diff --cached --quiet; then
             echo "no change in results, nothing to commit"
             exit 0
