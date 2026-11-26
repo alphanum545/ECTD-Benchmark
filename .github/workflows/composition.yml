@@ -188,7 +188,8 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add compositions/*/manifest.json
+          # compositions/ is gitignored, so force-add just the manifests.
+          git add -f compositions/variant_A/manifest.json compositions/variant_B/manifest.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "no manifest change to commit"
           else
