@@ -1,0 +1,271 @@
+{
+ "by_family": {
+  "FFT": {
+   "instances": 60,
+   "pooled": {
+    "AEFT": 1248.183634881887,
+    "BPPTS": 1382.01940827954,
+    "ECTD": 1279.9963041985566,
+    "HEFT": 1301.457753730378,
+    "IPEFT": 1351.0957526106197,
+    "LSTD": 1284.7041972718273
+   },
+   "wins": {
+    "AEFT": 25,
+    "BPPTS": 0,
+    "ECTD": 25,
+    "HEFT": 4,
+    "IPEFT": 1,
+    "LSTD": 5
+   }
+  },
+  "GE": {
+   "instances": 60,
+   "pooled": {
+    "AEFT": 1645.8488317450588,
+    "BPPTS": 1711.2529270710259,
+    "ECTD": 1653.040296663315,
+    "HEFT": 1798.2601349737938,
+    "IPEFT": 1719.3110152431898,
+    "LSTD": 1772.685070760357
+   },
+   "wins": {
+    "AEFT": 19,
+    "BPPTS": 5,
+    "ECTD": 31,
+    "HEFT": 3,
+    "IPEFT": 9,
+    "LSTD": 4
+   }
+  },
+  "Genome": {
+   "instances": 600,
+   "pooled": {
+    "AEFT": 1300.4523597244508,
+    "BPPTS": 1488.6244796956137,
+    "ECTD": 1418.210976324031,
+    "HEFT": 1403.880391259275,
+    "IPEFT": 1521.174277571541,
+    "LSTD": 1397.5933175435343
+   },
+   "wins": {
+    "AEFT": 304,
+    "BPPTS": 26,
+    "ECTD": 105,
+    "HEFT": 73,
+    "IPEFT": 18,
+    "LSTD": 88
+   }
+  },
+  "LA": {
+   "instances": 60,
+   "pooled": {
+    "AEFT": 1434.081664093548,
+    "BPPTS": 1498.440514744205,
+    "ECTD": 1451.9562193564927,
+    "HEFT": 1523.6261361412735,
+    "IPEFT": 1491.9275236938042,
+    "LSTD": 1534.2471854598075
+   },
+   "wins": {
+    "AEFT": 22,
+    "BPPTS": 6,
+    "ECTD": 25,
+    "HEFT": 3,
+    "IPEFT": 6,
+    "LSTD": 2
+   }
+  },
+  "LIGO": {
+   "instances": 660,
+   "pooled": {
+    "AEFT": 1312.5640766645317,
+    "BPPTS": 1562.441446692588,
+    "ECTD": 1410.8154057973948,
+    "HEFT": 1326.3460411754254,
+    "IPEFT": 1450.105855485733,
+    "LSTD": 1324.5302915212587
+   },
+   "wins": {
+    "AEFT": 288,
+    "BPPTS": 13,
+    "ECTD": 100,
+    "HEFT": 108,
+    "IPEFT": 30,
+    "LSTD": 143
+   }
+  },
+  "Montage": {
+   "instances": 654,
+   "pooled": {
+    "AEFT": 1520.3713353046378,
+    "BPPTS": 1741.746895753859,
+    "ECTD": 1575.8695568419878,
+    "HEFT": 1587.9494613761176,
+    "IPEFT": 1585.5051194510565,
+    "LSTD": 1594.5496500731024
+   },
+   "wins": {
+    "AEFT": 370,
+    "BPPTS": 4,
+    "ECTD": 63,
+    "HEFT": 71,
+    "IPEFT": 97,
+    "LSTD": 86
+   }
+  }
+ },
+ "by_processors": {
+  "16": {
+   "instances": 349,
+   "pooled": {
+    "AEFT": 714.1199033615607,
+    "BPPTS": 869.2807446284319,
+    "ECTD": 762.139589808065,
+    "HEFT": 702.1437562224199,
+    "IPEFT": 801.840257555999,
+    "LSTD": 700.1498004594486
+   }
+  },
+  "2": {
+   "instances": 349,
+   "pooled": {
+    "AEFT": 8157.792586448362,
+    "BPPTS": 8949.7124769258,
+    "ECTD": 8701.281849598552,
+    "HEFT": 8460.582269783052,
+    "IPEFT": 8733.58137880528,
+    "LSTD": 8486.770667149323
+   }
+  },
+  "32": {
+   "instances": 349,
+   "pooled": {
+    "AEFT": 581.0196303022124,
+    "BPPTS": 639.1897336253711,
+    "ECTD": 585.1375453233653,
+    "HEFT": 623.2064904055726,
+    "IPEFT": 612.078161019618,
+    "LSTD": 618.4545613364817
+   }
+  },
+  "4": {
+   "instances": 349,
+   "pooled": {
+    "AEFT": 3029.2512671157365,
+    "BPPTS": 3630.7851373172466,
+    "ECTD": 3390.311919744924,
+    "HEFT": 3159.385576854068,
+    "IPEFT": 3462.6441640544717,
+    "LSTD": 3168.4030348779515
+   }
+  },
+  "64": {
+   "instances": 349,
+   "pooled": {
+    "AEFT": 534.2641916159299,
+    "BPPTS": 562.3926059425788,
+    "ECTD": 530.7755124352378,
+    "HEFT": 607.9069471568878,
+    "IPEFT": 554.1662674010678,
+    "LSTD": 605.9057441756212
+   }
+  },
+  "8": {
+   "instances": 349,
+   "pooled": {
+    "AEFT": 1266.3007825154218,
+    "BPPTS": 1595.7719602772154,
+    "ECTD": 1423.8090763712057,
+    "HEFT": 1272.419906231332,
+    "IPEFT": 1483.1735025683786,
+    "LSTD": 1274.7435040978417
+   }
+  }
+ },
+ "errors": [
+  {
+   "error": "ValueError: costs must be a nonempty n by p matrix",
+   "id": "Montage/100Nodes/4PROCESSORS/9_4.txt"
+  },
+  {
+   "error": "ValueError: costs must be a nonempty n by p matrix",
+   "id": "Montage/100Nodes/32PROCESSORS/9_32.txt"
+  },
+  {
+   "error": "ValueError: costs must be a nonempty n by p matrix",
+   "id": "Montage/100Nodes/64PROCESSORS/9_64.txt"
+  },
+  {
+   "error": "ValueError: costs must be a nonempty n by p matrix",
+   "id": "Montage/100Nodes/16PROCESSORS/9_16.txt"
+  },
+  {
+   "error": "ValueError: costs must be a nonempty n by p matrix",
+   "id": "Montage/100Nodes/2PROCESSORS/9_2.txt"
+  },
+  {
+   "error": "ValueError: costs must be a nonempty n by p matrix",
+   "id": "Montage/100Nodes/8PROCESSORS/9_8.txt"
+  }
+ ],
+ "instances_failed": 6,
+ "instances_scored": 2094,
+ "invalid_schedules": {
+  "AEFT": 0,
+  "BPPTS": 0,
+  "ECTD": 0,
+  "HEFT": 0,
+  "IPEFT": 0,
+  "LSTD": 0
+ },
+ "pct_over_best": {
+  "AEFT": 0.0,
+  "BPPTS": 15.19,
+  "ECTD": 6.18,
+  "HEFT": 4.53,
+  "IPEFT": 9.87,
+  "LSTD": 4.42
+ },
+ "policies": [
+  "AEFT",
+  "BPPTS",
+  "ECTD",
+  "HEFT",
+  "IPEFT",
+  "LSTD"
+ ],
+ "pooled_geomean_makespan": {
+  "AEFT": 1381.0,
+  "BPPTS": 1590.75,
+  "ECTD": 1466.38,
+  "HEFT": 1443.52,
+  "IPEFT": 1517.24,
+  "LSTD": 1442.07
+ },
+ "ranking": [
+  "AEFT",
+  "LSTD",
+  "HEFT",
+  "ECTD",
+  "IPEFT",
+  "BPPTS"
+ ],
+ "shared_wins": {
+  "AEFT": 17,
+  "BPPTS": 9,
+  "ECTD": 26,
+  "HEFT": 53,
+  "IPEFT": 12,
+  "LSTD": 54
+ },
+ "strict_wins": {
+  "AEFT": 1011,
+  "BPPTS": 45,
+  "ECTD": 323,
+  "HEFT": 209,
+  "IPEFT": 149,
+  "LSTD": 274
+ },
+ "title": "ECTD benchmark on the real six-family corpus"
+}
