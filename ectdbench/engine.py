@@ -9,6 +9,7 @@ records, independently of the earliest-start arithmetic that produced them.
 
 from __future__ import annotations
 
+import bisect
 import heapq
 import math
 
@@ -82,6 +83,13 @@ class Schedule:
         self.problem = problem
         self.insertion = bool(insertion)
         self.events = [[] for _ in range(problem.p)]
+        # Parallel index over self.events, kept in the same order. Events on a
+        # processor never overlap, so their start times and their finish times
+        # are both ascending, and bisecting the finishes locates the first event
+        # that could still affect a candidate start. Without this the gap search
+        # walked every event from index 0 for every (task, processor) pair.
+        self._starts = [[] for _ in range(problem.p)]
+        self._finishes = [[] for _ in range(problem.p)]
         self.copies = {}
         self.primary = {}
         self.available = [0.0] * problem.p
@@ -117,11 +125,24 @@ class Schedule:
                 candidate = starts[processor]
                 if duration == 0:
                     continue
-                for event in self.events[processor]:
+                calendar = self.events[processor]
+                # Every event finishing at or before the candidate is a no-op:
+                # its start is also <= candidate, so it cannot trigger the break
+                # and it cannot raise the candidate. Skipping them is therefore
+                # equivalent to walking from index 0, which is what the original
+                # loop did.
+                index = bisect.bisect_right(self._finishes[processor], candidate)
+                length = len(calendar)
+                while index < length:
+                    event = calendar[index]
                     if candidate + duration <= event.start:
                         break
                     if candidate < event.finish:
                         candidate = event.finish
+                        index = bisect.bisect_right(
+                            self._finishes[processor], candidate, index)
+                        continue
+                    index += 1
                 starts[processor] = candidate
         return starts, [starts[q] + self.problem.w[task][q] for q in range(p)]
 
@@ -150,11 +171,17 @@ class Schedule:
             raise ValueError("execution interval does not match computation cost")
         event = Execution(task, processor, start, finish, bool(duplicate))
         calendar = self.events[processor]
-        if not calendar or start >= calendar[-1].start:
+        if not calendar or start >= self._starts[processor][-1]:
             calendar.append(event)
+            self._starts[processor].append(start)
+            self._finishes[processor].append(finish)
         else:
-            position = next(i for i, prev in enumerate(calendar) if prev.start > start)
+            # First index whose start is strictly greater, matching the original
+            # `next(i for i, prev in enumerate(calendar) if prev.start > start)`.
+            position = bisect.bisect_right(self._starts[processor], start)
             calendar.insert(position, event)
+            self._starts[processor].insert(position, start)
+            self._finishes[processor].insert(position, finish)
         if finish > self.available[processor]:
             self.available[processor] = finish
         self.copies.setdefault(task, []).append(event)
