@@ -94,6 +94,27 @@ def v_own_cost(problem, insertion=True):
     return _schedule(problem, ranks, own_cost_table(problem), insertion)
 
 
+def v_own_cost_damped(problem, insertion=True):
+    """Own-cost tail with the author-code damping applied to the tail part.
+
+    Current best on the corpus. The damping weights multiply only the
+    continuation, not the task's own cost: the own cost is measured, so there
+    is nothing optimistic about it to damp. That is the whole difference from
+    ``v_own_cost``, and it is worth 0.12%.
+
+    Algebraically identical to the ``s:sw2.0_damp_descendant`` configuration in
+    ``scripts/ectd_search.py``, which is how it was found: that harness scores
+    ``start + 2w + oct*weights``, and since ``oct == own_cost - w`` this is
+    ``start + w + (w + oct*weights)``.
+    """
+    ranks = descendant_ranks(problem)
+    oct_table, cps = optimistic_cost_table(problem)
+    weights = critical_path_weights(problem, ranks, cps)
+    tail = [[problem.w[i][q] + oct_table[i][q] * weights[i][q]
+             for q in range(problem.p)] for i in range(problem.n)]
+    return _schedule(problem, ranks, tail, insertion)
+
+
 def v_own_cost_aeft_ranks(problem, insertion=True):
     """Own-cost tail plus AEFT's mean-IOCT priority order."""
     p = problem.p
@@ -140,6 +161,7 @@ def v_no_dup(problem, insertion=True):
 VARIANTS = {
     "v:baseline": v_baseline,
     "v:own_cost": v_own_cost,
+    "v:own_cost_damped": v_own_cost_damped,
     "v:own_cost_aeft_ranks": v_own_cost_aeft_ranks,
     "v:own_cost_pure_eft": v_own_cost_pure_eft,
     "v:no_damping": v_no_damping,

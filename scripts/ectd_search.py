@@ -89,8 +89,12 @@ def stratified(records, per_cell):
 
     Sampling by cell rather than at random keeps every family and every
     processor count represented, so a configuration that wins the sweep is not
-    winning because the sample was mostly Montage.
+    winning because the sample was mostly Montage. ``per_cell <= 0`` returns
+    every instance, which is how a winner found on the sample is confirmed at
+    full scale.
     """
+    if per_cell <= 0:
+        return sorted(records, key=lambda r: r["id"])
     cells = {}
     for r in records:
         cells.setdefault((r["family"], r["level"], r["p"]), []).append(r)
@@ -155,12 +159,18 @@ def name_of(sw, damping, rank_mode):
     return "s:sw%.1f_%s_%s" % (sw, "damp" if damping else "raw", rank_mode)
 
 
-def build_table():
+def build_table(only=None):
     table = dict(policy_table())
     for sw in SELF_WEIGHTS:
         for damping in DAMPINGS:
             for rank_mode in RANK_MODES:
                 table[name_of(sw, damping, rank_mode)] = make_policy(sw, damping, rank_mode)
+    if only:
+        wanted = set(only)
+        missing = wanted - set(table)
+        if missing:
+            raise SystemExit("unknown policy name(s): %s" % ", ".join(sorted(missing)))
+        table = {k: v for k, v in table.items() if k in wanted}
     return table
 
 
@@ -241,7 +251,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", required=True)
     ap.add_argument("--per-cell", type=int, default=2,
-                    help="instances per (family, nodes, processors) cell")
+                    help="instances per (family, nodes, processors) cell; <=0 for all")
+    ap.add_argument("--only", nargs="+", default=None,
+                    help="score only these policy names (default: all)")
     ap.add_argument("--out", default="/tmp/search.json")
     ap.add_argument("--workers", type=int, default=0)
     args = ap.parse_args()
@@ -250,7 +262,7 @@ def main():
     records = stratified(discover(args.data_root), args.per_cell)
     if not records:
         raise SystemExit("no instances found")
-    table = build_table()
+    table = build_table(args.only)
     policies = list(table)
 
     print("sample   %d instances, %d policies, %d runs"

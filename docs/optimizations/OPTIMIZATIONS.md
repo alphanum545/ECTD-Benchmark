@@ -71,9 +71,11 @@ It helps because the tail estimate is the unreliable half of the score. The opti
 
 Accepted. Largest single improvement measured on this corpus, and the only change that beats AEFT pooled. The mechanism above is the reason to believe it generalises rather than being a corpus artifact: it is a bias toward measured cost over estimated cost, which should pay wherever the tail estimate is optimistic.
 
-Caveat that must travel with it: the value 2 was found by search, not derived. The sweep in `scripts/ectd_search.py` exists to establish whether 2 is a plateau or a lucky point. Until that sweep is committed, treat 2 as a fitted parameter and say so.
+The value 2 is now measured as a plateau, not a lucky point. The sweep in scripts/ectd_search.py scores self_weight from 0.0 to 3.0 on a 282-instance stratified sample (one instance from every family x level x processor cell). The curve is smooth and single-peaked: 0.0 is catastrophic (+57.3% vs stock), 0.5 is +12.5%, 1.0 is stock, 1.5 is -4.4%, 2.0 is -5.45%, 3.0 is -4.0%. 2.0 sits at the top of a broad basin, with 1.5 and 3.0 both within 1.5 points. That shape is what a real effect looks like; a lucky point would not have smooth neighbours on both sides.
 
-**Evidence:** `docs/benchmark/summary.json (ablation run 45799615516, 2094 instances)`; `docs/benchmark/summary.csv`
+self_weight = 0.0 is worth keeping in mind as a sanity check on the whole harness: it means ignore the task's own cost entirely and place purely on start + tail, and it is 57% worse than stock. The own-cost term is doing real work, not decoration.
+
+**Evidence:** `docs/benchmark/summary.json (ablation run 45799615516, 2094 instances)`; `scripts/ectd_search.py sweep, 282-instance stratified sample`
 
 ### `baseline_control` — Control: reimplementation must reproduce published ECTD exactly
 
@@ -191,11 +193,15 @@ The argument for it: the damping rule is an undocumented heuristic with an arbit
 
 **Decision.**
 
-Rejected, and the rejection is informative: damping measurably helps. It is the one piece of the author's undocumented heuristics that survives an ablation, so it should be kept and described rather than quietly dropped.
+Rejected as a standalone change, but the reason is narrower than first recorded and the entry needs that correction.
 
-This entry exists mainly to stop the change being re-proposed as an obvious simplification. It is not obvious, and it is not free.
+At stock self_weight=1.0 the damping multiplier is worth only 0.12%. The ablation measured +0.26% for removing it, which is the same effect seen from the other side and is inside what this corpus resolves. So damping is a small positive, not the load-bearing heuristic the first version of this entry claimed.
 
-**Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
+What the sweep adds: damping's value shrinks as self_weight rises. At 1.5 it is worth 0.20%, at 2.0 it is 0.10%, and at 3.0 it flips to -0.13%, i.e. damping becomes mildly harmful. Per family at self_weight=2.0 it is +0.49% on Montage, +0.05% on Genome, +0.15% on LA, and negative on GE (-0.25%) and LIGO (-0.05%).
+
+Conclusion: keep damping, because at the operating point it is a small win, but do not describe it as essential. It is a marginal heuristic whose benefit is being crowded out by the own-cost term. If self_weight is ever pushed higher, damping should be re-tested rather than assumed.
+
+**Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`; `scripts/ectd_search.py sweep, 282-instance stratified sample`
 
 ### `no_dup` — Disable entry-task duplication
 

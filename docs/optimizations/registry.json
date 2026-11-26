@@ -70,14 +70,23 @@
         "cost over estimated cost, which should pay wherever the tail estimate is",
         "optimistic.",
         "",
-        "Caveat that must travel with it: the value 2 was found by search, not derived.",
-        "The sweep in `scripts/ectd_search.py` exists to establish whether 2 is a",
-        "plateau or a lucky point. Until that sweep is committed, treat 2 as a fitted",
-        "parameter and say so."
+        "The value 2 is now measured as a plateau, not a lucky point. The sweep in",
+        "scripts/ectd_search.py scores self_weight from 0.0 to 3.0 on a 282-instance",
+        "stratified sample (one instance from every family x level x processor cell).",
+        "The curve is smooth and single-peaked: 0.0 is catastrophic (+57.3% vs stock),",
+        "0.5 is +12.5%, 1.0 is stock, 1.5 is -4.4%, 2.0 is -5.45%, 3.0 is -4.0%.",
+        "2.0 sits at the top of a broad basin, with 1.5 and 3.0 both within 1.5 points.",
+        "That shape is what a real effect looks like; a lucky point would not have",
+        "smooth neighbours on both sides.",
+        "",
+        "self_weight = 0.0 is worth keeping in mind as a sanity check on the whole",
+        "harness: it means ignore the task's own cost entirely and place purely on",
+        "start + tail, and it is 57% worse than stock. The own-cost term is doing real",
+        "work, not decoration."
       ],
       "evidence": [
         "docs/benchmark/summary.json (ablation run 45799615516, 2094 instances)",
-        "docs/benchmark/summary.csv"
+        "scripts/ectd_search.py sweep, 282-instance stratified sample"
       ],
       "outcome": {
         "direction": "better",
@@ -85,6 +94,72 @@
         "min_pct": 1.0,
         "statement": "Measured at least 1% faster than stock ECTD pooled."
       }
+    },
+    {
+      "id": "own_cost_damped",
+      "title": "Damp only the tail, not the task's own measured cost",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_own_cost_damped",
+        "policy_key": "v:own_cost_damped"
+      },
+      "mechanism": [
+        "own_cost sets the score to `start + w + (w + continuation)`, counting the",
+        "task's own execution cost twice. The damping multiplier from the author code",
+        "was then dropped, because at self_weight 1.0 it is worth only 0.12% and the",
+        "first ablation measured the undamped version as marginally better.",
+        "",
+        "That was the wrong conclusion from a real measurement. Damping is not",
+        "worthless; it was being applied to the wrong thing. The multiplier exists to",
+        "correct an over-optimistic tail estimate. The task's own execution cost is",
+        "measured, not estimated, so there is nothing optimistic about it to correct.",
+        "Damping the whole own-cost tail therefore damps a quantity that does not need",
+        "it, which is why its benefit appeared to vanish as self_weight rose.",
+        "",
+        "This variant multiplies only the continuation by the damping weights and",
+        "leaves the own cost alone: `tail = w + continuation * weights`. The",
+        "correction now lands exactly on the part of the estimate that is optimistic."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "At least as good as own_cost, i.e. damping the tail alone recovers the damping benefit without giving up the own-cost gain."
+      },
+      "outcome": {
+        "direction": "better",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "Measured faster than own_cost on the full corpus, and the best configuration measured so far."
+      },
+      "decision": [
+        "Accepted. Best pooled result measured on this corpus: 1366.94, which is",
+        "-6.78% against stock ECTD and -1.02% against AEFT.",
+        "",
+        "The size of the gain is small (0.12% over own_cost) and on its own would not",
+        "justify an entry. What justifies it is that the mechanism predicted the sign",
+        "and the reason: damping should help once it is applied only to the estimated",
+        "part. It does, and it helps at a self_weight where damping the whole tail was",
+        "measured as slightly harmful. A 0.12% move in the predicted direction, with a",
+        "mechanism that explains why the earlier measurement said otherwise, is worth",
+        "more than a 0.12% move on its own.",
+        "",
+        "Honest limit: 0.12% is close to the resolution of this corpus. The ordering",
+        "against own_cost is consistent across the 282-instance stratified sweep and",
+        "the 2094-instance full run, which is why it is accepted, but it should not be",
+        "described as a large effect. It is a small correction that happens to be in",
+        "the right direction for a stated reason.",
+        "",
+        "Still open: the per-family picture is unchanged. This configuration beats",
+        "AEFT on FFT, Genome, LIGO and Montage, and loses on GE (+1.54%) and LA",
+        "(+2.86%). Those two families are where the remaining gain is, and they are a",
+        "separate problem from the pooled score."
+      ],
+      "evidence": [
+        "scripts/ectd_search.py full-corpus run, 2094 instances",
+        "scripts/ectd_search.py sweep, 282-instance stratified sample"
+      ]
     },
     {
       "id": "own_cost_aeft_ranks",
@@ -199,15 +274,29 @@
         "statement": "Removing damping is expected to be worse, i.e. the damping earns its place."
       },
       "decision": [
-        "Rejected, and the rejection is informative: damping measurably helps. It is",
-        "the one piece of the author's undocumented heuristics that survives an",
-        "ablation, so it should be kept and described rather than quietly dropped.",
+        "Rejected as a standalone change, but the reason is narrower than first",
+        "recorded and the entry needs that correction.",
         "",
-        "This entry exists mainly to stop the change being re-proposed as an obvious",
-        "simplification. It is not obvious, and it is not free."
+        "At stock self_weight=1.0 the damping multiplier is worth only 0.12%. The",
+        "ablation measured +0.26% for removing it, which is the same effect seen from",
+        "the other side and is inside what this corpus resolves. So damping is a small",
+        "positive, not the load-bearing heuristic the first version of this entry",
+        "claimed.",
+        "",
+        "What the sweep adds: damping's value shrinks as self_weight rises. At 1.5 it",
+        "is worth 0.20%, at 2.0 it is 0.10%, and at 3.0 it flips to -0.13%, i.e.",
+        "damping becomes mildly harmful. Per family at self_weight=2.0 it is +0.49% on",
+        "Montage, +0.05% on Genome, +0.15% on LA, and negative on GE (-0.25%) and LIGO",
+        "(-0.05%).",
+        "",
+        "Conclusion: keep damping, because at the operating point it is a small win,",
+        "but do not describe it as essential. It is a marginal heuristic whose benefit",
+        "is being crowded out by the own-cost term. If self_weight is ever pushed",
+        "higher, damping should be re-tested rather than assumed."
       ],
       "evidence": [
-        "docs/benchmark/summary.json (ablation run 45799615516)"
+        "docs/benchmark/summary.json (ablation run 45799615516)",
+        "scripts/ectd_search.py sweep, 282-instance stratified sample"
       ],
       "outcome": {
         "direction": "worse",
