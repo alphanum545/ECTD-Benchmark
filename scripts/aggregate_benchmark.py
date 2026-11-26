@@ -80,6 +80,37 @@ def main():
             for p in leaders:
                 ties[p] += 1
 
+    # Per-instance leaderboard. One row per (instance, leading policy), so a
+    # shared win appears once per policy that shared it. This is the evidence
+    # behind the win counts: without it the counts are unfalsifiable.
+    leader_rows = []
+    for r in scored:
+        live = {p: r["makespan"][p] for p in policies
+                if r["makespan"].get(p) and r["valid"].get(p)}
+        if not live:
+            continue
+        low = min(live.values())
+        leaders = sorted(p for p, v in live.items() if v == low)
+        rest = sorted(v for v in live.values() if v > low)
+        next_best = rest[0] if rest else None
+        margin = None
+        if next_best:
+            margin = round(100.0 * (next_best - low) / low, 4)
+        for p in leaders:
+            leader_rows.append({
+                "id": r["id"],
+                "family": r.get("family", ""),
+                "level": r.get("level", ""),
+                "p": r.get("p", ""),
+                "policy": p,
+                "makespan": round(low, 6),
+                "next_best": None if next_best is None else round(next_best, 6),
+                "margin_pct": margin,
+                "shared": len(leaders) > 1,
+                "leaders": "|".join(leaders),
+            })
+    leader_rows.sort(key=lambda d: (d["family"], str(d["level"]), d["p"], d["id"], d["policy"]))
+
     families = sorted({r["family"] for r in scored})
     by_family = {}
     for fam in families:
@@ -121,6 +152,7 @@ def main():
         "pct_over_best": {p: pct(p) for p in policies if pooled[p]},
         "strict_wins": dict(wins),
         "shared_wins": dict(ties),
+        "at_or_best": {p: wins.get(p, 0) + ties.get(p, 0) for p in policies},
         "by_family": by_family,
         "by_processors": by_p,
         "invalid_schedules": {
@@ -147,14 +179,32 @@ def main():
     with open(os.path.join(args.out, "summary.csv"), "w") as fh:
         fh.write("\n".join(lines) + "\n")
 
+    # winners.csv: the per-instance evidence behind the win counts.
+    leader_header = ["id", "family", "level", "p", "policy", "makespan",
+                     "next_best", "margin_pct", "shared", "leaders"]
+    leader_lines = [",".join(leader_header)]
+    for d in leader_rows:
+        leader_lines.append(",".join([
+            str(d["id"]), d["family"], str(d["level"]), str(d["p"]), d["policy"],
+            "%.6f" % d["makespan"],
+            "" if d["next_best"] is None else "%.6f" % d["next_best"],
+            "" if d["margin_pct"] is None else "%.4f" % d["margin_pct"],
+            "1" if d["shared"] else "0",
+            d["leaders"],
+        ]))
+    with open(os.path.join(args.out, "winners.csv"), "w") as fh:
+        fh.write("\n".join(leader_lines) + "\n")
+
     print("%d instances scored, %d failed" % (len(scored), len(errors)))
     print("%-8s %12s %8s %8s %8s" % ("policy", "pooled", "vs best", "wins", "invalid"))
     for p in ranked:
         print("%-8s %12.2f %7s%% %8d %8d"
               % (p, pooled[p], "" if pct(p) is None else "%.2f" % pct(p),
                  wins.get(p, 0), summary["invalid_schedules"][p]))
-    print("\nwrote %s and %s" % (os.path.join(args.out, "summary.json"),
-                                 os.path.join(args.out, "summary.csv")))
+    print("\nwrote %s, %s and %s (%d leader rows)"
+          % (os.path.join(args.out, "summary.json"),
+             os.path.join(args.out, "summary.csv"),
+             os.path.join(args.out, "winners.csv"), len(leader_rows)))
     return 0
 
 
