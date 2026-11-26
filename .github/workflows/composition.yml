@@ -88,15 +88,20 @@ jobs:
             --num-shards "$SHARDS" \
             --workers "$WORKERS" \
             --out shard-out
+          # The Genome 900 reconstruction is cached at the repo root by the
+          # builder. Copy it into this shard's output so the single-path
+          # artifact carries everything the verifier needs.
+          if [ -d compositions/_sources ]; then
+            mkdir -p shard-out/_sources
+            cp -R compositions/_sources/. shard-out/_sources/
+          fi
 
       - name: Upload shard
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: comp-shard-${{ matrix.shard }}
-          path: |
-            shard-out
-            compositions/_sources
+          path: shard-out
           retention-days: 7
 
   merge:
@@ -144,12 +149,12 @@ jobs:
             --expected-shards "$SHARDS" \
             --variant "$VARIANT" \
             --out compositions
-          # The synthesised Genome 900 source lives in the repo-root cache,
-          # not under --out. Each shard uploaded it; restore one copy so the
-          # verifier can resolve every manifest source path.
+          # The synthesised Genome 900 source ships inside each shard under
+          # _sources/. Restore one copy to the path the manifest records
+          # (compositions/_sources/...), which is where the verifier resolves it.
           mkdir -p compositions/_sources
-          find shards -path '*/compositions/_sources/*' -type f -print -quit | while read -r src; do
-            rel=${src#*/compositions/_sources/}
+          find shards -path '*/_sources/*' -type f -print -quit | while read -r src; do
+            rel=${src#*/_sources/}
             mkdir -p "compositions/_sources/$(dirname "$rel")"
             cp "$src" "compositions/_sources/$rel"
           done
