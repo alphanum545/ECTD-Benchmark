@@ -8,21 +8,35 @@ Notation: `n` tasks, `p` processors, `e` edges, `w` the big-integer digit width
 (30 in CPython, not 64). `d_in(i)` and `d_out(i)` are the in- and out-degree of
 task `i`, so `sum d_in = sum d_out = e`.
 
+**Complexity here is worst case in `n` alone.** A bound is a property of the
+algorithm, not of the graph it happens to be run on, so every total below is
+stated at the worst case over DAGs on `n` nodes, where `e = Theta(n^2)`. A
+sparser graph makes any of these algorithms faster; that is a fact about the
+input, not a weaker bound, and it is not used anywhere in this document to argue
+that a bound is met. See the note at the end on why that distinction matters.
+
 ## Summary
 
-The paper's requirement is `O(n^2 p)`.
+The paper's requirement is `O(n^2 p)`. Totals are worst case in `n`, at
+`e = Theta(n^2)`.
 
-| Algorithm | Entry point | Rank stage | Total | Meets `O(n^2 p)` |
+| Algorithm | Entry point | Rank stage | Total (worst case) | Meets `O(n^2 p)` |
 |---|---|---|---|---|
-| HEFT | `baselines.py:53-55` | `O(n + e)` | `O(e p + n^2 + n p)` | yes |
-| LSTD | `proposed.py:216-226` | `O(n + e)` | `O(e p + n^2 + n p)` | yes |
-| AEFT | `extended_baselines.py:105-109` | `O(n + e)` | `O(e p + n^2 + n p)` | yes |
-| BPPTS | `extended_baselines.py:112-116` | `O(n + e)` | `O(e p + n^2 + n p)` | yes |
-| IPEFT | `ipeft.py:85-103` | `O(n + e)` | `O(e p + n p)` | yes |
-| **ECTD** | `proposed.py:141-158` | `O(n + e n/w + n^3/w)` | `O(n^3/w + n^2 p)` | **no** |
+| HEFT | `baselines.py:53-55` | `O(n + e)` | `O(n^2 p)` | yes |
+| LSTD | `proposed.py:216-226` | `O(n + e)` | `O(n^2 p)` | yes |
+| AEFT | `extended_baselines.py:105-109` | `O(n + e)` | `O(n^2 p)` | yes |
+| BPPTS | `extended_baselines.py:112-116` | `O(n + e)` | `O(n^2 p)` | yes |
+| IPEFT | `ipeft.py:85-103` | `O(n + e)` | `O(n^2 p)` | yes |
+| **ECTD** | `proposed.py:141-158` | `O(n + e n/w + n^2)` | **`O(n^3/w + n^2 p)`** | **no** |
 
-On a dense DAG (`e = Theta(n^2)`) the first five collapse to `O(n^2 p)` and ECTD
-to `O(n^3/w)`.
+Five of the six sit exactly at the requirement. ECTD exceeds it by one term,
+`e n/w`, which at `e = Theta(n^2)` is `n^3/w`. That term is the whole of the
+problem: nothing else in any of the six algorithms goes above `O(n^2 p)`.
+
+For reference, the untightened totals before collapsing `e` to its worst case
+are `O(e p + n^2 + n p)` for HEFT, LSTD, AEFT and BPPTS, `O(e p + n p)` for
+IPEFT, and `O(e n/w + n^2 + e p + n p)` for ECTD. The collapse is only a
+substitution of `e = Theta(n^2)`; it hides no assumption.
 
 ## Where the `p` comes from
 
@@ -99,22 +113,38 @@ descendant, which is `Theta(n^2)` over all tasks. That made (B) `O(n^3/w)`.
 
 ## Does ECTD meet `O(n^2 p)`?
 
-Not in general. After the byte-scan change the rank is `O(e n/w + n^2)`, and the
-total is
+No. The rank is `O(e n/w + n^2)` and the total is
 
 ```
 O(e n/w + n^2 + e p + n p)
 ```
 
-This is `O(n^2 p)` when `e = O(n p w)`. On the real corpus `e/n` is about 1.41,
-so the condition holds comfortably and ECTD is `O(n^2 p)` there. On a dense DAG
-`e = Theta(n^2)` and the bound is `O(n^3/w)`, which exceeds `O(n^2 p)` for
-`p < n/w`.
+At the worst case `e = Theta(n^2)` this is `O(n^3/w + n^2 p)`. The `e n/w` term
+is `n^3/w`, which exceeds `O(n^2 p)` whenever `p < n/w`.
 
-The honest statement for the paper: **five algorithms provably meet `O(n^2 p)`;
-ECTD meets it on sparse graphs and not on dense ones.** The remaining gap is
-term (A), the per-edge big-integer union, which no amount of scanning cleverness
-removes.
+The honest statement for the paper: **five algorithms provably meet
+`O(n^2 p)`; ECTD does not.** The gap is term (A), the per-edge big-integer
+union, and no amount of scanning cleverness removes it.
+
+### Why the corpus does not settle this
+
+On the benchmark corpus `e/n` is about 1.41, so `e = O(n)` and ECTD's total
+collapses to `O(n^2 p)` there. It is tempting to conclude that the bound is met
+in practice and move on. That conclusion is not available, for two reasons.
+
+First, a bound is a claim about the algorithm over all inputs of size `n`. If it
+holds only when the graph is sparse, then what has been proved is a bound on a
+restricted input class, and it has to be stated that way. Saying "`O(n^2 p)`"
+and meaning "`O(n^2 p)` for `e = O(n p w)`" is a different and weaker claim.
+
+Second, the sparsity is a property of this corpus, not of the problem. A
+different workload, a denser dependency graph, or a synthetic stress case would
+move `e/n` and the bound would move with it. An algorithm whose complexity
+depends on the input's density is not `O(n^2 p)`; it is `O(n^2 p)` on the inputs
+where that happens to be true.
+
+So the corpus measurement is evidence about performance on this benchmark. It is
+not evidence about the bound.
 
 ## Space
 
@@ -157,8 +187,13 @@ equality, 482 rank cases. Neither changes any schedule.
 
 **Byte-scan the descendant mask** (`proposed.py`). Removes the per-set-bit walk:
 `O(n^3/w)` becomes `O(n^2/8)`. Does not touch term (A). The rank goes from
-`O(n^3/w + e n/w)` to `O(n^2 + e n/w)`. This is the change that makes ECTD
-`O(n^2 p)` on sparse graphs.
+`O(n^3/w + e n/w)` to `O(n^2 + e n/w)`.
+
+This is a constant-factor win, not a bound fix. It removes one of the two
+`n^3/w` terms, and on a dense DAG the remaining one, `e n/w`, still dominates.
+ECTD is `O(n^3/w + n^2 p)` before the change and `O(n^3/w + n^2 p)` after it.
+The measured speedup is 2.4x to 3.9x on the rank phase; that is the whole of
+what it buys, and it is worth having, but it does not move the exponent.
 
 **Bisect the calendar** (`engine.py`). The gap search walked every event from
 index 0 and `place` located its insertion point with a linear `next(...)`. Events
@@ -174,15 +209,23 @@ Term (A) is the obstacle: one `n`-bit OR per edge. Options, none of which is a
 pure refactor:
 
 - **Append-only placement.** Drops the `n^2` placement term but changes the
-  policy and regresses schedule quality. It also does not touch (A).
+  policy and regresses schedule quality. It also does not touch (A), so it does
+  not close this gap at all.
 - **A cheaper rank functional.** Already tried: `v:own_cost_aeft_ranks` replaces
   `descendant_ranks` with a mean own-cost-plus-tail order and measured 0.74%
-  worse. See `docs/optimizations/OPTIMIZATIONS.md`.
+  worse. See `docs/optimizations/OPTIMIZATIONS.md`. This is the only route that
+  removes (A), because it removes the need for descendant sets entirely.
 - **Approximate descendant weights.** A sketch with error `Omega(1/sqrt(p))` is
   12.5% at `p=64` and 71% at `p=2`, against a registry resolution of 0.12%. Not
   viable at this precision.
 
 The exact distinct-descendant weighted sum is transitive-closure shaped, and
-bitset closure at `O(n^3/w)` is the standard exact method for it. Meeting
-`O(n^2 p)` on dense graphs requires changing the functional, not computing it
-faster, and every functional change so far has cost quality.
+bitset closure at `O(n^3/w)` is the standard exact method for it. Every rank in
+the other five algorithms is `O(n + e)` or `O(e p)`, which is why they clear the
+bound without effort: none of them needs a descendant set.
+
+Meeting `O(n^2 p)` therefore requires changing the functional, not computing it
+faster. That makes the rank replacement the main line of work, and it makes the
+per-family quality question (GE and LA) part of the same decision rather than a
+side quest: whichever `O(n^2 p)` rank is adopted has to be chosen on what it
+costs per family.

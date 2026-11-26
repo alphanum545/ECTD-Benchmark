@@ -146,7 +146,7 @@ Accepted as a control. It reproduces ECTD to the cent on every run so far, which
 
 **Equivalence:** `docs/equivalence/byte-scan-and-bisect.json`
 
-Scope: Removes the per-set-bit walk from the rank. Does NOT remove the per-edge big-integer union, which is the other O(n^3/w) term, so it does not by itself put ECTD under O(n^2 p) on a dense graph.
+Scope: Removes the per-set-bit walk from the rank. Does NOT remove the per-edge big-integer union, which is the other n^3/w term. ECTD is O(n^3/w + n^2 p) before this change and O(n^3/w + n^2 p) after it, so this is a constant-factor win and not a bound fix.
 
 **Mechanism.** Why this should move the result, in algorithm terms.
 
@@ -166,7 +166,7 @@ Accepted on proof, not on a benchmark. A refactor that changes no output cannot 
 
 Measured speedup on the rank phase alone: 3.4x at n=500 and 3.9x at n=4000 on sparse graphs, 2.4x at n=4000 on dense. Those are observations, not the justification. The justification is the equivalence report.
 
-Scope, and this is the part that must not get lost: the rank after this change is O(e*n/w + n^2). It meets O(n^2 p) when e = O(n*p*w), which holds on this corpus (e/n ~ 1.41) and fails on a dense DAG. The remaining obstacle is the union at proposed.py:31, which this does not touch.
+Scope, and this is the part that must not get lost: this removes one of two n^3/w terms. The rank after the change is O(e*n/w + n^2), and at the worst case e = Theta(n^2) that is still O(n^3/w). ECTD does not meet O(n^2 p) before this change and does not meet it after. An earlier version of this entry said the change made ECTD O(n^2 p) on sparse graphs, which conditioned a complexity claim on the input's density. That is not a bound and the claim has been withdrawn.
 
 **Evidence:** `docs/equivalence/byte-scan-and-bisect.json`; `docs/COMPLEXITY.md`
 
