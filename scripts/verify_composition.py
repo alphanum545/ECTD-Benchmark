@@ -21,17 +21,13 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
 
+import _paths                                            # noqa: E402
 
-def _find_package_root():
-    for candidate in (os.path.join(ROOT, "ECTD-Benchmark"), ROOT, HERE):
-        if os.path.isfile(os.path.join(candidate, "ectdbench", "__init__.py")):
-            return candidate
-    raise SystemExit("cannot find the ectdbench package")
-
-
-sys.path.insert(0, _find_package_root())
+ROOT = _paths.REPO_ROOT
+sys.path.insert(0, _paths.find_package_root())
 
 from ectdbench import policy_table                      # noqa: E402
 from ectdbench.model import Problem                     # noqa: E402

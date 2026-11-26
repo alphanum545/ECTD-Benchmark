@@ -11,7 +11,12 @@ import random
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+import _paths                                            # noqa: E402
+
+ROOT = _paths.REPO_ROOT
 OUT = os.path.join(ROOT, "scheduling-benchmark", "data")
 
 # small levels only: this is a pipeline test, not a scale test

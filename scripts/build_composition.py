@@ -40,60 +40,25 @@ import time
 from multiprocessing import Pool
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
 
+import _paths                                            # noqa: E402
 
-def _find_package_root():
-    """Locate the directory that contains the ectdbench package.
-
-    The measurement scripts assume the canonical workspace layout, where this
-    repo sits at <workspace>/ECTD-Benchmark and the source corpus at
-    <workspace>/scheduling-benchmark. That is the layout the real build uses.
-    But the same script also has to run from a plain clone, where the repo root
-    is ROOT itself. Search the plausible roots instead of hardcoding one.
-    """
-    for candidate in (os.path.join(ROOT, "ECTD-Benchmark"), ROOT, HERE):
-        if os.path.isfile(os.path.join(candidate, "ectdbench", "__init__.py")):
-            return candidate
-    raise SystemExit(
-        "cannot find the ectdbench package. Expected it at "
-        "<workspace>/ECTD-Benchmark/ectdbench or alongside this script.")
-
-
-PKG_ROOT = _find_package_root()
+ROOT = _paths.REPO_ROOT
+PKG_ROOT = _paths.find_package_root()
 sys.path.insert(0, PKG_ROOT)
-
-
-def _find_data_root():
-    """Locate the directory that contains scheduling-benchmark/data.
-
-    The corpus does not live in this repo. Depending on how the workspace is
-    laid out it is either a sibling of the repo root or one level above it, and
-    the measurement scripts' own README is ambiguous about which. Search both,
-    and honour ECTD_DATA_ROOT so a cloud machine can point at wherever the
-    corpus actually is.
-    """
-    override = os.environ.get("ECTD_DATA_ROOT")
-    candidates = [override] if override else []
-    candidates += [
-        os.path.join(ROOT, "scheduling-benchmark", "data"),
-        os.path.join(os.path.dirname(ROOT), "scheduling-benchmark", "data"),
-    ]
-    for candidate in candidates:
-        if candidate and os.path.isdir(candidate):
-            return candidate
-    raise SystemExit(
-        "cannot find scheduling-benchmark/data. Set ECTD_DATA_ROOT to the "
-        "directory that holds the <Family>/<N>Nodes/<P>PROCESSORS/*.txt corpus.")
-
-
-DATA_ROOT = _find_data_root()
+DATA_ROOT = _paths.find_data_root()
+GENOME900_CACHE = os.path.join(ROOT, "compositions", "_sources")
 
 POLS = ("ECTD", "AEFT", "BPPTS", "HEFT", "LSTD", "IPEFT")
 POW = (4, 8, 16, 32, 64)
 
 SET1 = ("Montage", "Genome", "LIGO")
 SET2 = ("FFT", "GE", "LA")
+
+# Genome's eleventh level, synthesised per section 7 (see scripts/genome900.py).
+GENOME900_LEVEL = "900Nodes"
 
 # section 4.2, nine rungs, tried in order per cell
 LADDER = (
@@ -341,6 +306,7 @@ def cell_inventory():
     break the correspondence with the measurements.
     """
     cells = []
+    resolved = []
     unresolved = []
     for fam in SET1 + SET2:
         set_name = "S1" if fam in SET1 else "S2"
@@ -353,18 +319,33 @@ def cell_inventory():
             for p in POW:
                 cells.append((fam, lv, p, set_name, src))
 
-    # Genome 900 has no real source file: report it explicitly.
+    # Genome 900. The corpus has ten Genome levels; Set 1 needs eleven. Section
+    # 7 says the eleventh is synthesised, so build it here rather than letting
+    # the lattice quietly come up 40 instances short. The source is a
+    # reconstruction of the declared properties (n=901, 2,729 edges, CCR 0.51),
+    # not the original file, and every instance built from it is marked
+    # synthesised in the manifest.
     have = {(f, l) for f, l, _, _, _ in cells}
     for fam in SET1:
         levels = {l for f, l in have if f == fam}
-        if len(levels) < 11:
+        if len(levels) >= 11:
+            continue
+        if fam != "Genome":
             unresolved.append({"family": fam, "levels_found": sorted(levels),
-                               "note": "Genome 900 is synthesised; no source file"})
-    return cells, unresolved
+                               "note": "missing levels and no synthesis recipe"})
+            continue
+        import genome900
+        src, info = genome900.ensure_source(GENOME900_CACHE)
+        for p in POW:
+            cells.append((fam, GENOME900_LEVEL, p, "S1", src))
+        resolved.append({"family": fam, "level": GENOME900_LEVEL,
+                         "source": os.path.relpath(src, ROOT),
+                         "synthesised": True, "info": info})
+    return cells, resolved, unresolved
 
 
 def build(variant, outdir, workers, limit_cells=None):
-    cells, unresolved = cell_inventory()
+    cells, resolved, unresolved = cell_inventory()
     if limit_cells:
         cells = cells[:limit_cells]
     jobs = [(f, l, p, s, src, variant, outdir) for f, l, p, s, src in cells]
@@ -428,6 +409,7 @@ def build(variant, outdir, workers, limit_cells=None):
         "escalated_instances": len(off_regime),
         "cells_outside_source_regime": len({(r["family"], r["level"], r["p"])
                                             for r in off_regime}),
+        "synthesised_sources": resolved,
         "unresolved": unresolved,
         "elapsed_sec": round(elapsed, 2),
         "cells": cells_out,
