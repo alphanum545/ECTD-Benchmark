@@ -52,7 +52,7 @@ Per cell: quota, filled, `met`, `waived`, `rung_used`, `rung_hist`, candidates.
 
 Top level: delivered/winners/added/waived, `realised_ratio` overall and per set
 and per family, `rung_usage`, `escalated_instances`,
-`cells_outside_source_regime`.
+`cells_outside_source_regime`, `synthesised_sources`, `unresolved`.
 
 `realised_ratio` is computed from what was actually built. It is never asserted
 from the target.
@@ -79,12 +79,33 @@ belong to the DAG and do not depend on p.
 Picking a different source per p would silently break the correspondence with
 the measurements. Don't.
 
-`ECTD_DATA_ROOT` overrides corpus discovery when the data is not in either of
-the two conventional locations.
+### Genome 900
+
+The corpus has ten Genome levels; Set 1 needs eleven. `cell_inventory()` builds
+the missing 900 via `scripts/genome900.py` and caches it under
+`compositions/_sources/`. Without it the lattice enumerates 235 cells and tops
+out at 1,805 instances — 40 short, exactly the 5 Genome-900 cells × 8.
+
+The source is a **reconstruction**, not the original: `ectd_real/gen_new.py` is
+referenced by the record but is not in this repo. It matches the declared
+properties (n=901, 2,729 edges, CCR 0.51) and every instance built from it is
+marked `synthesised: true` in the manifest under `synthesised_sources`.
+
+**It must keep a single real entry task.** An earlier version had 450
+independent roots; `Problem` then inserts a zero-cost dummy entry, entry
+duplication goes inert, and the p=4 cell filled 0 of 7 winners in 180 candidates
+across all nine rungs. With one real entry the same cell fills 7/7 at rung 9.
+
+### Paths
+
+`scripts/_paths.py` resolves both the package and the corpus, so the builder runs
+from any working directory. `ECTD_DATA_ROOT` overrides corpus discovery. The
+corpus is searched at the parent workspace **before** the local synthetic fixture,
+so a real corpus is never silently shadowed by test data.
 
 ## Scale
 
-Measured on the 90-cell synthetic fixture, 8 workers: Variant A 26 s, Variant B
-41 s. The real 240-cell build is larger instances (up to 2,079 nodes) and is
+Measured on the 95-cell synthetic fixture, 8 workers: Variant A 62 s, Variant B
+158 s. The real 240-cell build is larger instances (up to 2,079 nodes) and is
 estimated at a few minutes; the record's §7 figure of ~3 min single-core was for
 a smaller mean n. Treat the real timing as unmeasured until the real run.
