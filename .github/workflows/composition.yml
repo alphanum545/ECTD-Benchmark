@@ -94,7 +94,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: comp-shard-${{ matrix.shard }}
-          path: shard-out
+          path: |
+            shard-out
+            compositions/_sources
           retention-days: 7
 
   merge:
@@ -142,6 +144,17 @@ jobs:
             --expected-shards "$SHARDS" \
             --variant "$VARIANT" \
             --out compositions
+          # The synthesised Genome 900 source lives in the repo-root cache,
+          # not under --out. Each shard uploaded it; restore one copy so the
+          # verifier can resolve every manifest source path.
+          mkdir -p compositions/_sources
+          find shards -path '*/compositions/_sources/*' -type f -print -quit | while read -r src; do
+            rel=${src#*/compositions/_sources/}
+            mkdir -p "compositions/_sources/$(dirname "$rel")"
+            cp "$src" "compositions/_sources/$rel"
+          done
+          test -f compositions/_sources/Genome/900Nodes/16PROCESSORS/genome900_synth.txt \
+            || echo "::warning::Genome 900 source not restored from shards"
 
       - name: Verify variants
         env:
