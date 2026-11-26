@@ -1,0 +1,178 @@
+name: composition
+
+# Build the two synthetic compositions (Variant A FORCE, Variant B KNOB LADDER)
+# entirely in CI. 20 shards x 4 processes = 80 concurrent policy evaluations.
+# Each shard fetches the corpus itself: a 20-way artifact fan-out of a ~3 GB
+# corpus is slower and one more thing that can fail. This mirrors benchmark.yml.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset_repo:
+        description: "owner/repo holding the corpus"
+        required: false
+        default: "Techietal/Task-Scheduling-Dataset"
+      dataset_ref:
+        description: "branch, tag or SHA of the corpus"
+        required: false
+        default: "main"
+      variant:
+        description: "which variant to build"
+        required: false
+        default: "both"
+        type: choice
+        options: [both, A, B]
+  push:
+    branches: [ci/composition-build]
+    paths:
+      - "scripts/build_composition.py"
+      - "scripts/merge_composition.py"
+      - "scripts/verify_composition.py"
+      - "scripts/genome900.py"
+      - "scripts/_paths.py"
+      - ".github/workflows/composition.yml"
+
+permissions:
+  contents: write
+
+env:
+  DATASET_REPO: ${{ github.event.inputs.dataset_repo || 'Techietal/Task-Scheduling-Dataset' }}
+  DATASET_REF: ${{ github.event.inputs.dataset_ref || 'main' }}
+  VARIANT: ${{ github.event.inputs.variant || 'both' }}
+  SHARDS: "20"
+  WORKERS: "4"
+
+jobs:
+  build:
+    name: shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Report runner size
+        run: echo "cores=$(nproc)"
+
+      - name: Fetch corpus
+        run: |
+          set -euo pipefail
+          url="https://codeload.github.com/${DATASET_REPO}/tar.gz/refs/heads/${DATASET_REF}"
+          echo "fetching $url"
+          curl -sSL --retry 3 --retry-delay 5 --max-time 900 -o corpus.tar.gz "$url"
+          mkdir -p corpus
+          tar -xzf corpus.tar.gz -C corpus --strip-components=1
+          rm -f corpus.tar.gz
+          total=$(find corpus -name '*.txt' -path '*PROCESSORS*' | wc -l)
+          echo "instance files: $total"
+          if [ "$total" -lt 2000 ]; then
+            echo "::error::expected ~2100 instance files, found $total"
+            exit 1
+          fi
+
+      - name: Build shard ${{ matrix.shard }}
+        env:
+          ECTD_DATA_ROOT: ${{ github.workspace }}/corpus
+        run: |
+          set -euo pipefail
+          python3 scripts/build_composition.py \
+            --variant "$VARIANT" \
+            --shard-id "${{ matrix.shard }}" \
+            --num-shards "$SHARDS" \
+            --workers "$WORKERS" \
+            --out shard-out
+
+      - name: Upload shard
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comp-shard-${{ matrix.shard }}
+          path: shard-out
+          retention-days: 7
+
+  merge:
+    name: merge and verify
+    needs: build
+    if: always() && needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: comp-shard-*
+          path: shards
+
+      - name: Check shard coverage
+        run: |
+          set -euo pipefail
+          count=$(find shards -name manifest.json | wc -l)
+          echo "shard manifests: $count (expected $SHARDS x variants)"
+          if [ "$count" -lt "$SHARDS" ]; then
+            echo "::error::expected at least $SHARDS shard manifests, found $count"
+            exit 1
+          fi
+
+      - name: Merge shards
+        env:
+          ECTD_DATA_ROOT: ${{ github.workspace }}/corpus
+        run: |
+          set -euo pipefail
+          # corpus is needed at import time by _paths; fetch it again in merge.
+          url="https://codeload.github.com/${DATASET_REPO}/tar.gz/refs/heads/${DATASET_REF}"
+          curl -sSL --retry 3 --retry-delay 5 --max-time 900 -o corpus.tar.gz "$url"
+          mkdir -p corpus
+          tar -xzf corpus.tar.gz -C corpus --strip-components=1
+          rm -f corpus.tar.gz
+          python3 scripts/merge_composition.py \
+            --shards shards \
+            --expected-shards "$SHARDS" \
+            --variant "$VARIANT" \
+            --out compositions
+
+      - name: Verify variants
+        env:
+          ECTD_DATA_ROOT: ${{ github.workspace }}/corpus
+        run: |
+          set -euo pipefail
+          for v in A B; do
+            if [ -f "compositions/variant_$v/manifest.json" ]; then
+              echo "--- verifying variant $v ---"
+              python3 scripts/verify_composition.py "compositions/variant_$v"
+            fi
+          done
+
+      - name: Upload manifests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: composition-manifests
+          path: compositions/*/manifest.json
+          retention-days: 30
+
+      - name: Commit manifests
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add compositions/*/manifest.json
+          if git diff --cached --quiet; then
+            echo "no manifest change to commit"
+          else
+            git commit -m "Record composition build manifests from run $GITHUB_RUN_ID"
+            git push
+          fi

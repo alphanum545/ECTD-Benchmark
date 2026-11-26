@@ -344,10 +344,20 @@ def cell_inventory():
     return cells, resolved, unresolved
 
 
-def build(variant, outdir, workers, limit_cells=None):
+def build(variant, outdir, workers, limit_cells=None, shard_id=None, num_shards=None):
+    """Build a variant, optionally over one shard of the cell inventory.
+
+    Sharding is by canonical cell index modulo num_shards, so the union of all
+    shards is exactly the full inventory with no overlap and no gaps. A shard
+    writes only its own cells; the merge job recombines them.
+    """
     cells, resolved, unresolved = cell_inventory()
     if limit_cells:
         cells = cells[:limit_cells]
+    if shard_id is not None:
+        if num_shards is None or not (0 <= shard_id < num_shards):
+            raise ValueError("invalid shard_id/num_shards: %s/%s" % (shard_id, num_shards))
+        cells = [c for i, c in enumerate(cells) if i % num_shards == shard_id]
     jobs = [(f, l, p, s, src, variant, outdir) for f, l, p, s, src in cells]
 
     started = time.time()
@@ -393,6 +403,7 @@ def build(variant, outdir, workers, limit_cells=None):
         "variant": variant,
         "variant_name": "FORCE" if variant == "A" else "KNOB LADDER",
         "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "shard": {"id": shard_id, "count": num_shards},
         "lattice_target": 1845,
         "cells_target": 240,
         "quota": {"S1": {"winners": 7, "added": 1}, "S2": {"winners": 6, "added": 1}},
@@ -481,18 +492,26 @@ def main():
     ap.add_argument("--out", default=os.path.join(ROOT, "compositions"))
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--limit-cells", type=int, default=None)
+    ap.add_argument("--shard-id", type=int, default=None,
+                    help="build only cells whose canonical index %% num-shards == this")
+    ap.add_argument("--num-shards", type=int, default=None,
+                    help="total shard count; required with --shard-id")
     ap.add_argument("--self-check", action="store_true")
     args = ap.parse_args()
 
     if args.self_check:
         return self_check()
 
+    if (args.shard_id is None) != (args.num_shards is None):
+        raise SystemExit("--shard-id and --num-shards must be given together")
+
     variants = ("A", "B") if args.variant == "both" else (args.variant,)
     for v in variants:
         outdir = os.path.join(args.out, "variant_%s" % v)
         os.makedirs(outdir, exist_ok=True)
         print("building variant %s -> %s" % (v, outdir))
-        m = build(v, outdir, args.workers, args.limit_cells)
+        m = build(v, outdir, args.workers, args.limit_cells,
+                  args.shard_id, args.num_shards)
         dest = os.path.join(outdir, "manifest.json")
         with open(dest, "w") as fh:
             json.dump(m, fh, indent=1)
