@@ -5,6 +5,14 @@
 **Decided by:** user
 **Supersedes:** the single-variant plan in `docs/InstanceExpansionPlan.md` §4.4
 
+> **Rev. 2026-11-26b — measurement reconciliation.** Every quantitative claim in
+> this record was re-derived from the committed `docs/measurements/*.json`. The
+> rung-9 row, the 81-dead-cell inventory, the 552-instance count, the
+> 60-candidate confirmation and the §8 randomization table did not survive.
+> Corrected figures and the evidence are in
+> [`measurements/VERIFICATION.md`](measurements/VERIFICATION.md). The lattice
+> arithmetic (§3 vs §8) is still **open** and blocks the build.
+
 > **Location note.** This record lives in the `ECTD-Benchmark` repo. The data it
 > references (`ectd-real/ectd_selected_400.csv`, `scheduling-benchmark/data/`)
 > sits in the parent workspace, one level above this repo's root. Paths are
@@ -15,12 +23,13 @@
 ## 1. The decision
 
 We are building **two** 1,605-instance datasets from the same 400-file base set,
-differing only in how they treat the 81 "dead" cells where ECTD has never won:
+differing only in how they treat the 104 "dead" cells where ECTD has never won
+in 24 measured candidates:
 
-| | Variant A — FORCE | Variant B — DROP |
+| | Variant A — FORCE | Variant B — KNOB LADDER |
 |---|---|---|
-| Dead cells | forced with heavy candidate draw | excluded from the lattice |
-| Purpose | maximum coverage, full 5×p grid | maximum honesty, 7:1 true in every cell |
+| Dead cells | forced at σ=0.18, waivers where a cell cannot fill | forced by escalating σ and comm_scale |
+| Purpose | source fidelity | coverage |
 | Built | pending | pending |
 
 Both are built. Neither is discarded. At the end we compare them and keep the
@@ -31,40 +40,44 @@ survives across sessions and is not silently collapsed into one variant.
 
 ## 2. Why there is a choice at all
 
-The lattice requires **7 ECTD wins per cell** (Set 1) and **6** (Set 2). Measured
-ECTD win rates on real topologies with the value-re-draw method:
+The lattice requires a fixed number of ECTD wins per cell — 6 in Set 1 and 5 in
+Set 2 under §3's 1,605 arithmetic (see the OPEN note in §8). Measured ECTD win
+rates on real topologies with the value-re-draw method, from
+`docs/measurements/cell_rates.json` (24 candidates per cell: 2 sources × 12
+seeds, 235 cells, 5,640 candidates):
 
 | Family | p=4 | p=8 | p=16 | p=32 | p=64 |
 |---|---:|---:|---:|---:|---:|
-| Montage | 25.0% | 20.0% | 6.7% | 10.0% | 6.7% |
-| Genome | **0.0%** | **0.0%** | **0.0%** | 46.7% | 56.7% |
-| LIGO | **0.0%** | **0.0%** | **0.0%** | 10.0% | 16.7% |
-| FFT | **0.0%** | 3.3% | 50.0% | 50.0% | 73.3% |
-| GE | 20.0% | 73.3% | 93.3% | 90.0% | 73.3% |
-| LA | **0.0%** | 83.3% | 73.3% | 66.7% | 63.3% |
+| Montage | 9.1% | 4.2% | 7.2% | 8.0% | 11.0% |
+| Genome | 1.2% | 10.8% | 19.2% | 43.3% | 52.5% |
+| LIGO | 2.7% | 4.5% | 9.1% | 15.2% | 33.7% |
+| FFT | 4.2% | 26.7% | 40.0% | 63.3% | 78.3% |
+| GE | 30.0% | 62.5% | 62.5% | 70.0% | 71.7% |
+| LA | 20.0% | 30.8% | 39.2% | 51.7% | 54.2% |
 
-Confirmed at 60 candidates per cell: Genome p=4/p=8 and LIGO p=4/p=8 produced
-**0 wins in 60**. Mean advantage −13% to −18%.
-
-"0 in 60" means the true rate is under ~5% (rule of three), not literally zero.
-So forcing is expensive and uncertain, not impossible.
+These are pooled across each family's levels, and the per-cell spread is wide.
+§4.0 is the authoritative per-cell view; this table is orientation only.
 
 **Cause:** ECTD's advantage comes from critical-path weighting and entry
 duplication. Both need spare processors to pay off. At p=4/p=8 the machine is
 nearly serial and AEFT wins consistently. This is a property of the algorithm,
 not a defect in the data.
 
-**Dead cell inventory:** 81 of 240 cells (34%), holding 552 of 1,605 instances.
+**Dead cell inventory:** 104 of 235 measured cells (44%), holding 708 of 1,605
+instances. Genome 900's 5 cells are unmeasured (§8) and are excluded.
 
-| Family | Cells | Viable | Dead | Instances | In dead cells |
-|---|---:|---:|---:|---:|---:|
-| Montage | 55 | 55 | 0 | 385 | 0 |
-| Genome | 55 | 22 | 33 | 385 | 231 |
-| LIGO | 55 | 22 | 33 | 385 | 231 |
-| FFT | 25 | 15 | 10 | 150 | 60 |
-| GE | 25 | 25 | 0 | 150 | 0 |
-| LA | 25 | 20 | 5 | 150 | 30 |
-| **Total** | **240** | **159** | **81** | **1,605** | **552** |
+| Family | Cells | Measured | Dead | Viable | Instances | In dead cells |
+|---|---:|---:|---:|---:|---:|---:|
+| Montage | 55 | 55 | 31 | 24 | 385 | 217 |
+| Genome | 55 | 50 | 22 | 28 | 385 | 154 |
+| LIGO | 55 | 55 | 31 | 24 | 385 | 217 |
+| FFT | 25 | 25 | 10 | 15 | 150 | 60 |
+| GE | 25 | 25 | 3 | 22 | 150 | 18 |
+| LA | 25 | 25 | 7 | 18 | 150 | 42 |
+| **Total** | **240** | **235** | **104** | **131** | **1,605** | **708** |
+
+If Genome 900's 5 unmeasured cells also come up dead, that becomes 109 dead
+cells and 743 instances.
 
 ---
 
@@ -90,6 +103,12 @@ TOTAL: 1605        cells: 240 (165 + 75)
 **Properties:** family equality holds · full 5-value p grid in both sets ·
 all 240 cells present · target ratio 1,404W / 201A = 6.985:1
 
+> **The 7:1 target is global, not per-cell.** 1,404W/201A is 1,605 split 7:1 and
+> rounded. No uniform per-cell quota produces it: 7:1 over 7 instances per cell
+> needs 6.125 winners, and over 6 instances needs 5.25. The per-cell quotas in
+> §3 (6W+1A / 5W+1A) give 1,365W/240A = 5.69:1. The §8 quotas (7W+1A / 6W+1A)
+> give 1,605W/240A = 6.69:1. See the OPEN note in §8.
+
 **Build rule:** every cell must yield its full quota. Dead cells get a hard draw
 cap; if a cell cannot fill, it is recorded as a **waiver** in the manifest rather
 than silently backfilled.
@@ -98,9 +117,12 @@ than silently backfilled.
 depending on the true rate (5% → 0.3 min; 1% → 1.3 min on 8 workers). Total
 runtime is minutes, not hours.
 
-**Known risk:** some dead cells may still come up short. 552 instances carry a
-bias we cannot verify per-cell. If a cell fails, the global 7:1 must be
-recomputed and the label corrected — it must not be asserted as 7:1 when it isn't.
+**Known risk — and it is large.** At σ=0.18 the measurement finds only 6 of the
+104 dead cells live (24 candidates each). A's realised fill count depends on the
+draw cap, but the measured expectation is 6 cells — 4 Set 1 cells × 7 plus 2
+Set 2 cells × 6 = 40 instances — leaving **668 waived** and **937 of 1,605
+delivered**. The global ratio must be recomputed on what is actually built and
+the label corrected; it must not be asserted as 7:1 when it isn't.
 
 ---
 
@@ -165,15 +187,21 @@ multiplier). Baseline is σ=0.18, ×1.
 | LIGO 1000 @p32 | 0% | 60% | 80% | 50% | 80% |
 | FFT 1152 @p32 | 0% | 50% | 90% | 100% | 80% |
 
+The "Base" column is the sweep's own 10-candidate baseline, not the 24-candidate
+`cell_rates.json` figure: Montage 900@p64 and 1000@p64 read 10% here (1 win in
+10) but 0/24 in `cell_rates.json`. Both are consistent with a true rate near
+zero; 10 draws cannot distinguish them.
+
 Every dead cell becomes live. **Mechanism:** raising communication cost relative
 to computation rewards ECTD's critical-path weighting. ECTD's advantage is
 modelling when communication dominates, so amplifying comm cost puts the instance
 into the regime where the algorithm's premise holds. This is a deliberate,
 recorded manipulation, not a neutral re-draw.
 
-**Approved ladder** — tried in order per cell until the quota fills. **Nine rungs,
-not four.** Measurement on all 104 dead cells showed the original 4-rung ladder
-left 27 cells unfilled; four further rungs were needed.
+**Approved ladder** — tried in order per cell until the quota fills. **Eight
+rungs, not four.** Measurement on all 104 dead cells showed the original 4-rung
+ladder left 27 cells unfilled; four further rungs were needed and filled 24 of
+them.
 
 | Rung | σ | comm_scale | Cells filled here |
 |---:|---:|---:|---:|
@@ -185,13 +213,22 @@ left 27 cells unfilled; four further rungs were needed.
 | 6 | 1.0 | ×8 | 0 |
 | 7 | 1.0 | ×16 | 1 |
 | 8 | 1.0 | ×32 | 8 |
-| 9 | 1.0 | ×64 | 3 |
 
-**All 104 dead cells fill.** The last three (Genome 1000@p4, LIGO 1000@p4,
-LIGO 900@p4) needed ×64, where they reach 48–65% win rate.
+**101 of 104 dead cells fill.** Three resist every rung tested:
 
-Distribution: only **6 of 104** dead cells fill at baseline. 98 need escalation,
-and 26 need ×16 or beyond. Those 26 are the instances that are no longer in their
+| Cell | Baseline wins | Ladder result |
+|---|---:|---|
+| Genome 1000 @p4 | 0/24 | never filled (`wins=0, cand=0`) |
+| LIGO 1000 @p4 | 0/24 | never filled (`wins=0, cand=0`) |
+| LIGO 900 @p4 | 0/24 | never filled (`wins=0, cand=0`) |
+
+All three are the largest level of their family at the smallest machine. That is
+the same regime §2 identifies as the cause of the dead cells: at p=4 with n≥900
+there are no spare processors for critical-path weighting to exploit. It is a
+boundary of the method, not a search failure, and it should be reported as one.
+
+Distribution: only **6 of 104** dead cells fill at baseline. 95 need escalation,
+and 24 need ×16 or beyond. Those 24 are the instances that are no longer in their
 source communication regime.
 
 **Cap 20 candidates per rung, then escalate.** Tested on the hardest cell: a
@@ -217,14 +254,20 @@ hard they push:
 | Cells | 240 | 240 |
 | p per set | 5 / 5 | 5 / 5 |
 | Dead cells | forced, may waive | forced via ladder |
-| Value re-draw | σ=0.18 only | escalates to σ=0.6 / ×8 |
-| Fidelity to source | high | degrades in ~5 cells |
-| 7:1 | target, may waive | target, should hold |
+| Cells filled | 6 of 104 | 101 of 104 |
+| Instances delivered | 937 of 1,605 | 1,584 of 1,605 |
+| Value re-draw | σ=0.18 only | escalates to σ=1.0 / ×32 |
+| Fidelity to source | high | degrades in 24 cells |
+| 7:1 | target, may waive | target, may waive in 3 cells |
 
 A stays faithful to the source cost distribution and accepts waivers where a cell
-cannot fill. B guarantees the fill by moving the instance into a
-communication-heavy regime. **A is the honest-coverage variant; B is the
-guaranteed-fill variant.** The comparison in §6 decides which is preferable.
+cannot fill. B pushes most cells over the line by moving the instance into a
+communication-heavy regime, and waives the three that resist every rung.
+
+**Neither variant is a guaranteed fill.** B delivers 1,584 of 1,605 instances, 21
+short, and needs the same waiver mechanism as A — for 3 cells instead of 98.
+**A is the high-fidelity variant; B is the high-coverage variant.** The
+comparison in §6 decides which is preferable.
 
 ---
 
@@ -232,16 +275,18 @@ guaranteed-fill variant.** The comparison in §6 decides which is preferable.
 
 | | A — FORCE | B — KNOB LADDER |
 |---|---:|---:|
-| Total instances | 1,605 | 1,605 |
+| Target instances | 1,605 | 1,605 |
+| Delivered instances | 937 | 1,584 |
 | Cells | 240 | 240 |
 | Family equality | holds | holds |
 | p per set (S1 / S2) | 5 / 5 | 5 / 5 |
-| Dead cells | 81 forced | 81 forced |
-| Value re-draw | σ=0.18 only | escalates to σ=0.6 / ×8 |
-| 7:1 true in every cell | target, may waive | target, should hold |
+| Dead cells | 104 forced | 104 forced |
+| Cells filled | 6 of 104 | 101 of 104 |
+| Value re-draw | σ=0.18 only | escalates to σ=1.0 / ×32 |
+| 7:1 true in every cell | target, may waive | target, may waive in 3 cells |
 | Low-p regime present | yes | yes |
-| Fidelity to source costs | high | degrades in ~5 cells |
-| Main risk | unfilled cells / waivers | instances no longer in source regime |
+| Fidelity to source costs | high | degrades in 24 cells |
+| Main risk | 668 waived instances | 24 cells outside source regime |
 
 ---
 
@@ -258,8 +303,9 @@ To be decided when both exist, but the comparison should at minimum report:
 7. **Fidelity** — how far Variant B's escalated cells drift from their source cost
    distribution, reported separately from the ×1 cells.
 
-Both variants now cover the same cells, so coverage is no longer a differentiator.
-The real trade is **fill guarantee (B) versus source fidelity (A)**.
+Both variants now target the same cells, so the lattice is not a differentiator.
+The real trade is **coverage (B) versus source fidelity (A)**, and it is much
+larger than §4.3 first suggested: A waives 668 instances, B waives 21.
 
 ---
 
@@ -278,17 +324,25 @@ Then score the six policies, keep the draw if it advances the cell's quota, repe
 ### Per-cell loop
 
 ```
-for rung in LADDER:                      # 9 rungs, see §4.2
+for rung in LADDER:                      # 8 rungs, see §4.2
     for candidate in range(20):          # cap 20 per rung
         resample comp and comm from source
         score all 6 policies
-        if ECTD wins and winners < 7:  keep
-        if ECTD loses and added < 1:   keep
+        if ECTD wins and winners < quota_w:  keep
+        if ECTD loses and added < 1:        keep
     if quota met: stop, record rung
 ```
 
-Set 1 cells need **7 winners + 1 added** (8 instances). Set 2 cells need
-**6 winners + 1 added** (7 instances).
+> **OPEN — lattice arithmetic, resolve before building.** §3 gives
+> 165×7 + 75×6 = 1,605, i.e. **6W+1A** (Set 1) and **5W+1A** (Set 2). The loop
+> above was previously written as 7W+1A and 6W+1A, which is 165×8 + 75×7 =
+> **1,845**. The two cannot both be right. The 1,404W/201A target in §3 is 1,605
+> split 7:1 and rounded, and no uniform per-cell quota can produce it. Pick one
+> before the builder is written.
+
+Set 1 cells need **6 winners + 1 added** (7 instances). Set 2 cells need
+**5 winners + 1 added** (6 instances). *These are the §3 quotas; if the §8 quota
+is adopted instead, every total in this document scales to 1,845.*
 
 ### Measured cost
 
@@ -307,18 +361,31 @@ non-deterministic, for work a CPU does in 3 minutes.
 
 ### Why not full randomization
 
-Randomizing every comp and comm value independently was tested and **fails**:
+Randomizing every comp and comm value independently was tested and **fails**.
+Neither column is in a committed artifact: the "full random" figures come from
+the original probe, and the "source resample" column did not match
+`cell_rates.json`. Restated here from that file:
 
-| Cell | Source resample | Full random |
+| Cell | Source resample (`cell_rates.json`) | Full random (uncommitted) |
 |---|---:|---:|
-| LIGO 800 @p64 | 80% | **0%** |
-| Genome 500 @p32 | 33% | 13% |
-| FFT 224 @p64 | 87% | 53% |
+| LIGO 800 @p64 | 29% (7/24) | **0%** |
+| Genome 500 @p32 | 67% (16/24) | 13% |
+| FFT 224 @p64 | 75% (18/24) | 53% |
 | dead cells @p4 | 0% | 0% |
 
-Random values erase *which* edges are expensive, and that pattern is exactly what
-ECTD's critical-path weighting exploits. The escalating ladder preserves it and
-fills 5/5 test cells at drift 0.65–0.68; free search filled 3/5 at drift 1.74–1.79.
+The direction is consistent — full randomization collapses the high-p cells —
+but the "full random" column should be regenerated and committed before it is
+cited. Random values erase *which* edges are expensive, and that pattern is
+exactly what ECTD's critical-path weighting exploits. The escalating ladder
+preserves it and fills 5/5 test cells at drift 0.65–0.68; free search filled 3/5
+at drift 1.74–1.79.
+
+> **Caveat on the 5/5.** `search_compare.json` records the ladder arm as filling
+> all five test cells, but `ladder_probe2.json` records three of those five
+> (Genome 1000@p4, LIGO 1000@p4, LIGO 900@p4) as never filling. The two
+> artifacts contradict each other on the same cells. Until that is resolved, the
+> ladder's fill advantage over free search should be quoted as "at least 2/5,
+> possibly 5/5" — the drift comparison is unaffected.
 
 ### Structure preservation — verified
 
@@ -360,18 +427,20 @@ with the other.
 - Base set: `ectd-real/ectd_selected_400.csv` (400 rows, 349 winners / 51 added)
 - Win rates: measured 2026-11-25/26 on real topologies with value re-draw, σ=0.18,
   2 sources × 12 seeds per cell, 235 cells, 5,640 candidates
-  (`scripts/measure_cell_rates.py` → `scripts/out/cell_rates.json`)
+  (`scripts/measure_cell_rates.py` → `docs/measurements/cell_rates.json`)
 - Knob sweep: 2026-11-26 on the 6 hardest dead cells, σ ∈ {0.18, 0.35, 0.6, 1.0}
   × comm_scale ∈ {1, 2, 4, 8}
 - Ladder probe: `scripts/probe_ladder.py` (104 cells, 4 rungs) →
-  `scripts/out/ladder_probe.json`; `scripts/probe_ladder2.py` (27 stubborn cells,
-  4 more rungs) → `scripts/out/ladder_probe2.json`
+  `docs/measurements/ladder_probe.json`; `scripts/probe_ladder2.py` (27 stubborn
+  cells, 4 more rungs) → `docs/measurements/ladder_probe2.json`
 - Ladder vs free search: `scripts/compare_search.py` →
-  `scripts/out/search_compare.json`
+  `docs/measurements/search_compare.json`
+- Reconciliation: `docs/measurements/VERIFICATION.md` (2026-11-26) — every figure
+  above re-derived from the committed JSON
 - Lattice arithmetic: `N = 165·r1 + 75·r2` (Set 1 / Set 2), derived from
   3 families × tasks × 5 p × r
-- Dead-cell definition: 0 ECTD wins in the measured candidates (95% upper bound
-  ≈ 5% at 60 draws)
+- Dead-cell definition: 0 ECTD wins in 24 measured candidates (95% upper bound
+  ≈ 12% at 24 draws)
 - Related: `docs/InstanceExpansionPlan.md`, `ectd_real/make_instances.py`,
   `ectd_real/gen_new.py`, `scripts/measure_cell_rates.py`,
   `scripts/probe_ladder.py`, `scripts/probe_ladder2.py`, `scripts/compare_search.py`
