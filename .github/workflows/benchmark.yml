@@ -1,0 +1,179 @@
+name: benchmark
+
+# Scores the six policies (ECTD, AEFT, BPPTS, HEFT, LSTD, IPEFT) against the
+# real six-family workflow corpus: 2,100 instances, not random graphs.
+#
+# Corpus: Techietal/Task-Scheduling-Dataset (public), layout
+#   <Family>/<N>Nodes/<P>PROCESSORS/<i>_<P>.txt
+#   Montage 660 + Genome 600 + LIGO 660 + FFT 60 + GE 60 + LA 60 = 2,100
+#
+# 20 shards x 4 vCPU. Shards are balanced by n*n + n*p (the communication
+# matrix dominates cost), not by file count, so the six 2,079-node GE
+# instances do not all land in one shard.
+#
+# Each shard fetches the corpus itself rather than downloading a shared
+# artifact: the corpus is ~3 GB, and a 20-way artifact fan-out is both slower
+# and one more thing that can fail. Fetching is idempotent and cheap.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset_repo:
+        description: "owner/repo holding the corpus"
+        required: false
+        default: "Techietal/Task-Scheduling-Dataset"
+      dataset_ref:
+        description: "branch, tag or SHA of the corpus"
+        required: false
+        default: "main"
+      limit:
+        description: "score only N files per shard (0 = all)"
+        required: false
+        default: "0"
+  push:
+    branches: [main]
+    paths:
+      - "ectdbench/**"
+      - "scripts/run_benchmark.py"
+      - "scripts/aggregate_benchmark.py"
+      - "scripts/build_composition.py"
+      - ".github/workflows/benchmark.yml"
+
+permissions:
+  contents: read
+
+env:
+  DATASET_REPO: ${{ github.event.inputs.dataset_repo || 'Techietal/Task-Scheduling-Dataset' }}
+  DATASET_REF: ${{ github.event.inputs.dataset_ref || 'main' }}
+  LIMIT: ${{ github.event.inputs.limit || '0' }}
+  SHARDS: "20"
+
+jobs:
+  benchmark:
+    name: shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep this list and SHARDS in step. 20 shards is the agreed shape.
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Report runner size
+        run: |
+          echo "cores: $(nproc)"
+          free -h || true
+          python3 -VV
+
+      - name: Fetch corpus
+        run: |
+          set -euo pipefail
+          url="https://codeload.github.com/${DATASET_REPO}/tar.gz/refs/heads/${DATASET_REF}"
+          echo "fetching $url"
+          curl -sSL --retry 3 --retry-delay 5 --max-time 900 -o corpus.tar.gz "$url"
+          ls -lh corpus.tar.gz
+          mkdir -p corpus
+          tar -xzf corpus.tar.gz -C corpus --strip-components=1
+          rm -f corpus.tar.gz
+
+      - name: Verify corpus
+        run: |
+          set -euo pipefail
+          total=$(find corpus -name '*.txt' -path '*PROCESSORS*' | wc -l)
+          echo "instance files: $total"
+          if [ "$total" -lt 2000 ]; then
+            echo "::error::expected ~2100 instance files, found $total"
+            exit 1
+          fi
+          for d in corpus/*/; do
+            printf '  %-12s %s\n' "$(basename "$d")" "$(find "$d" -name '*.txt' | wc -l)"
+          done
+
+      - name: Check instance format
+        run: |
+          python3 - <<'PY'
+          import glob, sys
+          files = sorted(glob.glob("corpus/*/*Nodes/*PROCESSORS/*.txt"))
+          print("files:", len(files))
+          bad = []
+          for path in files:
+              with open(path) as fh:
+                  t = fh.read().split()
+              n, p = int(t[0]), int(t[1])
+              ok = any(2 + hdr + n * p + n * n == len(t) for hdr in (p + 5 * p, 5 * p, 0))
+              if not ok:
+                  bad.append((path, n, p, len(t)))
+          if bad:
+              print("unparseable:", bad[:5])
+              sys.exit(1)
+          print("all %d files parse as D1/D2/D3" % len(files))
+          PY
+
+      - name: Score shard
+        run: |
+          set -euo pipefail
+          python3 scripts/run_benchmark.py \
+            --data-root corpus \
+            --shard "${{ matrix.shard }}" \
+            --shards "$SHARDS" \
+            --limit "$LIMIT" \
+            --out bench-out
+
+      - name: Upload shard result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-shard-${{ matrix.shard }}
+          path: bench-out
+          retention-days: 7
+
+  aggregate:
+    name: aggregate
+    needs: benchmark
+    if: always() && needs.benchmark.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download all shard results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bench-shard-*
+          path: shards
+          merge-multiple: true
+
+      - name: Check shard coverage
+        run: |
+          set -euo pipefail
+          count=$(ls shards/shard_*.jsonl 2>/dev/null | wc -l)
+          echo "shard files: $count"
+          if [ "$count" -ne "$SHARDS" ]; then
+            echo "::error::expected $SHARDS shard files, found $count"
+            exit 1
+          fi
+
+      - name: Aggregate
+        run: python3 scripts/aggregate_benchmark.py --results shards --out docs/benchmark
+
+      - name: Show result
+        run: |
+          echo "--- summary.csv ---"
+          cat docs/benchmark/summary.csv
+
+      - name: Upload summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-summary
+          path: docs/benchmark
+          retention-days: 30
