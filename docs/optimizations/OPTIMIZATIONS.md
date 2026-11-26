@@ -30,11 +30,14 @@ build rather than being quietly softened in the prose.
 | Read the descendant bitmask by bytes instead of peeling set bits | refactor | ACCEPTED | n/a | n/a |
 | Locate the insertion gap by bisecting instead of scanning from zero | refactor | ACCEPTED | n/a | n/a |
 | Apply damping above outdegree p instead of p+1 | algorithm | INCONCLUSIVE | -0.04% | +6.14% |
-| ECTD rank with lam = 0: pure max of the OCT row | algorithm | PROPOSED | -6.18% | -0.38% |
-| ECTD rank with lam = 0.25: quarter-way from max toward mean | algorithm | PROPOSED | -6.32% | -0.52% |
-| ECTD rank with lam = 0.5: halfway from max toward mean | algorithm | PROPOSED | -6.40% | -0.62% |
-| ECTD rank with lam = 0.75: three-quarters from max toward mean | algorithm | PROPOSED | -6.51% | -0.73% |
-| ECTD rank with lam = 1: the mean, which is the control | algorithm | PROPOSED | -6.59% | -0.81% |
+| ECTD successor accumulation (max, beta=0.25) | algorithm | PROPOSED | -6.90% | -1.14% |
+| ECTD successor accumulation (max, beta=0.5) | algorithm | PROPOSED | -7.08% | -1.33% |
+| ECTD successor accumulation (max, beta=1) | algorithm | PROPOSED | -6.88% | -1.12% |
+| ECTD successor accumulation (max, beta=2) | algorithm | PROPOSED | -6.57% | -0.80% |
+| ECTD successor accumulation (sum, beta=0.25) | algorithm | PROPOSED | -6.12% | -0.32% |
+| ECTD successor accumulation (sum, beta=0.5) | algorithm | PROPOSED | -6.20% | -0.40% |
+| ECTD successor accumulation (sum, beta=1) | algorithm | PROPOSED | -6.43% | -0.65% |
+| ECTD successor accumulation (sum, beta=2) | algorithm | PROPOSED | -6.39% | -0.60% |
 | Replace descendant ranks with HEFT upward rank | algorithm | PROPOSED | -6.89% | -1.14% |
 | Replace descendant ranks with LSTD rank | algorithm | PROPOSED | -7.01% | -1.26% |
 | Replace descendant ranks with AEFT mean IOCT | algorithm | PROPOSED | -6.08% | -0.27% |
@@ -47,6 +50,11 @@ build rather than being quietly softened in the prose.
 | Fall back to pure EFT when a task has more successors than processors | algorithm | REJECTED | -5.97% | -0.16% |
 | Remove the critical-successor damping multiplier entirely | algorithm | REJECTED | +0.26% | +6.46% |
 | Disable entry-task duplication | algorithm | REJECTED | +0.12% | +6.31% |
+| ECTD rank with lam = 0: pure max of the OCT row | algorithm | REJECTED | -6.18% | -0.38% |
+| ECTD rank with lam = 0.25: quarter-way from max toward mean | algorithm | REJECTED | -6.32% | -0.52% |
+| ECTD rank with lam = 0.5: halfway from max toward mean | algorithm | REJECTED | -6.40% | -0.62% |
+| ECTD rank with lam = 0.75: three-quarters from max toward mean | algorithm | REJECTED | -6.51% | -0.73% |
+| ECTD rank with lam = 1: the mean, which is the control | algorithm | REJECTED | -6.59% | -0.81% |
 
 A refactor row has no makespan by design: it is required to change no
 schedule at all, so its evidence is an equivalence report rather than a
@@ -245,168 +253,251 @@ It must not be adopted on this basis, and it must not be adopted in combination 
 
 ## Proposed, not yet measured
 
-### `ectd_lam_0` — ECTD rank with lam = 0: pure max of the OCT row
+### `ectd_succ_max_0p25` — ECTD successor accumulation (max, beta=0.25)
 
 **Status:** PROPOSED  
 **Kind:** algorithm
 
-**Measured:** `v:ectd_lam_0` = 1375.76 pooled, -6.18% vs `ECTD`, -0.38% vs `AEFT`
+**Measured:** `v:ectd_succ_max_0p25` = 1365.27 pooled, -6.90% vs `ECTD`, -1.14% vs `AEFT`
 
 **Mechanism.** Why this should move the result, in algorithm terms.
 
-ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
 
-rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
 
-lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
 
-So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
 
-This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
-
-**Claim before measuring:** lam = 0 is expected worse than descendant_ranks.
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
 
 **Measured outcome:** Not yet measured. Run the ablation workflow.
 
 **Decision.**
 
-Proposed. Cannot be accepted until the ablation workflow scores it.
+Proposed. Cannot be accepted until measured.
 
-lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
 
-Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
 
 **Evidence:** `docs/COMPLEXITY.md`
 
-### `ectd_lam_0p25` — ECTD rank with lam = 0.25: quarter-way from max toward mean
+### `ectd_succ_max_0p5` — ECTD successor accumulation (max, beta=0.5)
 
 **Status:** PROPOSED  
 **Kind:** algorithm
 
-**Measured:** `v:ectd_lam_0p25` = 1373.77 pooled, -6.32% vs `ECTD`, -0.52% vs `AEFT`
+**Measured:** `v:ectd_succ_max_0p5` = 1362.58 pooled, -7.08% vs `ECTD`, -1.33% vs `AEFT`
 
 **Mechanism.** Why this should move the result, in algorithm terms.
 
-ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
 
-rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
 
-lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
 
-So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
 
-This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
-
-**Claim before measuring:** lam = 0.25 is expected better than descendant_ranks.
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
 
 **Measured outcome:** Not yet measured. Run the ablation workflow.
 
 **Decision.**
 
-Proposed. Cannot be accepted until the ablation workflow scores it.
+Proposed. Cannot be accepted until measured.
 
-lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
 
-Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
 
 **Evidence:** `docs/COMPLEXITY.md`
 
-### `ectd_lam_0p5` — ECTD rank with lam = 0.5: halfway from max toward mean
+### `ectd_succ_max_1` — ECTD successor accumulation (max, beta=1)
 
 **Status:** PROPOSED  
 **Kind:** algorithm
 
-**Measured:** `v:ectd_lam_0p5` = 1372.47 pooled, -6.40% vs `ECTD`, -0.62% vs `AEFT`
+**Measured:** `v:ectd_succ_max_1` = 1365.48 pooled, -6.88% vs `ECTD`, -1.12% vs `AEFT`
 
 **Mechanism.** Why this should move the result, in algorithm terms.
 
-ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
 
-rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
 
-lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
 
-So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
 
-This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
-
-**Claim before measuring:** lam = 0.5 is expected better than descendant_ranks.
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
 
 **Measured outcome:** Not yet measured. Run the ablation workflow.
 
 **Decision.**
 
-Proposed. Cannot be accepted until the ablation workflow scores it.
+Proposed. Cannot be accepted until measured.
 
-lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
 
-Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
 
 **Evidence:** `docs/COMPLEXITY.md`
 
-### `ectd_lam_0p75` — ECTD rank with lam = 0.75: three-quarters from max toward mean
+### `ectd_succ_max_2` — ECTD successor accumulation (max, beta=2)
 
 **Status:** PROPOSED  
 **Kind:** algorithm
 
-**Measured:** `v:ectd_lam_0p75` = 1370.88 pooled, -6.51% vs `ECTD`, -0.73% vs `AEFT`
+**Measured:** `v:ectd_succ_max_2` = 1370.01 pooled, -6.57% vs `ECTD`, -0.80% vs `AEFT`
 
 **Mechanism.** Why this should move the result, in algorithm terms.
 
-ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
 
-rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
 
-lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
 
-So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
 
-This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
-
-**Claim before measuring:** lam = 0.75 is expected better than descendant_ranks.
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
 
 **Measured outcome:** Not yet measured. Run the ablation workflow.
 
 **Decision.**
 
-Proposed. Cannot be accepted until the ablation workflow scores it.
+Proposed. Cannot be accepted until measured.
 
-lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
 
-Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
 
 **Evidence:** `docs/COMPLEXITY.md`
 
-### `ectd_lam_1` — ECTD rank with lam = 1: the mean, which is the control
+### `ectd_succ_sum_0p25` — ECTD successor accumulation (sum, beta=0.25)
 
 **Status:** PROPOSED  
 **Kind:** algorithm
 
-**Measured:** `v:ectd_lam_1` = 1369.78 pooled, -6.59% vs `ECTD`, -0.81% vs `AEFT`
+**Measured:** `v:ectd_succ_sum_0p25` = 1376.64 pooled, -6.12% vs `ECTD`, -0.32% vs `AEFT`
 
 **Mechanism.** Why this should move the result, in algorithm terms.
 
-ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
 
-rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
 
-lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
 
-So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
 
-This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
-
-**Claim before measuring:** lam = 1 is expected worse than descendant_ranks.
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
 
 **Measured outcome:** Not yet measured. Run the ablation workflow.
 
 **Decision.**
 
-Proposed. Cannot be accepted until the ablation workflow scores it.
+Proposed. Cannot be accepted until measured.
 
-lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
 
-Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_sum_0p5` — ECTD successor accumulation (sum, beta=0.5)
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_sum_0p5` = 1375.50 pooled, -6.20% vs `ECTD`, -0.40% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
+
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_sum_1` — ECTD successor accumulation (sum, beta=1)
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_sum_1` = 1372.07 pooled, -6.43% vs `ECTD`, -0.65% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
+
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_sum_2` — ECTD successor accumulation (sum, beta=2)
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_sum_2` = 1372.75 pooled, -6.39% vs `ECTD`, -0.60% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The lam family varied how to collapse one OCT row by its LEVEL (max -> mean). The curve was monotone with the optimum at lam=1, so tail-level pessimism is not the mechanism. What descendant_ranks actually buys is downstream influence: a task with many important successors is urgent. That is the dimension lam never touched.
+
+The node weight is still ECTD's own OCT table. beta controls how much successor influence propagates:
+
+base(i)  = mean_q oct[i][q] max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) ) sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+
+The sum form double-counts shared successors. That is deliberate: it is O(e), not the O(e n/w) transitive closure, and it is the cheapest way to approximate the descendant count. Both forms are O(e p) to build the table plus O(e) to propagate, so both clear O(n^2 p).
+
+**Claim before measuring:** Expected to beat descendant_ranks by restoring downstream influence.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until measured.
+
+beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10 graphs, so the family contains its own baseline. max and sum differ as expected. The orderings change with beta.
+
+Stopping rule, fixed before measuring: if neither form beats descendant_ranks (1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that ECTD's contribution is the scoring rule and not the ordering.
 
 **Evidence:** `docs/COMPLEXITY.md`
 
@@ -737,6 +828,181 @@ Rejected. Duplication measurably helps, so it stays. The cost of the copies is o
 Recorded because entry duplication is the step most likely to look like superfluous complexity to a reader of the source, and this is the measurement that says otherwise.
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
+
+### `ectd_lam_0` — ECTD rank with lam = 0: pure max of the OCT row
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0` = 1375.76 pooled, -6.18% vs `ECTD`, -0.38% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0 is expected worse than descendant_ranks.
+
+**Measured outcome:** Pooled 1375.76, worse than descendant_ranks 1366.94.
+
+**Decision.**
+
+Rejected. The curve is monotone in lam: lam=1 is the best of the family and every step toward the max is worse. lam=1 is itself 0.207% worse than descendant_ranks, so the family does not reach the thing it was meant to replace.
+
+The mechanism is falsified. The claim was that a task expensive on its worst processor is more urgent than its average suggests, so lam < 1 should beat the mean. It does not. Per-processor pessimism in the row collapse is not what descendant_ranks buys.
+
+What it did get right: every lam beats descendant_ranks on GE and LA by 1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the AEFT-ordering swap, just smaller. That is recorded here so the next rank candidate is not judged on GE and LA alone.
+
+Kept in the registry as a rejection, not deleted. This is the record of a mechanism that was argued, predicted, measured and falsified.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_0p25` — ECTD rank with lam = 0.25: quarter-way from max toward mean
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0p25` = 1373.77 pooled, -6.32% vs `ECTD`, -0.52% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0.25 is expected better than descendant_ranks.
+
+**Measured outcome:** Pooled 1373.77, worse than descendant_ranks 1366.94.
+
+**Decision.**
+
+Rejected. The curve is monotone in lam: lam=1 is the best of the family and every step toward the max is worse. lam=1 is itself 0.207% worse than descendant_ranks, so the family does not reach the thing it was meant to replace.
+
+The mechanism is falsified. The claim was that a task expensive on its worst processor is more urgent than its average suggests, so lam < 1 should beat the mean. It does not. Per-processor pessimism in the row collapse is not what descendant_ranks buys.
+
+What it did get right: every lam beats descendant_ranks on GE and LA by 1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the AEFT-ordering swap, just smaller. That is recorded here so the next rank candidate is not judged on GE and LA alone.
+
+Kept in the registry as a rejection, not deleted. This is the record of a mechanism that was argued, predicted, measured and falsified.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_0p5` — ECTD rank with lam = 0.5: halfway from max toward mean
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0p5` = 1372.47 pooled, -6.40% vs `ECTD`, -0.62% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0.5 is expected better than descendant_ranks.
+
+**Measured outcome:** Pooled 1372.47, worse than descendant_ranks 1366.94.
+
+**Decision.**
+
+Rejected. The curve is monotone in lam: lam=1 is the best of the family and every step toward the max is worse. lam=1 is itself 0.207% worse than descendant_ranks, so the family does not reach the thing it was meant to replace.
+
+The mechanism is falsified. The claim was that a task expensive on its worst processor is more urgent than its average suggests, so lam < 1 should beat the mean. It does not. Per-processor pessimism in the row collapse is not what descendant_ranks buys.
+
+What it did get right: every lam beats descendant_ranks on GE and LA by 1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the AEFT-ordering swap, just smaller. That is recorded here so the next rank candidate is not judged on GE and LA alone.
+
+Kept in the registry as a rejection, not deleted. This is the record of a mechanism that was argued, predicted, measured and falsified.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_0p75` — ECTD rank with lam = 0.75: three-quarters from max toward mean
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0p75` = 1370.88 pooled, -6.51% vs `ECTD`, -0.73% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0.75 is expected better than descendant_ranks.
+
+**Measured outcome:** Pooled 1370.88, worse than descendant_ranks 1366.94.
+
+**Decision.**
+
+Rejected. The curve is monotone in lam: lam=1 is the best of the family and every step toward the max is worse. lam=1 is itself 0.207% worse than descendant_ranks, so the family does not reach the thing it was meant to replace.
+
+The mechanism is falsified. The claim was that a task expensive on its worst processor is more urgent than its average suggests, so lam < 1 should beat the mean. It does not. Per-processor pessimism in the row collapse is not what descendant_ranks buys.
+
+What it did get right: every lam beats descendant_ranks on GE and LA by 1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the AEFT-ordering swap, just smaller. That is recorded here so the next rank candidate is not judged on GE and LA alone.
+
+Kept in the registry as a rejection, not deleted. This is the record of a mechanism that was argued, predicted, measured and falsified.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_1` — ECTD rank with lam = 1: the mean, which is the control
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_1` = 1369.78 pooled, -6.59% vs `ECTD`, -0.81% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 1 is expected worse than descendant_ranks.
+
+**Measured outcome:** Pooled 1369.78, worse than descendant_ranks 1366.94.
+
+**Decision.**
+
+Rejected. The curve is monotone in lam: lam=1 is the best of the family and every step toward the max is worse. lam=1 is itself 0.207% worse than descendant_ranks, so the family does not reach the thing it was meant to replace.
+
+The mechanism is falsified. The claim was that a task expensive on its worst processor is more urgent than its average suggests, so lam < 1 should beat the mean. It does not. Per-processor pessimism in the row collapse is not what descendant_ranks buys.
+
+What it did get right: every lam beats descendant_ranks on GE and LA by 1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the AEFT-ordering swap, just smaller. That is recorded here so the next rank candidate is not judged on GE and LA alone.
+
+Kept in the registry as a rejection, not deleted. This is the record of a mechanism that was argued, predicted, measured and falsified.
+
+**Evidence:** `docs/COMPLEXITY.md`
 
 ## How to add an entry
 
