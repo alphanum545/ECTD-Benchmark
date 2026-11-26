@@ -434,7 +434,7 @@
       "id": "ectd_succ_own_g0p5",
       "title": "ECTD rank with own-cost weight gamma=0.5, beta=0.5",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "accepted",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_succ_own_rank",
@@ -469,19 +469,39 @@
         "statement": "Expected worse than gamma=0."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "better",
         "vs": "v:ectd_succ_max_0p5",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1360.64, better than gamma=0 (1362.58), -0.142%."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Accepted. New best on the corpus: 1360.64, which is -0.142% against",
+        "the previous best v:ectd_succ_max_0p5, -1.474% vs AEFT and -7.211% vs",
+        "published ECTD. Still O(e p), so the complexity requirement holds.",
         "",
-        "gamma=0 is the control and reproduces the current best exactly, so the",
-        "family contains its own baseline. beta is held at 0.5, the measured",
-        "optimum, so gamma is the only thing varied in the main sweep.",
+        "My prediction was wrong. I predicted gamma=0.5 would be worse than",
+        "gamma=0 and gamma=1 better. The measurement is the reverse: gamma=0.5",
+        "is best (1360.64), gamma=1 is second (1361.85), gamma=0 is third",
+        "(1362.58). The reasoning that own cost should be weighted in the rank",
+        "was right; my guess at the right magnitude was wrong. Recorded as-is.",
         "",
-        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
-        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+        "The gamma curve has an interior optimum at 0.5: gamma=0 gives 1362.58,",
+        "0.5 gives 1360.64, 1 gives 1361.85, 2 gives 1370.25. gamma=2 collapsing",
+        "sharply is informative: matching the scoring rule's self_weight of 2 in",
+        "the rank is too much. The two mechanisms want different magnitudes.",
+        "",
+        "The beta refinement at gamma=0 confirms 0.5 was the peak: 0.375 gives",
+        "1363.68 and 0.625 gives 1363.77, both worse than 1362.58. So beta=0.5",
+        "was not a lucky grid point.",
+        "",
+        "Per family vs the previous best: Montage -0.39%, Genome +0.14%, LIGO",
+        "-0.20%, FFT -0.29%, GE +0.26%, LA +0.08%. Instance-weighted over the",
+        "three families carrying 91.4% of the corpus that is -0.157%, so the",
+        "gain is on the bulk. GE regresses slightly here, but it remains far",
+        "better than published ECTD, which was the original gap.",
+        "",
+        "Strict wins 66 versus 26 for the previous best, so this one wins more",
+        "outright as well as pooling better. That is a stronger result than the",
+        "previous step, where pooled gain came with fewer strict wins."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -491,7 +511,7 @@
       "id": "ectd_succ_own_g1",
       "title": "ECTD rank with own-cost weight gamma=1, beta=0.5",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "accepted",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_succ_own_rank",
@@ -526,19 +546,14 @@
         "statement": "Expected better than gamma=0."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "better",
         "vs": "v:ectd_succ_max_0p5",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1361.85, better than gamma=0 (1362.58), -0.054%."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
-        "",
-        "gamma=0 is the control and reproduces the current best exactly, so the",
-        "family contains its own baseline. beta is held at 0.5, the measured",
-        "optimum, so gamma is the only thing varied in the main sweep.",
-        "",
-        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
-        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+        "Accepted as a valid but dominated point. Pooled 1361.85 beats gamma=0 but",
+        "loses to gamma=0.5. Kept in the registry so the shape of the curve is",
+        "visible: gamma=0.5 and gamma=1 are close, gamma=2 falls off sharply."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -548,7 +563,7 @@
       "id": "ectd_succ_own_g2",
       "title": "ECTD rank with own-cost weight gamma=2, beta=0.5",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_succ_own_rank",
@@ -583,19 +598,18 @@
         "statement": "Expected worse than gamma=0."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:ectd_succ_max_0p5",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1370.25, worse than gamma=0 (1362.58), +0.563%."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1370.25 against gamma=0 at 1362.58.",
         "",
-        "gamma=0 is the control and reproduces the current best exactly, so the",
-        "family contains its own baseline. beta is held at 0.5, the measured",
-        "optimum, so gamma is the only thing varied in the main sweep.",
+        "The beta refinement confirms 0.5 is the peak; both neighbouring points",
+        "are worse. gamma=2 is far worse, showing that the rank and the scoring",
+        "rule want different magnitudes of own-cost weight.",
         "",
-        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
-        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+        "Kept so the optima are visible rather than only the winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -605,7 +619,7 @@
       "id": "ectd_succ_own_b0p375",
       "title": "ECTD rank with own-cost weight gamma=0, beta=0.375",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_succ_own_rank",
@@ -640,19 +654,18 @@
         "statement": "Expected worse than gamma=0."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:ectd_succ_max_0p5",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1363.68, worse than gamma=0 (1362.58), +0.081%."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1363.68 against gamma=0 at 1362.58.",
         "",
-        "gamma=0 is the control and reproduces the current best exactly, so the",
-        "family contains its own baseline. beta is held at 0.5, the measured",
-        "optimum, so gamma is the only thing varied in the main sweep.",
+        "The beta refinement confirms 0.5 is the peak; both neighbouring points",
+        "are worse. gamma=2 is far worse, showing that the rank and the scoring",
+        "rule want different magnitudes of own-cost weight.",
         "",
-        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
-        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+        "Kept so the optima are visible rather than only the winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -662,7 +675,7 @@
       "id": "ectd_succ_own_b0p625",
       "title": "ECTD rank with own-cost weight gamma=0, beta=0.625",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_succ_own_rank",
@@ -697,19 +710,18 @@
         "statement": "Expected worse than gamma=0."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:ectd_succ_max_0p5",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1363.77, worse than gamma=0 (1362.58), +0.087%."
       },
       "decision": [
-        "Proposed. Cannot be accepted until measured.",
+        "Rejected. Pooled 1363.77 against gamma=0 at 1362.58.",
         "",
-        "gamma=0 is the control and reproduces the current best exactly, so the",
-        "family contains its own baseline. beta is held at 0.5, the measured",
-        "optimum, so gamma is the only thing varied in the main sweep.",
+        "The beta refinement confirms 0.5 is the peak; both neighbouring points",
+        "are worse. gamma=2 is far worse, showing that the rank and the scoring",
+        "rule want different magnitudes of own-cost weight.",
         "",
-        "Stopping rule: if no gamma beats 1362.58, the own-cost principle has",
-        "nothing left to give the rank and we stop with v:ectd_succ_max_0p5."
+        "Kept so the optima are visible rather than only the winner."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"

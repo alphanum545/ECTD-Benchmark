@@ -27,6 +27,8 @@ build rather than being quietly softened in the prose.
 | Weight the task's own execution cost twice in the processor score | algorithm | ACCEPTED | -6.67% | -0.90% |
 | Damp only the tail, not the task's own measured cost | algorithm | ACCEPTED | -6.78% | -1.02% |
 | Control: reimplementation must reproduce published ECTD exactly | algorithm | ACCEPTED | +0.00% | +6.18% |
+| ECTD rank with own-cost weight gamma=0.5, beta=0.5 | algorithm | ACCEPTED | -7.21% | -1.47% |
+| ECTD rank with own-cost weight gamma=1, beta=0.5 | algorithm | ACCEPTED | -7.13% | -1.39% |
 | ECTD successor accumulation (max, beta=0.25) | algorithm | ACCEPTED | -6.90% | -1.14% |
 | ECTD successor accumulation (max, beta=0.5) | algorithm | ACCEPTED | -7.08% | -1.33% |
 | ECTD successor accumulation (max, beta=1) | algorithm | ACCEPTED | -6.88% | -1.12% |
@@ -50,6 +52,9 @@ build rather than being quietly softened in the prose.
 | Fall back to pure EFT when a task has more successors than processors | algorithm | REJECTED | -5.97% | -0.16% |
 | Remove the critical-successor damping multiplier entirely | algorithm | REJECTED | +0.26% | +6.46% |
 | Disable entry-task duplication | algorithm | REJECTED | +0.12% | +6.31% |
+| ECTD rank with own-cost weight gamma=2, beta=0.5 | algorithm | REJECTED | -6.56% | -0.78% |
+| ECTD rank with own-cost weight gamma=0, beta=0.375 | algorithm | REJECTED | -7.00% | -1.25% |
+| ECTD rank with own-cost weight gamma=0, beta=0.625 | algorithm | REJECTED | -7.00% | -1.25% |
 | ECTD successor accumulation (max, beta=2) | algorithm | REJECTED | -6.57% | -0.80% |
 | ECTD successor accumulation (sum, beta=0.25) | algorithm | REJECTED | -6.12% | -0.32% |
 | ECTD successor accumulation (sum, beta=0.5) | algorithm | REJECTED | -6.20% | -0.40% |
@@ -164,6 +169,70 @@ It is listed as an entry because it is a claim that must be checked on every run
 Accepted as a control. It reproduces ECTD to the cent on every run so far, which is the precondition for reading any other row in the table.
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
+
+### `ectd_succ_own_g0p5` — ECTD rank with own-cost weight gamma=0.5, beta=0.5
+
+**Status:** ACCEPTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p5_g0p5` = 1360.64 pooled, -7.21% vs `ECTD`, -1.47% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Pooled 1360.64, better than gamma=0 (1362.58), -0.142%.
+
+**Decision.**
+
+Accepted. New best on the corpus: 1360.64, which is -0.142% against the previous best v:ectd_succ_max_0p5, -1.474% vs AEFT and -7.211% vs published ECTD. Still O(e p), so the complexity requirement holds.
+
+My prediction was wrong. I predicted gamma=0.5 would be worse than gamma=0 and gamma=1 better. The measurement is the reverse: gamma=0.5 is best (1360.64), gamma=1 is second (1361.85), gamma=0 is third (1362.58). The reasoning that own cost should be weighted in the rank was right; my guess at the right magnitude was wrong. Recorded as-is.
+
+The gamma curve has an interior optimum at 0.5: gamma=0 gives 1362.58, 0.5 gives 1360.64, 1 gives 1361.85, 2 gives 1370.25. gamma=2 collapsing sharply is informative: matching the scoring rule's self_weight of 2 in the rank is too much. The two mechanisms want different magnitudes.
+
+The beta refinement at gamma=0 confirms 0.5 was the peak: 0.375 gives 1363.68 and 0.625 gives 1363.77, both worse than 1362.58. So beta=0.5 was not a lucky grid point.
+
+Per family vs the previous best: Montage -0.39%, Genome +0.14%, LIGO -0.20%, FFT -0.29%, GE +0.26%, LA +0.08%. Instance-weighted over the three families carrying 91.4% of the corpus that is -0.157%, so the gain is on the bulk. GE regresses slightly here, but it remains far better than published ECTD, which was the original gap.
+
+Strict wins 66 versus 26 for the previous best, so this one wins more outright as well as pooling better. That is a stronger result than the previous step, where pooled gain came with fewer strict wins.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_own_g1` — ECTD rank with own-cost weight gamma=1, beta=0.5
+
+**Status:** ACCEPTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p5_g1` = 1361.85 pooled, -7.13% vs `ECTD`, -1.39% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected better than gamma=0.
+
+**Measured outcome:** Pooled 1361.85, better than gamma=0 (1362.58), -0.054%.
+
+**Decision.**
+
+Accepted as a valid but dominated point. Pooled 1361.85 beats gamma=0 but loses to gamma=0.5. Kept in the registry so the shape of the curve is visible: gamma=0.5 and gamma=1 are close, gamma=2 falls off sharply.
+
+**Evidence:** `docs/COMPLEXITY.md`
 
 ### `ectd_succ_max_0p25` — ECTD successor accumulation (max, beta=0.25)
 
@@ -841,6 +910,99 @@ Rejected. Duplication measurably helps, so it stays. The cost of the copies is o
 Recorded because entry duplication is the step most likely to look like superfluous complexity to a reader of the source, and this is the measurement that says otherwise.
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
+
+### `ectd_succ_own_g2` — ECTD rank with own-cost weight gamma=2, beta=0.5
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p5_g2` = 1370.25 pooled, -6.56% vs `ECTD`, -0.78% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Pooled 1370.25, worse than gamma=0 (1362.58), +0.563%.
+
+**Decision.**
+
+Rejected. Pooled 1370.25 against gamma=0 at 1362.58.
+
+The beta refinement confirms 0.5 is the peak; both neighbouring points are worse. gamma=2 is far worse, showing that the rank and the scoring rule want different magnitudes of own-cost weight.
+
+Kept so the optima are visible rather than only the winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_own_b0p375` — ECTD rank with own-cost weight gamma=0, beta=0.375
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p375g0` = 1363.68 pooled, -7.00% vs `ECTD`, -1.25% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Pooled 1363.68, worse than gamma=0 (1362.58), +0.081%.
+
+**Decision.**
+
+Rejected. Pooled 1363.68 against gamma=0 at 1362.58.
+
+The beta refinement confirms 0.5 is the peak; both neighbouring points are worse. gamma=2 is far worse, showing that the rank and the scoring rule want different magnitudes of own-cost weight.
+
+Kept so the optima are visible rather than only the winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_succ_own_b0p625` — ECTD rank with own-cost weight gamma=0, beta=0.625
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_succ_own_b0p625g0` = 1363.77 pooled, -7.00% vs `ECTD`, -1.25% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+The winning successor rank uses a node base of mean_q oct[i][q], the tail only. But the scoring rule that won earlier established that the task's own cost deserves extra weight (self_weight = 2). The rank ignores that principle. This family applies it to the ordering:
+
+base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ] rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+
+gamma = 0 reproduces the current best exactly, verified to == across 10 graphs. gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's double weight on own cost.
+
+This also partly recovers what descendant_ranks had and the cheap OCT base lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost quantity. gamma asks how much of that the rank needs.
+
+**Claim before measuring:** Expected worse than gamma=0.
+
+**Measured outcome:** Pooled 1363.77, worse than gamma=0 (1362.58), +0.087%.
+
+**Decision.**
+
+Rejected. Pooled 1363.77 against gamma=0 at 1362.58.
+
+The beta refinement confirms 0.5 is the peak; both neighbouring points are worse. gamma=2 is far worse, showing that the rank and the scoring rule want different magnitudes of own-cost weight.
+
+Kept so the optima are visible rather than only the winner.
+
+**Evidence:** `docs/COMPLEXITY.md`
 
 ### `ectd_succ_max_2` — ECTD successor accumulation (max, beta=2)
 
