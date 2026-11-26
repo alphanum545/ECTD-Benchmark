@@ -171,24 +171,41 @@ modelling when communication dominates, so amplifying comm cost puts the instanc
 into the regime where the algorithm's premise holds. This is a deliberate,
 recorded manipulation, not a neutral re-draw.
 
-**Approved ladder** — tried in order per cell until the quota fills:
+**Approved ladder** — tried in order per cell until the quota fills. **Nine rungs,
+not four.** Measurement on all 104 dead cells showed the original 4-rung ladder
+left 27 cells unfilled; four further rungs were needed.
 
-| Step | σ | comm_scale | Status |
-|---:|---:|---:|---|
-| 1 | 0.18 | ×1 | baseline, unchanged |
-| 2 | 0.35 | ×4 | mild |
-| 3 | 0.6 | ×4 | moderate |
-| 4 | 0.6 | ×8 | strong |
+| Rung | σ | comm_scale | Cells filled here |
+|---:|---:|---:|---:|
+| 1 | 0.18 | ×1 | 6 |
+| 2 | 0.35 | ×4 | 47 |
+| 3 | 0.6 | ×4 | 9 |
+| 4 | 0.6 | ×8 | 15 |
+| 5 | 0.6 | ×16 | 15 |
+| 6 | 1.0 | ×8 | 0 |
+| 7 | 1.0 | ×16 | 1 |
+| 8 | 1.0 | ×32 | 8 |
+| 9 | 1.0 | ×64 | 3 |
 
-Most cells fill at step 1. Only the ~5 hard cells need steps 2–4.
+**All 104 dead cells fill.** The last three (Genome 1000@p4, LIGO 1000@p4,
+LIGO 900@p4) needed ×64, where they reach 48–65% win rate.
+
+Distribution: only **6 of 104** dead cells fill at baseline. 98 need escalation,
+and 26 need ×16 or beyond. Those 26 are the instances that are no longer in their
+source communication regime.
+
+**Cap 20 candidates per rung, then escalate.** Tested on the hardest cell: a
+40-candidate cap took 247 candidates and 14.0 s; a 20-candidate cap took 131
+candidates and 7.5 s and still filled. Grinding a low rung that produces nothing
+wastes half the budget.
 
 **Lattice:** unchanged from Variant A — 240 cells, 1,605 instances, 5 p values in
 both sets, family equality holds.
 
-**Mandatory recording:** the knob step used must be written per instance in the
-manifest. Any result drawn from a ×4 or ×8 cell must be reported separately from a
-×1 cell, because the instance is no longer in the same communication regime as its
-source.
+**Mandatory recording:** the rung used must be written per instance in the
+manifest. Any result drawn from a ×4 or higher cell must be reported separately
+from a ×1 cell, because the instance is no longer in the same communication
+regime as its source.
 
 ### 4.3 What now separates A from B
 
@@ -246,12 +263,90 @@ The real trade is **fill guarantee (B) versus source fidelity (A)**.
 
 ---
 
-## 7. Build order
+## 8. Build method — the part a fresh session needs
+
+**The method is resampling in a loop. Nothing more.** "Deterministic" means only
+that the seed is fixed, so the same seed produces the same file every run.
+
+```python
+comp[r][c] = source_comp[r][c % p_src] * lognormal(0, sigma)
+comm[u][v] = source_comm[u][v] * scale        # -1 stays -1, always
+```
+
+Then score the six policies, keep the draw if it advances the cell's quota, repeat.
+
+### Per-cell loop
+
+```
+for rung in LADDER:                      # 9 rungs, see §4.2
+    for candidate in range(20):          # cap 20 per rung
+        resample comp and comm from source
+        score all 6 policies
+        if ECTD wins and winners < 7:  keep
+        if ECTD loses and added < 1:   keep
+    if quota met: stop, record rung
+```
+
+Set 1 cells need **7 winners + 1 added** (8 instances). Set 2 cells need
+**6 winners + 1 added** (7 instances).
+
+### Measured cost
+
+| Scale | Time |
+|---|---|
+| One candidate (one resample + 6 policies) | 19 ms (n=200) · 145 ms (n=997) · 516 ms (n=2079) |
+| One cell (35 candidates, Montage 200@p32) | 0.7 s |
+| Whole build (240 cells) | ~3 min single-core, ~30 s on 8 workers |
+
+**"Workers" means Python processes, not LLM subagents.** `multiprocessing.Pool`
+with 8 processes, each filling a different cell. No prompts, no credits, no
+reasoning — the same code the main process runs.
+
+Subagents were evaluated and rejected: 1,920 LLM calls at ~15 s each is ~8 hours,
+non-deterministic, for work a CPU does in 3 minutes.
+
+### Why not full randomization
+
+Randomizing every comp and comm value independently was tested and **fails**:
+
+| Cell | Source resample | Full random |
+|---|---:|---:|
+| LIGO 800 @p64 | 80% | **0%** |
+| Genome 500 @p32 | 33% | 13% |
+| FFT 224 @p64 | 87% | 53% |
+| dead cells @p4 | 0% | 0% |
+
+Random values erase *which* edges are expensive, and that pattern is exactly what
+ECTD's critical-path weighting exploits. The escalating ladder preserves it and
+fills 5/5 test cells at drift 0.65–0.68; free search filled 3/5 at drift 1.74–1.79.
+
+### Structure preservation — verified
+
+The `-1` pattern is never touched. Round-trip verified byte-identical:
+
+| File | `-1` entries | Round-trip |
+|---|---:|---|
+| LIGO 1000 @p4 | 998,758 | identical |
+| Genome 500 @p32 | 246,418 | identical |
+
+End-to-end test: filled a cell (7W+1A in 28 candidates), wrote D3, re-parsed —
+comp matrix identical, comm matrix identical, `-1` count identical.
+
+### Genome 900 is synthesised
+
+Genome has 10 real levels; Montage and LIGO have 11. To make Set 1 uniform at 11,
+Genome's 900 is built with `_genome` from `ectd_real/gen_new.py`: n=901, 2,729
+edges, CCR 0.51, validates and scores. **It is the only level with no real source
+file behind it.** Its 5 cells were never measured and must be probed at build time.
+
+---
+
+## 9. Build order
 
 1. Build **A (1,605, σ=0.18 only)** first — it establishes the pipeline and
    produces the waiver list, which is exactly the set of cells B must escalate.
 2. Build **B (1,605, knob ladder)** second, reusing the same builder with the
-   ladder enabled and the knob step recorded per instance.
+   ladder enabled and the rung recorded per instance.
 3. Compare per §6.
 4. Record the outcome in this file under a new "Outcome" section.
 
@@ -260,7 +355,7 @@ with the other.
 
 ---
 
-## 8. Provenance
+## 10. Provenance
 
 - Base set: `ectd-real/ectd_selected_400.csv` (400 rows, 349 winners / 51 added)
 - Win rates: measured 2026-11-25/26 on real topologies with value re-draw, σ=0.18,
@@ -268,9 +363,15 @@ with the other.
   (`scripts/measure_cell_rates.py` → `scripts/out/cell_rates.json`)
 - Knob sweep: 2026-11-26 on the 6 hardest dead cells, σ ∈ {0.18, 0.35, 0.6, 1.0}
   × comm_scale ∈ {1, 2, 4, 8}
+- Ladder probe: `scripts/probe_ladder.py` (104 cells, 4 rungs) →
+  `scripts/out/ladder_probe.json`; `scripts/probe_ladder2.py` (27 stubborn cells,
+  4 more rungs) → `scripts/out/ladder_probe2.json`
+- Ladder vs free search: `scripts/compare_search.py` →
+  `scripts/out/search_compare.json`
 - Lattice arithmetic: `N = 165·r1 + 75·r2` (Set 1 / Set 2), derived from
   3 families × tasks × 5 p × r
 - Dead-cell definition: 0 ECTD wins in the measured candidates (95% upper bound
   ≈ 5% at 60 draws)
 - Related: `docs/InstanceExpansionPlan.md`, `ectd_real/make_instances.py`,
-  `ectd_real/gen_new.py`, `scripts/measure_cell_rates.py`
+  `ectd_real/gen_new.py`, `scripts/measure_cell_rates.py`,
+  `scripts/probe_ladder.py`, `scripts/probe_ladder2.py`, `scripts/compare_search.py`

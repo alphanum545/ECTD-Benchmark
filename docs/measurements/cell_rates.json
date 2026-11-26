@@ -1,0 +1,942 @@
+{
+ "FFT|1152Nodes|16": [
+  0,
+  24
+ ],
+ "FFT|1152Nodes|32": [
+  0,
+  24
+ ],
+ "FFT|1152Nodes|4": [
+  0,
+  24
+ ],
+ "FFT|1152Nodes|64": [
+  21,
+  24
+ ],
+ "FFT|1152Nodes|8": [
+  0,
+  24
+ ],
+ "FFT|224Nodes|16": [
+  15,
+  24
+ ],
+ "FFT|224Nodes|32": [
+  19,
+  24
+ ],
+ "FFT|224Nodes|4": [
+  0,
+  24
+ ],
+ "FFT|224Nodes|64": [
+  18,
+  24
+ ],
+ "FFT|224Nodes|8": [
+  0,
+  24
+ ],
+ "FFT|40Nodes|16": [
+  12,
+  24
+ ],
+ "FFT|40Nodes|32": [
+  17,
+  24
+ ],
+ "FFT|40Nodes|4": [
+  5,
+  24
+ ],
+ "FFT|40Nodes|64": [
+  11,
+  24
+ ],
+ "FFT|40Nodes|8": [
+  17,
+  24
+ ],
+ "FFT|512Nodes|16": [
+  0,
+  24
+ ],
+ "FFT|512Nodes|32": [
+  22,
+  24
+ ],
+ "FFT|512Nodes|4": [
+  0,
+  24
+ ],
+ "FFT|512Nodes|64": [
+  23,
+  24
+ ],
+ "FFT|512Nodes|8": [
+  0,
+  24
+ ],
+ "FFT|96Nodes|16": [
+  21,
+  24
+ ],
+ "FFT|96Nodes|32": [
+  18,
+  24
+ ],
+ "FFT|96Nodes|4": [
+  0,
+  24
+ ],
+ "FFT|96Nodes|64": [
+  21,
+  24
+ ],
+ "FFT|96Nodes|8": [
+  15,
+  24
+ ],
+ "GE|135Nodes|16": [
+  18,
+  24
+ ],
+ "GE|135Nodes|32": [
+  22,
+  24
+ ],
+ "GE|135Nodes|4": [
+  5,
+  24
+ ],
+ "GE|135Nodes|64": [
+  20,
+  24
+ ],
+ "GE|135Nodes|8": [
+  20,
+  24
+ ],
+ "GE|2079Nodes|16": [
+  20,
+  24
+ ],
+ "GE|2079Nodes|32": [
+  23,
+  24
+ ],
+ "GE|2079Nodes|4": [
+  0,
+  24
+ ],
+ "GE|2079Nodes|64": [
+  21,
+  24
+ ],
+ "GE|2079Nodes|8": [
+  0,
+  24
+ ],
+ "GE|35Nodes|16": [
+  17,
+  24
+ ],
+ "GE|35Nodes|32": [
+  15,
+  24
+ ],
+ "GE|35Nodes|4": [
+  19,
+  24
+ ],
+ "GE|35Nodes|64": [
+  14,
+  24
+ ],
+ "GE|35Nodes|8": [
+  21,
+  24
+ ],
+ "GE|527Nodes|16": [
+  9,
+  24
+ ],
+ "GE|527Nodes|32": [
+  16,
+  24
+ ],
+ "GE|527Nodes|4": [
+  0,
+  24
+ ],
+ "GE|527Nodes|64": [
+  20,
+  24
+ ],
+ "GE|527Nodes|8": [
+  15,
+  24
+ ],
+ "GE|9Nodes|16": [
+  11,
+  24
+ ],
+ "GE|9Nodes|32": [
+  8,
+  24
+ ],
+ "GE|9Nodes|4": [
+  12,
+  24
+ ],
+ "GE|9Nodes|64": [
+  11,
+  24
+ ],
+ "GE|9Nodes|8": [
+  19,
+  24
+ ],
+ "Genome|1000Nodes|16": [
+  0,
+  24
+ ],
+ "Genome|1000Nodes|32": [
+  1,
+  24
+ ],
+ "Genome|1000Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|1000Nodes|64": [
+  9,
+  24
+ ],
+ "Genome|1000Nodes|8": [
+  0,
+  24
+ ],
+ "Genome|100Nodes|16": [
+  17,
+  24
+ ],
+ "Genome|100Nodes|32": [
+  23,
+  24
+ ],
+ "Genome|100Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|100Nodes|64": [
+  24,
+  24
+ ],
+ "Genome|100Nodes|8": [
+  9,
+  24
+ ],
+ "Genome|200Nodes|16": [
+  14,
+  24
+ ],
+ "Genome|200Nodes|32": [
+  9,
+  24
+ ],
+ "Genome|200Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|200Nodes|64": [
+  9,
+  24
+ ],
+ "Genome|200Nodes|8": [
+  0,
+  24
+ ],
+ "Genome|300Nodes|16": [
+  4,
+  24
+ ],
+ "Genome|300Nodes|32": [
+  13,
+  24
+ ],
+ "Genome|300Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|300Nodes|64": [
+  10,
+  24
+ ],
+ "Genome|300Nodes|8": [
+  0,
+  24
+ ],
+ "Genome|400Nodes|16": [
+  1,
+  24
+ ],
+ "Genome|400Nodes|32": [
+  14,
+  24
+ ],
+ "Genome|400Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|400Nodes|64": [
+  13,
+  24
+ ],
+ "Genome|400Nodes|8": [
+  0,
+  24
+ ],
+ "Genome|500Nodes|16": [
+  0,
+  24
+ ],
+ "Genome|500Nodes|32": [
+  16,
+  24
+ ],
+ "Genome|500Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|500Nodes|64": [
+  12,
+  24
+ ],
+ "Genome|500Nodes|8": [
+  0,
+  24
+ ],
+ "Genome|50Nodes|16": [
+  10,
+  24
+ ],
+ "Genome|50Nodes|32": [
+  4,
+  24
+ ],
+ "Genome|50Nodes|4": [
+  3,
+  24
+ ],
+ "Genome|50Nodes|64": [
+  10,
+  24
+ ],
+ "Genome|50Nodes|8": [
+  17,
+  24
+ ],
+ "Genome|600Nodes|16": [
+  0,
+  24
+ ],
+ "Genome|600Nodes|32": [
+  6,
+  24
+ ],
+ "Genome|600Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|600Nodes|64": [
+  10,
+  24
+ ],
+ "Genome|600Nodes|8": [
+  0,
+  24
+ ],
+ "Genome|700Nodes|16": [
+  0,
+  24
+ ],
+ "Genome|700Nodes|32": [
+  11,
+  24
+ ],
+ "Genome|700Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|700Nodes|64": [
+  9,
+  24
+ ],
+ "Genome|700Nodes|8": [
+  0,
+  24
+ ],
+ "Genome|800Nodes|16": [
+  0,
+  24
+ ],
+ "Genome|800Nodes|32": [
+  7,
+  24
+ ],
+ "Genome|800Nodes|4": [
+  0,
+  24
+ ],
+ "Genome|800Nodes|64": [
+  20,
+  24
+ ],
+ "Genome|800Nodes|8": [
+  0,
+  24
+ ],
+ "LA|11Nodes|16": [
+  9,
+  24
+ ],
+ "LA|11Nodes|32": [
+  4,
+  24
+ ],
+ "LA|11Nodes|4": [
+  9,
+  24
+ ],
+ "LA|11Nodes|64": [
+  0,
+  24
+ ],
+ "LA|11Nodes|8": [
+  7,
+  24
+ ],
+ "LA|137Nodes|16": [
+  17,
+  24
+ ],
+ "LA|137Nodes|32": [
+  11,
+  24
+ ],
+ "LA|137Nodes|4": [
+  0,
+  24
+ ],
+ "LA|137Nodes|64": [
+  17,
+  24
+ ],
+ "LA|137Nodes|8": [
+  13,
+  24
+ ],
+ "LA|2081Nodes|16": [
+  0,
+  24
+ ],
+ "LA|2081Nodes|32": [
+  21,
+  24
+ ],
+ "LA|2081Nodes|4": [
+  0,
+  24
+ ],
+ "LA|2081Nodes|64": [
+  23,
+  24
+ ],
+ "LA|2081Nodes|8": [
+  0,
+  24
+ ],
+ "LA|37Nodes|16": [
+  13,
+  24
+ ],
+ "LA|37Nodes|32": [
+  8,
+  24
+ ],
+ "LA|37Nodes|4": [
+  15,
+  24
+ ],
+ "LA|37Nodes|64": [
+  5,
+  24
+ ],
+ "LA|37Nodes|8": [
+  17,
+  24
+ ],
+ "LA|529Nodes|16": [
+  8,
+  24
+ ],
+ "LA|529Nodes|32": [
+  18,
+  24
+ ],
+ "LA|529Nodes|4": [
+  0,
+  24
+ ],
+ "LA|529Nodes|64": [
+  20,
+  24
+ ],
+ "LA|529Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|1000Nodes|16": [
+  0,
+  24
+ ],
+ "LIGO|1000Nodes|32": [
+  0,
+  24
+ ],
+ "LIGO|1000Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|1000Nodes|64": [
+  2,
+  24
+ ],
+ "LIGO|1000Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|100Nodes|16": [
+  5,
+  24
+ ],
+ "LIGO|100Nodes|32": [
+  5,
+  24
+ ],
+ "LIGO|100Nodes|4": [
+  3,
+  24
+ ],
+ "LIGO|100Nodes|64": [
+  7,
+  24
+ ],
+ "LIGO|100Nodes|8": [
+  6,
+  24
+ ],
+ "LIGO|200Nodes|16": [
+  11,
+  24
+ ],
+ "LIGO|200Nodes|32": [
+  12,
+  24
+ ],
+ "LIGO|200Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|200Nodes|64": [
+  9,
+  24
+ ],
+ "LIGO|200Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|300Nodes|16": [
+  1,
+  24
+ ],
+ "LIGO|300Nodes|32": [
+  9,
+  24
+ ],
+ "LIGO|300Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|300Nodes|64": [
+  10,
+  24
+ ],
+ "LIGO|300Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|400Nodes|16": [
+  0,
+  24
+ ],
+ "LIGO|400Nodes|32": [
+  1,
+  24
+ ],
+ "LIGO|400Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|400Nodes|64": [
+  13,
+  24
+ ],
+ "LIGO|400Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|500Nodes|16": [
+  0,
+  24
+ ],
+ "LIGO|500Nodes|32": [
+  0,
+  24
+ ],
+ "LIGO|500Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|500Nodes|64": [
+  9,
+  24
+ ],
+ "LIGO|500Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|50Nodes|16": [
+  7,
+  24
+ ],
+ "LIGO|50Nodes|32": [
+  13,
+  24
+ ],
+ "LIGO|50Nodes|4": [
+  4,
+  24
+ ],
+ "LIGO|50Nodes|64": [
+  14,
+  24
+ ],
+ "LIGO|50Nodes|8": [
+  6,
+  24
+ ],
+ "LIGO|600Nodes|16": [
+  0,
+  24
+ ],
+ "LIGO|600Nodes|32": [
+  0,
+  24
+ ],
+ "LIGO|600Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|600Nodes|64": [
+  4,
+  24
+ ],
+ "LIGO|600Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|700Nodes|16": [
+  0,
+  24
+ ],
+ "LIGO|700Nodes|32": [
+  0,
+  24
+ ],
+ "LIGO|700Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|700Nodes|64": [
+  11,
+  24
+ ],
+ "LIGO|700Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|800Nodes|16": [
+  0,
+  24
+ ],
+ "LIGO|800Nodes|32": [
+  0,
+  24
+ ],
+ "LIGO|800Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|800Nodes|64": [
+  7,
+  24
+ ],
+ "LIGO|800Nodes|8": [
+  0,
+  24
+ ],
+ "LIGO|900Nodes|16": [
+  0,
+  24
+ ],
+ "LIGO|900Nodes|32": [
+  0,
+  24
+ ],
+ "LIGO|900Nodes|4": [
+  0,
+  24
+ ],
+ "LIGO|900Nodes|64": [
+  3,
+  24
+ ],
+ "LIGO|900Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|1000Nodes|16": [
+  0,
+  24
+ ],
+ "Montage|1000Nodes|32": [
+  0,
+  24
+ ],
+ "Montage|1000Nodes|4": [
+  0,
+  24
+ ],
+ "Montage|1000Nodes|64": [
+  0,
+  24
+ ],
+ "Montage|1000Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|100Nodes|16": [
+  0,
+  24
+ ],
+ "Montage|100Nodes|32": [
+  3,
+  24
+ ],
+ "Montage|100Nodes|4": [
+  5,
+  24
+ ],
+ "Montage|100Nodes|64": [
+  5,
+  24
+ ],
+ "Montage|100Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|200Nodes|16": [
+  6,
+  24
+ ],
+ "Montage|200Nodes|32": [
+  9,
+  24
+ ],
+ "Montage|200Nodes|4": [
+  8,
+  24
+ ],
+ "Montage|200Nodes|64": [
+  7,
+  24
+ ],
+ "Montage|200Nodes|8": [
+  1,
+  24
+ ],
+ "Montage|300Nodes|16": [
+  3,
+  24
+ ],
+ "Montage|300Nodes|32": [
+  4,
+  24
+ ],
+ "Montage|300Nodes|4": [
+  2,
+  24
+ ],
+ "Montage|300Nodes|64": [
+  5,
+  24
+ ],
+ "Montage|300Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|400Nodes|16": [
+  0,
+  24
+ ],
+ "Montage|400Nodes|32": [
+  0,
+  24
+ ],
+ "Montage|400Nodes|4": [
+  0,
+  24
+ ],
+ "Montage|400Nodes|64": [
+  2,
+  24
+ ],
+ "Montage|400Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|500Nodes|16": [
+  2,
+  24
+ ],
+ "Montage|500Nodes|32": [
+  1,
+  24
+ ],
+ "Montage|500Nodes|4": [
+  0,
+  24
+ ],
+ "Montage|500Nodes|64": [
+  3,
+  24
+ ],
+ "Montage|500Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|50Nodes|16": [
+  8,
+  24
+ ],
+ "Montage|50Nodes|32": [
+  2,
+  24
+ ],
+ "Montage|50Nodes|4": [
+  9,
+  24
+ ],
+ "Montage|50Nodes|64": [
+  5,
+  24
+ ],
+ "Montage|50Nodes|8": [
+  10,
+  24
+ ],
+ "Montage|600Nodes|16": [
+  0,
+  24
+ ],
+ "Montage|600Nodes|32": [
+  0,
+  24
+ ],
+ "Montage|600Nodes|4": [
+  0,
+  24
+ ],
+ "Montage|600Nodes|64": [
+  0,
+  24
+ ],
+ "Montage|600Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|700Nodes|16": [
+  0,
+  24
+ ],
+ "Montage|700Nodes|32": [
+  0,
+  24
+ ],
+ "Montage|700Nodes|4": [
+  0,
+  24
+ ],
+ "Montage|700Nodes|64": [
+  1,
+  24
+ ],
+ "Montage|700Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|800Nodes|16": [
+  0,
+  24
+ ],
+ "Montage|800Nodes|32": [
+  2,
+  24
+ ],
+ "Montage|800Nodes|4": [
+  0,
+  24
+ ],
+ "Montage|800Nodes|64": [
+  1,
+  24
+ ],
+ "Montage|800Nodes|8": [
+  0,
+  24
+ ],
+ "Montage|900Nodes|16": [
+  0,
+  24
+ ],
+ "Montage|900Nodes|32": [
+  0,
+  24
+ ],
+ "Montage|900Nodes|4": [
+  0,
+  24
+ ],
+ "Montage|900Nodes|64": [
+  0,
+  24
+ ],
+ "Montage|900Nodes|8": [
+  0,
+  24
+ ]
+}

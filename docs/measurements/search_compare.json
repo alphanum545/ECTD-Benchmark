@@ -1,0 +1,123 @@
+{
+ "timing": [
+  {
+   "family": "LIGO",
+   "level": "900Nodes",
+   "p": 4,
+   "n": 900,
+   "sec": 0.0758363405863444
+  },
+  {
+   "family": "Genome",
+   "level": "1000Nodes",
+   "p": 4,
+   "n": 997,
+   "sec": 0.08422430356343587
+  },
+  {
+   "family": "LIGO",
+   "level": "1000Nodes",
+   "p": 4,
+   "n": 1000,
+   "sec": 0.09055034319559734
+  },
+  {
+   "family": "Montage",
+   "level": "600Nodes",
+   "p": 64,
+   "n": 600,
+   "sec": 0.13227597872416177
+  },
+  {
+   "family": "FFT",
+   "level": "96Nodes",
+   "p": 16,
+   "n": 96,
+   "sec": 0.007599433263142903
+  }
+ ],
+ "free": [
+  {
+   "family": "LIGO",
+   "level": "900Nodes",
+   "p": 4,
+   "cands": 0,
+   "drift": 0.0,
+   "sec": 4.172191143035889
+  },
+  {
+   "family": "Genome",
+   "level": "1000Nodes",
+   "p": 4,
+   "cands": 13,
+   "drift": 1.7532990017337955,
+   "sec": 1.0963170528411865
+  },
+  {
+   "family": "LIGO",
+   "level": "1000Nodes",
+   "p": 4,
+   "cands": 0,
+   "drift": 0.0,
+   "sec": 4.932098150253296
+  },
+  {
+   "family": "Montage",
+   "level": "600Nodes",
+   "p": 64,
+   "cands": 5,
+   "drift": 1.7383928694931559,
+   "sec": 0.6973457336425781
+  },
+  {
+   "family": "FFT",
+   "level": "96Nodes",
+   "p": 16,
+   "cands": 1,
+   "drift": 1.7860387537725235,
+   "sec": 0.007914066314697266
+  }
+ ],
+ "ladder": [
+  {
+   "family": "LIGO",
+   "level": "900Nodes",
+   "p": 4,
+   "cands": 4,
+   "drift": 0.6716310226016415,
+   "sec": 0.30718302726745605
+  },
+  {
+   "family": "Genome",
+   "level": "1000Nodes",
+   "p": 4,
+   "cands": 1,
+   "drift": 0.649019987945332,
+   "sec": 0.09221124649047852
+  },
+  {
+   "family": "LIGO",
+   "level": "1000Nodes",
+   "p": 4,
+   "cands": 1,
+   "drift": 0.6711682738411702,
+   "sec": 0.09615683555603027
+  },
+  {
+   "family": "Montage",
+   "level": "600Nodes",
+   "p": 64,
+   "cands": 1,
+   "drift": 0.6801877940859562,
+   "sec": 0.14621901512145996
+  },
+  {
+   "family": "FFT",
+   "level": "96Nodes",
+   "p": 16,
+   "cands": 2,
+   "drift": 0.6716546164433757,
+   "sec": 0.014262914657592773
+  }
+ ]
+}
