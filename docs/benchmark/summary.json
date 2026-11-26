@@ -1,18 +1,19 @@
 {
  "at_or_best": {
-  "AEFT": 329,
+  "AEFT": 308,
   "BPPTS": 46,
-  "ECTD": 252,
-  "HEFT": 189,
-  "IPEFT": 141,
-  "LSTD": 254,
-  "v:baseline": 252,
-  "v:damp_threshold_p": 254,
+  "ECTD": 250,
+  "HEFT": 186,
+  "IPEFT": 140,
+  "LSTD": 249,
+  "v:baseline": 250,
+  "v:damp_threshold_p": 252,
   "v:no_damping": 241,
-  "v:no_dup": 232,
-  "v:own_cost": 734,
-  "v:own_cost_aeft_ranks": 439,
-  "v:own_cost_pure_eft": 359
+  "v:no_dup": 230,
+  "v:own_cost": 556,
+  "v:own_cost_aeft_ranks": 405,
+  "v:own_cost_damped": 656,
+  "v:own_cost_pure_eft": 336
  },
  "by_family": {
   "FFT": {
@@ -30,6 +31,7 @@
     "v:no_dup": 1301.886960320304,
     "v:own_cost": 1236.3787877773336,
     "v:own_cost_aeft_ranks": 1229.8913601997588,
+    "v:own_cost_damped": 1236.3787877773336,
     "v:own_cost_pure_eft": 1229.8913601997588
    },
    "wins": {
@@ -45,6 +47,7 @@
     "v:no_dup": 6,
     "v:own_cost": 11,
     "v:own_cost_aeft_ranks": 21,
+    "v:own_cost_damped": 11,
     "v:own_cost_pure_eft": 21
    }
   },
@@ -63,6 +66,7 @@
     "v:no_dup": 1663.2500119076428,
     "v:own_cost": 1664.3094638497216,
     "v:own_cost_aeft_ranks": 1633.6166399005876,
+    "v:own_cost_damped": 1671.1675582734736,
     "v:own_cost_pure_eft": 1636.8701500439902
    },
    "wins": {
@@ -78,6 +82,7 @@
     "v:no_dup": 14,
     "v:own_cost": 5,
     "v:own_cost_aeft_ranks": 15,
+    "v:own_cost_damped": 4,
     "v:own_cost_pure_eft": 5
    }
   },
@@ -96,22 +101,24 @@
     "v:no_dup": 1420.7731962934417,
     "v:own_cost": 1288.632169999086,
     "v:own_cost_aeft_ranks": 1298.2432965135429,
+    "v:own_cost_damped": 1288.078775860718,
     "v:own_cost_pure_eft": 1298.1671863880288
    },
    "wins": {
-    "AEFT": 132,
+    "AEFT": 124,
     "BPPTS": 20,
     "ECTD": 75,
     "HEFT": 51,
     "IPEFT": 17,
-    "LSTD": 55,
+    "LSTD": 54,
     "v:baseline": 75,
     "v:damp_threshold_p": 75,
     "v:no_damping": 73,
     "v:no_dup": 68,
-    "v:own_cost": 181,
-    "v:own_cost_aeft_ranks": 159,
-    "v:own_cost_pure_eft": 145
+    "v:own_cost": 165,
+    "v:own_cost_aeft_ranks": 150,
+    "v:own_cost_damped": 168,
+    "v:own_cost_pure_eft": 137
    }
   },
   "LA": {
@@ -129,6 +136,7 @@
     "v:no_dup": 1451.9562193564927,
     "v:own_cost": 1473.4429738809968,
     "v:own_cost_aeft_ranks": 1434.5545611100806,
+    "v:own_cost_damped": 1475.0974294781402,
     "v:own_cost_pure_eft": 1435.2841412283626
    },
    "wins": {
@@ -142,8 +150,9 @@
     "v:damp_threshold_p": 22,
     "v:no_damping": 22,
     "v:no_dup": 23,
-    "v:own_cost": 5,
+    "v:own_cost": 4,
     "v:own_cost_aeft_ranks": 14,
+    "v:own_cost_damped": 5,
     "v:own_cost_pure_eft": 10
    }
   },
@@ -162,22 +171,24 @@
     "v:no_dup": 1410.8154057973948,
     "v:own_cost": 1300.8220033570592,
     "v:own_cost_aeft_ranks": 1312.0569817274766,
+    "v:own_cost_damped": 1300.2864955230805,
     "v:own_cost_pure_eft": 1310.9322588481507
    },
    "wins": {
-    "AEFT": 96,
+    "AEFT": 90,
     "BPPTS": 12,
-    "ECTD": 79,
-    "HEFT": 76,
+    "ECTD": 78,
+    "HEFT": 75,
     "IPEFT": 26,
-    "LSTD": 121,
-    "v:baseline": 79,
-    "v:damp_threshold_p": 80,
+    "LSTD": 120,
+    "v:baseline": 78,
+    "v:damp_threshold_p": 79,
     "v:no_damping": 76,
-    "v:no_dup": 79,
-    "v:own_cost": 242,
-    "v:own_cost_aeft_ranks": 102,
-    "v:own_cost_pure_eft": 101
+    "v:no_dup": 78,
+    "v:own_cost": 205,
+    "v:own_cost_aeft_ranks": 100,
+    "v:own_cost_damped": 210,
+    "v:own_cost_pure_eft": 95
    }
   },
   "Montage": {
@@ -195,22 +206,24 @@
     "v:no_dup": 1575.8695568419878,
     "v:own_cost": 1499.1686938672622,
     "v:own_cost_aeft_ranks": 1518.473027481462,
+    "v:own_cost_damped": 1493.8061712293625,
     "v:own_cost_pure_eft": 1519.6577358576985
    },
    "wins": {
-    "AEFT": 68,
+    "AEFT": 61,
     "BPPTS": 3,
-    "ECTD": 42,
-    "HEFT": 54,
-    "IPEFT": 84,
-    "LSTD": 69,
-    "v:baseline": 42,
-    "v:damp_threshold_p": 45,
+    "ECTD": 41,
+    "HEFT": 52,
+    "IPEFT": 83,
+    "LSTD": 66,
+    "v:baseline": 41,
+    "v:damp_threshold_p": 44,
     "v:no_damping": 33,
-    "v:no_dup": 42,
-    "v:own_cost": 290,
-    "v:own_cost_aeft_ranks": 128,
-    "v:own_cost_pure_eft": 77
+    "v:no_dup": 41,
+    "v:own_cost": 166,
+    "v:own_cost_aeft_ranks": 105,
+    "v:own_cost_damped": 258,
+    "v:own_cost_pure_eft": 68
    }
   }
  },
@@ -230,6 +243,7 @@
     "v:no_dup": 763.0279031101716,
     "v:own_cost": 701.4534067581056,
     "v:own_cost_aeft_ranks": 713.6375026720486,
+    "v:own_cost_damped": 701.1828386972879,
     "v:own_cost_pure_eft": 711.7860047832717
    }
   },
@@ -248,6 +262,7 @@
     "v:no_dup": 8702.794622738575,
     "v:own_cost": 8136.242811747709,
     "v:own_cost_aeft_ranks": 8140.131967937931,
+    "v:own_cost_damped": 8132.721360325248,
     "v:own_cost_pure_eft": 8159.830622580686
    }
   },
@@ -266,6 +281,7 @@
     "v:no_dup": 586.6473578525345,
     "v:own_cost": 579.0732492670336,
     "v:own_cost_aeft_ranks": 580.4888018636142,
+    "v:own_cost_damped": 578.2507321541127,
     "v:own_cost_pure_eft": 579.5803276879903
    }
   },
@@ -284,6 +300,7 @@
     "v:no_dup": 3392.1116998728758,
     "v:own_cost": 2998.1899876441457,
     "v:own_cost_aeft_ranks": 3016.6172981728705,
+    "v:own_cost_damped": 2993.529949592088,
     "v:own_cost_pure_eft": 3024.308306185937
    }
   },
@@ -302,6 +319,7 @@
     "v:no_dup": 532.0348622067505,
     "v:own_cost": 535.2113999839687,
     "v:own_cost_aeft_ranks": 534.6709457334063,
+    "v:own_cost_damped": 534.7577149241653,
     "v:own_cost_pure_eft": 533.7120705109096
    }
   },
@@ -320,57 +338,61 @@
     "v:no_dup": 1424.1805530228635,
     "v:own_cost": 1239.1957367366656,
     "v:own_cost_aeft_ranks": 1263.0335621628394,
+    "v:own_cost_damped": 1235.8684750755351,
     "v:own_cost_pure_eft": 1264.5046920610157
    }
   }
  },
  "ectd_wins_slice": {
-  "instances": 252,
+  "instances": 250,
   "mean_rank": {
-   "AEFT": 7.504,
-   "BPPTS": 9.9008,
-   "ECTD": 1.0595,
-   "HEFT": 11.0516,
-   "IPEFT": 9.4841,
-   "LSTD": 11.2262,
-   "v:baseline": 2.1071,
-   "v:damp_threshold_p": 3.1627,
-   "v:no_damping": 4.3929,
-   "v:no_dup": 5.1984,
-   "v:own_cost": 8.0595,
-   "v:own_cost_aeft_ranks": 8.4881,
-   "v:own_cost_pure_eft": 9.3651
+   "AEFT": 7.896,
+   "BPPTS": 10.58,
+   "ECTD": 1.06,
+   "HEFT": 11.9,
+   "IPEFT": 10.18,
+   "LSTD": 12.064,
+   "v:baseline": 2.108,
+   "v:damp_threshold_p": 3.168,
+   "v:no_damping": 4.404,
+   "v:no_dup": 5.248,
+   "v:own_cost": 8.148,
+   "v:own_cost_aeft_ranks": 8.82,
+   "v:own_cost_damped": 9.34,
+   "v:own_cost_pure_eft": 10.084
   },
   "note": "conditional slice: ECTD is at-or-best on every row by construction",
   "pct_over_ectd": {
-   "AEFT": 6.42,
-   "BPPTS": 9.98,
+   "AEFT": 6.44,
+   "BPPTS": 9.9,
    "ECTD": 0.0,
-   "HEFT": 17.23,
-   "IPEFT": 9.26,
-   "LSTD": 16.47,
+   "HEFT": 17.26,
+   "IPEFT": 9.29,
+   "LSTD": 16.5,
    "v:baseline": 0.0,
    "v:damp_threshold_p": 0.02,
-   "v:no_damping": 0.39,
+   "v:no_damping": 0.37,
    "v:no_dup": 0.56,
-   "v:own_cost": 5.86,
+   "v:own_cost": 5.9,
    "v:own_cost_aeft_ranks": 6.06,
-   "v:own_cost_pure_eft": 6.01
+   "v:own_cost_damped": 5.83,
+   "v:own_cost_pure_eft": 6.03
   },
   "pooled_geomean_makespan": {
-   "AEFT": 572.47,
-   "BPPTS": 591.61,
-   "ECTD": 537.94,
-   "HEFT": 630.63,
-   "IPEFT": 587.75,
-   "LSTD": 626.55,
-   "v:baseline": 537.94,
-   "v:damp_threshold_p": 538.07,
-   "v:no_damping": 540.06,
-   "v:no_dup": 540.93,
-   "v:own_cost": 569.47,
-   "v:own_cost_aeft_ranks": 570.55,
-   "v:own_cost_pure_eft": 570.28
+   "AEFT": 572.15,
+   "BPPTS": 590.76,
+   "ECTD": 537.55,
+   "HEFT": 630.32,
+   "IPEFT": 587.49,
+   "LSTD": 626.22,
+   "v:baseline": 537.55,
+   "v:damp_threshold_p": 537.68,
+   "v:no_damping": 539.51,
+   "v:no_dup": 540.56,
+   "v:own_cost": 569.28,
+   "v:own_cost_aeft_ranks": 570.14,
+   "v:own_cost_damped": 568.89,
+   "v:own_cost_pure_eft": 569.98
   },
   "rank2_count": {
    "AEFT": 0,
@@ -379,12 +401,13 @@
    "HEFT": 2,
    "IPEFT": 6,
    "LSTD": 1,
-   "v:baseline": 229,
+   "v:baseline": 227,
    "v:damp_threshold_p": 0,
    "v:no_damping": 0,
    "v:no_dup": 0,
    "v:own_cost": 0,
    "v:own_cost_aeft_ranks": 0,
+   "v:own_cost_damped": 0,
    "v:own_cost_pure_eft": 0
   },
   "ranking": [
@@ -393,6 +416,7 @@
    "v:damp_threshold_p",
    "v:no_damping",
    "v:no_dup",
+   "v:own_cost_damped",
    "v:own_cost",
    "v:own_cost_pure_eft",
    "v:own_cost_aeft_ranks",
@@ -444,22 +468,24 @@
   "v:no_dup": 0,
   "v:own_cost": 0,
   "v:own_cost_aeft_ranks": 0,
+  "v:own_cost_damped": 0,
   "v:own_cost_pure_eft": 0
  },
  "pct_over_best": {
-  "AEFT": 0.91,
-  "BPPTS": 16.23,
-  "ECTD": 7.14,
-  "HEFT": 5.47,
-  "IPEFT": 10.86,
-  "LSTD": 5.37,
-  "v:baseline": 7.14,
-  "v:damp_threshold_p": 7.1,
-  "v:no_damping": 7.42,
-  "v:no_dup": 7.27,
-  "v:own_cost": 0.0,
-  "v:own_cost_aeft_ranks": 0.74,
-  "v:own_cost_pure_eft": 0.74
+  "AEFT": 1.03,
+  "BPPTS": 16.37,
+  "ECTD": 7.27,
+  "HEFT": 5.6,
+  "IPEFT": 11.0,
+  "LSTD": 5.5,
+  "v:baseline": 7.27,
+  "v:damp_threshold_p": 7.23,
+  "v:no_damping": 7.55,
+  "v:no_dup": 7.4,
+  "v:own_cost": 0.12,
+  "v:own_cost_aeft_ranks": 0.86,
+  "v:own_cost_damped": 0.0,
+  "v:own_cost_pure_eft": 0.87
  },
  "policies": [
   "AEFT",
@@ -474,6 +500,7 @@
   "v:no_dup",
   "v:own_cost",
   "v:own_cost_aeft_ranks",
+  "v:own_cost_damped",
   "v:own_cost_pure_eft"
  ],
  "pooled_geomean_makespan": {
@@ -489,9 +516,11 @@
   "v:no_dup": 1468.11,
   "v:own_cost": 1368.61,
   "v:own_cost_aeft_ranks": 1378.76,
+  "v:own_cost_damped": 1366.94,
   "v:own_cost_pure_eft": 1378.79
  },
  "ranking": [
+  "v:own_cost_damped",
   "v:own_cost",
   "v:own_cost_aeft_ranks",
   "v:own_cost_pure_eft",
@@ -507,32 +536,34 @@
   "BPPTS"
  ],
  "shared_wins": {
-  "AEFT": 256,
+  "AEFT": 240,
   "BPPTS": 9,
-  "ECTD": 252,
-  "HEFT": 51,
+  "ECTD": 250,
+  "HEFT": 50,
   "IPEFT": 11,
-  "LSTD": 50,
-  "v:baseline": 252,
-  "v:damp_threshold_p": 249,
+  "LSTD": 49,
+  "v:baseline": 250,
+  "v:damp_threshold_p": 247,
   "v:no_damping": 225,
-  "v:no_dup": 223,
-  "v:own_cost": 76,
-  "v:own_cost_aeft_ranks": 278,
-  "v:own_cost_pure_eft": 323
+  "v:no_dup": 221,
+  "v:own_cost": 415,
+  "v:own_cost_aeft_ranks": 275,
+  "v:own_cost_damped": 411,
+  "v:own_cost_pure_eft": 307
  },
  "strict_wins": {
-  "AEFT": 73,
+  "AEFT": 68,
   "BPPTS": 37,
-  "HEFT": 138,
-  "IPEFT": 130,
-  "LSTD": 204,
+  "HEFT": 136,
+  "IPEFT": 129,
+  "LSTD": 200,
   "v:damp_threshold_p": 5,
   "v:no_damping": 16,
   "v:no_dup": 9,
-  "v:own_cost": 658,
-  "v:own_cost_aeft_ranks": 161,
-  "v:own_cost_pure_eft": 36
+  "v:own_cost": 141,
+  "v:own_cost_aeft_ranks": 130,
+  "v:own_cost_damped": 245,
+  "v:own_cost_pure_eft": 29
  },
  "title": "ECTD ablation: policies and design variants on the real six-family corpus"
 }

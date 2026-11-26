@@ -25,6 +25,7 @@ build rather than being quietly softened in the prose.
 | Change | Status | vs `ECTD` | vs `AEFT` |
 |---|---|---:|---:|
 | Weight the task's own execution cost twice in the processor score | ACCEPTED | -6.67% | -0.90% |
+| Damp only the tail, not the task's own measured cost | ACCEPTED | -6.78% | -1.02% |
 | Control: reimplementation must reproduce published ECTD exactly | ACCEPTED | +0.00% | +6.18% |
 | Apply damping above outdegree p instead of p+1 | INCONCLUSIVE | -0.04% | +6.14% |
 | Replace descendant ranks with mean own-cost-plus-tail priority | REJECTED | -5.98% | -0.16% |
@@ -76,6 +77,36 @@ The value 2 is now measured as a plateau, not a lucky point. The sweep in script
 self_weight = 0.0 is worth keeping in mind as a sanity check on the whole harness: it means ignore the task's own cost entirely and place purely on start + tail, and it is 57% worse than stock. The own-cost term is doing real work, not decoration.
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516, 2094 instances)`; `scripts/ectd_search.py sweep, 282-instance stratified sample`
+
+### `own_cost_damped` — Damp only the tail, not the task's own measured cost
+
+**Status:** ACCEPTED
+
+**Measured:** `v:own_cost_damped` = 1366.94 pooled, -6.78% vs `ECTD`, -1.02% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+own_cost sets the score to `start + w + (w + continuation)`, counting the task's own execution cost twice. The damping multiplier from the author code was then dropped, because at self_weight 1.0 it is worth only 0.12% and the first ablation measured the undamped version as marginally better.
+
+That was the wrong conclusion from a real measurement. Damping is not worthless; it was being applied to the wrong thing. The multiplier exists to correct an over-optimistic tail estimate. The task's own execution cost is measured, not estimated, so there is nothing optimistic about it to correct. Damping the whole own-cost tail therefore damps a quantity that does not need it, which is why its benefit appeared to vanish as self_weight rose.
+
+This variant multiplies only the continuation by the damping weights and leaves the own cost alone: `tail = w + continuation * weights`. The correction now lands exactly on the part of the estimate that is optimistic.
+
+**Claim before measuring:** At least as good as own_cost, i.e. damping the tail alone recovers the damping benefit without giving up the own-cost gain.
+
+**Measured outcome:** Measured faster than own_cost on the full corpus, and the best configuration measured so far.
+
+**Decision.**
+
+Accepted. Best pooled result measured on this corpus: 1366.94, which is -6.78% against stock ECTD and -1.02% against AEFT.
+
+The size of the gain is small (0.12% over own_cost) and on its own would not justify an entry. What justifies it is that the mechanism predicted the sign and the reason: damping should help once it is applied only to the estimated part. It does, and it helps at a self_weight where damping the whole tail was measured as slightly harmful. A 0.12% move in the predicted direction, with a mechanism that explains why the earlier measurement said otherwise, is worth more than a 0.12% move on its own.
+
+Honest limit: 0.12% is close to the resolution of this corpus. The ordering against own_cost is consistent across the 282-instance stratified sweep and the 2094-instance full run, which is why it is accepted, but it should not be described as a large effect. It is a small correction that happens to be in the right direction for a stated reason.
+
+Still open: the per-family picture is unchanged. This configuration beats AEFT on FFT, Genome, LIGO and Montage, and loses on GE (+1.54%) and LA (+2.86%). Those two families are where the remaining gain is, and they are a separate problem from the pooled score.
+
+**Evidence:** `scripts/ectd_search.py full-corpus run, 2094 instances`; `scripts/ectd_search.py sweep, 282-instance stratified sample`
 
 ### `baseline_control` — Control: reimplementation must reproduce published ECTD exactly
 
