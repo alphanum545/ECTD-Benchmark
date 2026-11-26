@@ -163,3 +163,17 @@ python3 scripts/render_results.py
 
 `scripts/render_results.py` regenerates this document from `summary.json`, so
 the prose cannot drift from the data.
+
+## The instances behind the counts
+
+`summary.json` reports counts. `winners_ectd.csv` reports the rows: one line per
+instance where ECTD tied or beat every other policy, 349 in total, with the
+makespan, the next-best makespan, the margin between them, and which policies
+shared the lead. It is committed rather than left in the workflow artifact, so
+the evidence outlives the 30-day retention window.
+
+Of the 349, 323 are outright wins and 26 are ties with at least one other
+policy. Margin over the next-best policy runs from 0.04% to 20.60%, median
+3.02%. Every one of the 349 is a positive margin, which is what "at-or-best"
+means here: no instance is included on a shared minimum where ECTD was not
+itself at that minimum.
