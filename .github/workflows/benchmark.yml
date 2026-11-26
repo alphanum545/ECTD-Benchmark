@@ -116,6 +116,11 @@ jobs:
           PY
 
       - name: Score shard
+        env:
+          # build_composition.py resolves the corpus at import time through
+          # _paths.find_data_root(), which only knows about
+          # scheduling-benchmark/data. --data-root alone is not enough.
+          ECTD_DATA_ROOT: ${{ github.workspace }}/corpus
         run: |
           set -euo pipefail
           python3 scripts/run_benchmark.py \
