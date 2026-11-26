@@ -169,7 +169,8 @@ jobs:
           for v in A B; do
             if [ -f "compositions/variant_$v/manifest.json" ]; then
               echo "--- verifying variant $v ---"
-              python3 scripts/verify_composition.py "compositions/variant_$v"
+              python3 scripts/verify_composition.py "compositions/variant_$v" \
+                --workers "$WORKERS"
             fi
           done
 

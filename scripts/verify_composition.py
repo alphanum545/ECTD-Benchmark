@@ -59,12 +59,74 @@ def neg_pattern(commc, n):
     return frozenset((u, v) for u in range(n) for v in range(n) if commc[u][v] == -1)
 
 
+_TABLE = None
+
+
+def _table():
+    global _TABLE
+    if _TABLE is None:
+        _TABLE = policy_table()
+    return _TABLE
+
+
+def _check_one(job):
+    """Verify one instance. Module level so it is picklable for the pool."""
+    r, path, want_neg, LADDER = job
+    fails = []
+    knob = []
+    out = {"fails": fails, "knob": knob, "checked": False,
+           "won": False, "class": r.get("class")}
+
+    if not os.path.isfile(path):
+        fails.append("missing instance file: %s" % path)
+        return out
+
+    n, p, compc, commc, fmt = detect_and_parse(path)
+    if fmt != "D3":
+        fails.append("%s parsed as %s, expected D3" % (r["id"], fmt))
+    if p != r["p"]:
+        fails.append("%s p mismatch: file %d, manifest %d" % (r["id"], p, r["p"]))
+
+    if want_neg is not None and neg_pattern(commc, n) != want_neg:
+        fails.append("%s changed the -1 pattern" % r["id"])
+
+    if 1 <= r["rung"] <= len(LADDER):
+        if LADDER[r["rung"] - 1] != (r["sigma"], r["comm_scale"]):
+            knob.append(r["id"])
+    else:
+        fails.append("%s has rung %s outside the ladder" % (r["id"], r["rung"]))
+
+    edges = [(u, v, float(commc[u][v]))
+             for u in range(n) for v in range(n) if commc[u][v] != -1]
+    prob = Problem([[float(x) for x in row] for row in compc], edges, name=r["id"])
+    table = _table()
+    sc = {}
+    for name in POLS:
+        sch = table[name](prob, insertion=(name != "IPEFT"))
+        v = validate_schedule(prob, sch)
+        if not v["valid"]:
+            fails.append("%s invalid %s: %s" % (r["id"], name, v["errors"][:2]))
+            return out
+        sc[name] = sch.makespan
+
+    won = sc["ECTD"] == min(sc.values())
+    out["won"] = won
+    out["checked"] = True
+    if r["class"] == "winner" and not won:
+        fails.append("%s labelled winner but ECTD did not win" % r["id"])
+    if r["class"] == "added" and won:
+        fails.append("%s labelled added but ECTD won" % r["id"])
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("variant_dir", help="e.g. compositions/variant_B")
     ap.add_argument("--source-root", default=os.path.join(
         ROOT, "scheduling-benchmark", "data"))
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--workers", type=int, default=1,
+                    help="parallel processes for the six-policy rescore")
     args = ap.parse_args()
 
     man_path = os.path.join(args.variant_dir, "manifest.json")
@@ -98,59 +160,31 @@ def main():
     rung_knob_mismatch = []
     LADDER = [(0.18, 1.0), (0.35, 4.0), (0.6, 4.0), (0.6, 8.0), (0.6, 16.0),
               (1.0, 8.0), (1.0, 16.0), (1.0, 32.0), (1.0, 64.0)]
+
+    # Per-instance work is independent, so score in a pool. The source -1
+    # patterns are already cached above; only the six-policy rescore is heavy.
+    jobs = []
     for r in inst:
         path = os.path.join(args.variant_dir, "instances", r["family"], r["level"],
                             "%dPROCESSORS" % r["p"], r["id"] + ".txt")
-        if not os.path.isfile(path):
-            fails.append("missing instance file: %s" % path)
-            continue
-        n, p, compc, commc, fmt = detect_and_parse(path)
-        if fmt != "D3":
-            fails.append("%s parsed as %s, expected D3" % (r["id"], fmt))
-        if p != r["p"]:
-            fails.append("%s p mismatch: file %d, manifest %d" % (r["id"], p, r["p"]))
+        jobs.append((r, path, src_neg.get(r.get("source")), LADDER))
 
-        # -1 structure preserved
-        want = src_neg.get(r.get("source"))
-        if want is not None and neg_pattern(commc, n) != want:
-            fails.append("%s changed the -1 pattern" % r["id"])
+    if args.workers and args.workers > 1:
+        from multiprocessing import Pool
+        with Pool(args.workers) as pool:
+            results = pool.map(_check_one, jobs, chunksize=4)
+    else:
+        results = [_check_one(j) for j in jobs]
 
-        # rung/knob consistency: the recorded rung must equal the knobs applied
-        if 1 <= r["rung"] <= len(LADDER):
-            if LADDER[r["rung"] - 1] != (r["sigma"], r["comm_scale"]):
-                rung_knob_mismatch.append(r["id"])
-        else:
-            fails.append("%s has rung %s outside the ladder" % (r["id"], r["rung"]))
-
-        # schedules validate, and the class label is true
-        edges = [(u, v, float(commc[u][v]))
-                 for u in range(n) for v in range(n) if commc[u][v] != -1]
-        prob = Problem([[float(x) for x in row] for row in compc], edges, name=r["id"])
-        sc = {}
-        bad = False
-        for name in POLS:
-            sch = table[name](prob, insertion=(name != "IPEFT"))
-            v = validate_schedule(prob, sch)
-            if not v["valid"]:
-                fails.append("%s invalid %s: %s" % (r["id"], name, v["errors"][:2]))
-                bad = True
-                break
-            sc[name] = sch.makespan
-        if bad:
-            continue
-
-        ectd_won = sc["ECTD"] == min(sc.values())
-        if r["class"] == "winner":
-            if ectd_won:
+    for res in results:
+        fails.extend(res["fails"])
+        rung_knob_mismatch.extend(res["knob"])
+        if res["checked"]:
+            checked += 1
+            if res["class"] == "winner" and res["won"]:
                 won_ok += 1
-            else:
-                fails.append("%s labelled winner but ECTD did not win" % r["id"])
-        else:
-            if not ectd_won:
+            elif res["class"] == "added" and not res["won"]:
                 added_ok += 1
-            else:
-                fails.append("%s labelled added but ECTD won" % r["id"])
-        checked += 1
 
     # lattice arithmetic on what was delivered
     by_set = collections.Counter()
