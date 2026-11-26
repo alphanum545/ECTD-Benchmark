@@ -1,231 +1,440 @@
 {
+ "at_or_best": {
+  "AEFT": 15,
+  "BPPTS": 0,
+  "ECTD": 14,
+  "HEFT": 9,
+  "IPEFT": 1,
+  "LSTD": 12,
+  "v:baseline": 14,
+  "v:damp_threshold_p": 13,
+  "v:no_damping": 15,
+  "v:no_dup": 14,
+  "v:own_cost": 17,
+  "v:own_cost_aeft_ranks": 18,
+  "v:own_cost_pure_eft": 13
+ },
  "by_family": {
   "FFT": {
-   "instances": 60,
+   "instances": 12,
    "pooled": {
-    "AEFT": 1248.183634881887,
-    "BPPTS": 1382.01940827954,
-    "ECTD": 1279.9963041985566,
-    "HEFT": 1301.457753730378,
-    "IPEFT": 1351.0957526106197,
-    "LSTD": 1284.7041972718273
+    "AEFT": 3307.8986113337246,
+    "BPPTS": 3914.7342351443276,
+    "ECTD": 3651.702910701711,
+    "HEFT": 3424.186800555636,
+    "IPEFT": 3798.4784078831776,
+    "LSTD": 3409.3999017541687,
+    "v:baseline": 3651.702910701711,
+    "v:damp_threshold_p": 3651.702910701711,
+    "v:no_damping": 3651.702910701711,
+    "v:no_dup": 3662.4335958740708,
+    "v:own_cost": 3291.9217357033012,
+    "v:own_cost_aeft_ranks": 3283.013426222411,
+    "v:own_cost_pure_eft": 3283.013426222411
    },
    "wins": {
-    "AEFT": 25,
+    "AEFT": 4,
     "BPPTS": 0,
-    "ECTD": 25,
-    "HEFT": 4,
-    "IPEFT": 1,
-    "LSTD": 5
+    "ECTD": 0,
+    "HEFT": 1,
+    "IPEFT": 0,
+    "LSTD": 1,
+    "v:baseline": 0,
+    "v:damp_threshold_p": 0,
+    "v:no_damping": 0,
+    "v:no_dup": 0,
+    "v:own_cost": 2,
+    "v:own_cost_aeft_ranks": 5,
+    "v:own_cost_pure_eft": 5
    }
   },
   "GE": {
-   "instances": 60,
+   "instances": 12,
    "pooled": {
-    "AEFT": 1645.8488317450588,
-    "BPPTS": 1711.2529270710259,
-    "ECTD": 1653.040296663315,
-    "HEFT": 1798.2601349737938,
-    "IPEFT": 1719.3110152431898,
-    "LSTD": 1772.685070760357
+    "AEFT": 10373.188386782627,
+    "BPPTS": 11227.49654694335,
+    "ECTD": 11230.990075718213,
+    "HEFT": 11131.799703510258,
+    "IPEFT": 11346.588859470903,
+    "LSTD": 11156.322152430683,
+    "v:baseline": 11230.990075718213,
+    "v:damp_threshold_p": 11236.81054553521,
+    "v:no_damping": 11215.518558387248,
+    "v:no_dup": 11209.461579141605,
+    "v:own_cost": 10918.801042355239,
+    "v:own_cost_aeft_ranks": 10303.80713171376,
+    "v:own_cost_pure_eft": 10354.27568359165
    },
    "wins": {
-    "AEFT": 19,
-    "BPPTS": 5,
-    "ECTD": 31,
-    "HEFT": 3,
-    "IPEFT": 9,
-    "LSTD": 4
+    "AEFT": 0,
+    "BPPTS": 0,
+    "ECTD": 2,
+    "HEFT": 1,
+    "IPEFT": 0,
+    "LSTD": 0,
+    "v:baseline": 2,
+    "v:damp_threshold_p": 1,
+    "v:no_damping": 4,
+    "v:no_dup": 2,
+    "v:own_cost": 0,
+    "v:own_cost_aeft_ranks": 5,
+    "v:own_cost_pure_eft": 0
    }
   },
   "Genome": {
-   "instances": 600,
+   "instances": 16,
    "pooled": {
-    "AEFT": 1300.4523597244508,
-    "BPPTS": 1488.6244796956137,
-    "ECTD": 1418.210976324031,
-    "HEFT": 1403.880391259275,
-    "IPEFT": 1521.174277571541,
-    "LSTD": 1397.5933175435343
+    "AEFT": 555.2631619336446,
+    "BPPTS": 629.255292081384,
+    "ECTD": 563.8171534042671,
+    "HEFT": 633.9501016617386,
+    "IPEFT": 672.9432084231152,
+    "LSTD": 632.4773494011787,
+    "v:baseline": 563.8171534042671,
+    "v:damp_threshold_p": 563.8171534042671,
+    "v:no_damping": 563.1951698932693,
+    "v:no_dup": 563.8171534042671,
+    "v:own_cost": 548.833872130173,
+    "v:own_cost_aeft_ranks": 555.7303668645878,
+    "v:own_cost_pure_eft": 553.6679445476082
    },
    "wins": {
-    "AEFT": 304,
-    "BPPTS": 26,
-    "ECTD": 105,
-    "HEFT": 73,
-    "IPEFT": 18,
-    "LSTD": 88
+    "AEFT": 6,
+    "BPPTS": 0,
+    "ECTD": 5,
+    "HEFT": 0,
+    "IPEFT": 0,
+    "LSTD": 0,
+    "v:baseline": 5,
+    "v:damp_threshold_p": 5,
+    "v:no_damping": 5,
+    "v:no_dup": 5,
+    "v:own_cost": 5,
+    "v:own_cost_aeft_ranks": 3,
+    "v:own_cost_pure_eft": 5
    }
   },
   "LA": {
-   "instances": 60,
+   "instances": 12,
    "pooled": {
-    "AEFT": 1434.081664093548,
-    "BPPTS": 1498.440514744205,
-    "ECTD": 1451.9562193564927,
-    "HEFT": 1523.6261361412735,
-    "IPEFT": 1491.9275236938042,
-    "LSTD": 1534.2471854598075
+    "AEFT": 8910.591774033534,
+    "BPPTS": 10023.67583271525,
+    "ECTD": 10047.075820840875,
+    "HEFT": 9378.377839198603,
+    "IPEFT": 9926.775210571543,
+    "LSTD": 9402.779106243079,
+    "v:baseline": 10047.075820840875,
+    "v:damp_threshold_p": 10047.080106251868,
+    "v:no_damping": 9991.470169857557,
+    "v:no_dup": 10047.075820840875,
+    "v:own_cost": 9559.059659889623,
+    "v:own_cost_aeft_ranks": 8920.821077830313,
+    "v:own_cost_pure_eft": 8913.216803466372
    },
    "wins": {
-    "AEFT": 22,
-    "BPPTS": 6,
-    "ECTD": 25,
-    "HEFT": 3,
-    "IPEFT": 6,
-    "LSTD": 2
+    "AEFT": 2,
+    "BPPTS": 0,
+    "ECTD": 3,
+    "HEFT": 0,
+    "IPEFT": 0,
+    "LSTD": 1,
+    "v:baseline": 3,
+    "v:damp_threshold_p": 3,
+    "v:no_damping": 2,
+    "v:no_dup": 3,
+    "v:own_cost": 1,
+    "v:own_cost_aeft_ranks": 4,
+    "v:own_cost_pure_eft": 1
    }
   },
   "LIGO": {
-   "instances": 660,
+   "instances": 14,
    "pooled": {
-    "AEFT": 1312.5640766645317,
-    "BPPTS": 1562.441446692588,
-    "ECTD": 1410.8154057973948,
-    "HEFT": 1326.3460411754254,
-    "IPEFT": 1450.105855485733,
-    "LSTD": 1324.5302915212587
+    "AEFT": 633.4032773524573,
+    "BPPTS": 764.890390289285,
+    "ECTD": 650.7822869235104,
+    "HEFT": 610.041617907205,
+    "IPEFT": 688.6530956744572,
+    "LSTD": 604.9181249410985,
+    "v:baseline": 650.7822869235104,
+    "v:damp_threshold_p": 650.7822869235104,
+    "v:no_damping": 652.8246931951317,
+    "v:no_dup": 650.7822869235104,
+    "v:own_cost": 626.0202523537812,
+    "v:own_cost_aeft_ranks": 638.7613566151227,
+    "v:own_cost_pure_eft": 635.7248543858825
    },
    "wins": {
-    "AEFT": 288,
-    "BPPTS": 13,
-    "ECTD": 100,
-    "HEFT": 108,
-    "IPEFT": 30,
-    "LSTD": 143
+    "AEFT": 3,
+    "BPPTS": 0,
+    "ECTD": 4,
+    "HEFT": 3,
+    "IPEFT": 1,
+    "LSTD": 3,
+    "v:baseline": 4,
+    "v:damp_threshold_p": 4,
+    "v:no_damping": 4,
+    "v:no_dup": 4,
+    "v:own_cost": 2,
+    "v:own_cost_aeft_ranks": 1,
+    "v:own_cost_pure_eft": 2
    }
   },
   "Montage": {
-   "instances": 654,
+   "instances": 14,
    "pooled": {
-    "AEFT": 1520.3713353046378,
-    "BPPTS": 1741.746895753859,
-    "ECTD": 1575.8695568419878,
-    "HEFT": 1587.9494613761176,
-    "IPEFT": 1585.5051194510565,
-    "LSTD": 1594.5496500731024
+    "AEFT": 664.2378875355707,
+    "BPPTS": 738.0662422509629,
+    "ECTD": 681.938362622312,
+    "HEFT": 676.3384383939323,
+    "IPEFT": 684.6064853990947,
+    "LSTD": 673.4670533211822,
+    "v:baseline": 681.938362622312,
+    "v:damp_threshold_p": 681.938362622312,
+    "v:no_damping": 683.031000612944,
+    "v:no_dup": 681.938362622312,
+    "v:own_cost": 653.5378241082456,
+    "v:own_cost_aeft_ranks": 665.8149213646512,
+    "v:own_cost_pure_eft": 665.8149213646512
    },
    "wins": {
-    "AEFT": 370,
-    "BPPTS": 4,
-    "ECTD": 63,
-    "HEFT": 71,
-    "IPEFT": 97,
-    "LSTD": 86
+    "AEFT": 0,
+    "BPPTS": 0,
+    "ECTD": 0,
+    "HEFT": 4,
+    "IPEFT": 0,
+    "LSTD": 7,
+    "v:baseline": 0,
+    "v:damp_threshold_p": 0,
+    "v:no_damping": 0,
+    "v:no_dup": 0,
+    "v:own_cost": 7,
+    "v:own_cost_aeft_ranks": 0,
+    "v:own_cost_pure_eft": 0
    }
   }
  },
  "by_processors": {
   "16": {
-   "instances": 349,
+   "instances": 10,
    "pooled": {
-    "AEFT": 714.1199033615607,
-    "BPPTS": 869.2807446284319,
-    "ECTD": 762.139589808065,
-    "HEFT": 702.1437562224199,
-    "IPEFT": 801.840257555999,
-    "LSTD": 700.1498004594486
+    "AEFT": 2094.393985954971,
+    "BPPTS": 2656.1366596498674,
+    "ECTD": 2339.0718650375384,
+    "HEFT": 1973.305214956681,
+    "IPEFT": 2464.2452824139887,
+    "LSTD": 1962.3194851146318,
+    "v:baseline": 2339.0718650375384,
+    "v:damp_threshold_p": 2340.2938401306847,
+    "v:no_damping": 2315.504299872187,
+    "v:no_dup": 2339.6979972058048,
+    "v:own_cost": 2036.7522656566218,
+    "v:own_cost_aeft_ranks": 2105.4161938452444,
+    "v:own_cost_pure_eft": 2100.8988682711615
    }
   },
   "2": {
-   "instances": 349,
+   "instances": 6,
    "pooled": {
-    "AEFT": 8157.792586448362,
-    "BPPTS": 8949.7124769258,
-    "ECTD": 8701.281849598552,
-    "HEFT": 8460.582269783052,
-    "IPEFT": 8733.58137880528,
-    "LSTD": 8486.770667149323
+    "AEFT": 37012.79546903746,
+    "BPPTS": 41149.908961785826,
+    "ECTD": 40554.439252638134,
+    "HEFT": 38233.18989317821,
+    "IPEFT": 40096.30422824866,
+    "LSTD": 38304.801429910454,
+    "v:baseline": 40554.439252638134,
+    "v:damp_threshold_p": 40550.64980104391,
+    "v:no_damping": 40604.932500456336,
+    "v:no_dup": 40521.076753883295,
+    "v:own_cost": 38707.71145295091,
+    "v:own_cost_aeft_ranks": 36896.329325820225,
+    "v:own_cost_pure_eft": 37013.21168976766
    }
   },
   "32": {
-   "instances": 349,
+   "instances": 16,
    "pooled": {
-    "AEFT": 581.0196303022124,
-    "BPPTS": 639.1897336253711,
-    "ECTD": 585.1375453233653,
-    "HEFT": 623.2064904055726,
-    "IPEFT": 612.078161019618,
-    "LSTD": 618.4545613364817
+    "AEFT": 1150.030310309399,
+    "BPPTS": 1302.8708403641497,
+    "ECTD": 1157.5279226650798,
+    "HEFT": 1210.1351231158874,
+    "IPEFT": 1303.7742821361546,
+    "LSTD": 1206.756442433229,
+    "v:baseline": 1157.5279226650798,
+    "v:damp_threshold_p": 1157.4428034234006,
+    "v:no_damping": 1157.6952100414421,
+    "v:no_dup": 1160.6204225249837,
+    "v:own_cost": 1116.0531640537197,
+    "v:own_cost_aeft_ranks": 1141.7053795763093,
+    "v:own_cost_pure_eft": 1137.4268585355524
    }
   },
   "4": {
-   "instances": 349,
+   "instances": 6,
    "pooled": {
-    "AEFT": 3029.2512671157365,
-    "BPPTS": 3630.7851373172466,
-    "ECTD": 3390.311919744924,
-    "HEFT": 3159.385576854068,
-    "IPEFT": 3462.6441640544717,
-    "LSTD": 3168.4030348779515
+    "AEFT": 14149.678815481115,
+    "BPPTS": 17163.667880966983,
+    "ECTD": 17323.398198757735,
+    "HEFT": 14530.877797686606,
+    "IPEFT": 16635.415430098925,
+    "LSTD": 14563.728197138385,
+    "v:baseline": 17323.398198757735,
+    "v:damp_threshold_p": 17331.30228745444,
+    "v:no_damping": 17378.710174590808,
+    "v:no_dup": 17341.483109896057,
+    "v:own_cost": 15703.679071099994,
+    "v:own_cost_aeft_ranks": 14061.728357358084,
+    "v:own_cost_pure_eft": 14077.112226680765
    }
   },
   "64": {
-   "instances": 349,
+   "instances": 36,
    "pooled": {
-    "AEFT": 534.2641916159299,
-    "BPPTS": 562.3926059425788,
-    "ECTD": 530.7755124352378,
-    "HEFT": 607.9069471568878,
-    "IPEFT": 554.1662674010678,
-    "LSTD": 605.9057441756212
+    "AEFT": 739.4657345382834,
+    "BPPTS": 806.17555964178,
+    "ECTD": 743.8495051263354,
+    "HEFT": 806.5345935332351,
+    "IPEFT": 790.6469268440413,
+    "LSTD": 802.8015128525327,
+    "v:baseline": 743.8495051263354,
+    "v:damp_threshold_p": 743.8495051263354,
+    "v:no_damping": 744.7939454974065,
+    "v:no_dup": 743.8675751728805,
+    "v:own_cost": 742.171949075588,
+    "v:own_cost_aeft_ranks": 742.420071104503,
+    "v:own_cost_pure_eft": 741.6737013953115
    }
   },
   "8": {
-   "instances": 349,
+   "instances": 6,
    "pooled": {
-    "AEFT": 1266.3007825154218,
-    "BPPTS": 1595.7719602772154,
-    "ECTD": 1423.8090763712057,
-    "HEFT": 1272.419906231332,
-    "IPEFT": 1483.1735025683786,
-    "LSTD": 1274.7435040978417
+    "AEFT": 6060.186489841966,
+    "BPPTS": 7432.56966958117,
+    "ECTD": 7637.628858842591,
+    "HEFT": 6083.942498883418,
+    "IPEFT": 7410.129597575305,
+    "LSTD": 6118.108922969891,
+    "v:baseline": 7637.628858842591,
+    "v:damp_threshold_p": 7637.628858842591,
+    "v:no_damping": 7627.660820496517,
+    "v:no_dup": 7592.729084512306,
+    "v:own_cost": 6648.292315995219,
+    "v:own_cost_aeft_ranks": 6043.784623990193,
+    "v:own_cost_pure_eft": 6058.329749275596
    }
   }
  },
- "errors": [
-  {
-   "error": "ValueError: costs must be a nonempty n by p matrix",
-   "id": "Montage/100Nodes/4PROCESSORS/9_4.txt"
+ "ectd_wins_slice": {
+  "instances": 14,
+  "mean_rank": {
+   "AEFT": 7.3571,
+   "BPPTS": 11.1429,
+   "ECTD": 1.0714,
+   "HEFT": 11.2857,
+   "IPEFT": 10.4286,
+   "LSTD": 11.1429,
+   "v:baseline": 2.0714,
+   "v:damp_threshold_p": 3.2857,
+   "v:no_damping": 4.1429,
+   "v:no_dup": 4.8571,
+   "v:own_cost": 7.7143,
+   "v:own_cost_aeft_ranks": 7.7143,
+   "v:own_cost_pure_eft": 8.7857
   },
-  {
-   "error": "ValueError: costs must be a nonempty n by p matrix",
-   "id": "Montage/100Nodes/32PROCESSORS/9_32.txt"
+  "note": "conditional slice: ECTD is at-or-best on every row by construction",
+  "pct_over_ectd": {
+   "AEFT": 3.31,
+   "BPPTS": 9.29,
+   "ECTD": 0.0,
+   "HEFT": 13.75,
+   "IPEFT": 10.26,
+   "LSTD": 13.25,
+   "v:baseline": 0.0,
+   "v:damp_threshold_p": 0.04,
+   "v:no_damping": 0.09,
+   "v:no_dup": 0.0,
+   "v:own_cost": 3.39,
+   "v:own_cost_aeft_ranks": 3.12,
+   "v:own_cost_pure_eft": 3.21
   },
-  {
-   "error": "ValueError: costs must be a nonempty n by p matrix",
-   "id": "Montage/100Nodes/64PROCESSORS/9_64.txt"
+  "pooled_geomean_makespan": {
+   "AEFT": 1183.4,
+   "BPPTS": 1251.91,
+   "ECTD": 1145.46,
+   "HEFT": 1303.01,
+   "IPEFT": 1263.0,
+   "LSTD": 1297.28,
+   "v:baseline": 1145.46,
+   "v:damp_threshold_p": 1145.89,
+   "v:no_damping": 1146.44,
+   "v:no_dup": 1145.47,
+   "v:own_cost": 1184.25,
+   "v:own_cost_aeft_ranks": 1181.17,
+   "v:own_cost_pure_eft": 1182.27
   },
-  {
-   "error": "ValueError: costs must be a nonempty n by p matrix",
-   "id": "Montage/100Nodes/16PROCESSORS/9_16.txt"
+  "rank2_count": {
+   "AEFT": 0,
+   "BPPTS": 0,
+   "ECTD": 1,
+   "HEFT": 0,
+   "IPEFT": 0,
+   "LSTD": 0,
+   "v:baseline": 13,
+   "v:damp_threshold_p": 0,
+   "v:no_damping": 0,
+   "v:no_dup": 0,
+   "v:own_cost": 0,
+   "v:own_cost_aeft_ranks": 0,
+   "v:own_cost_pure_eft": 0
   },
-  {
-   "error": "ValueError: costs must be a nonempty n by p matrix",
-   "id": "Montage/100Nodes/2PROCESSORS/9_2.txt"
-  },
-  {
-   "error": "ValueError: costs must be a nonempty n by p matrix",
-   "id": "Montage/100Nodes/8PROCESSORS/9_8.txt"
-  }
- ],
- "instances_failed": 6,
- "instances_scored": 2094,
+  "ranking": [
+   "ECTD",
+   "v:baseline",
+   "v:no_dup",
+   "v:damp_threshold_p",
+   "v:no_damping",
+   "v:own_cost_aeft_ranks",
+   "v:own_cost_pure_eft",
+   "AEFT",
+   "v:own_cost",
+   "BPPTS",
+   "IPEFT",
+   "LSTD",
+   "HEFT"
+  ]
+ },
+ "errors": [],
+ "instances_failed": 0,
+ "instances_scored": 80,
  "invalid_schedules": {
   "AEFT": 0,
   "BPPTS": 0,
   "ECTD": 0,
   "HEFT": 0,
   "IPEFT": 0,
-  "LSTD": 0
+  "LSTD": 0,
+  "v:baseline": 0,
+  "v:damp_threshold_p": 0,
+  "v:no_damping": 0,
+  "v:no_dup": 0,
+  "v:own_cost": 0,
+  "v:own_cost_aeft_ranks": 0,
+  "v:own_cost_pure_eft": 0
  },
  "pct_over_best": {
-  "AEFT": 0.0,
-  "BPPTS": 15.19,
-  "ECTD": 6.18,
-  "HEFT": 4.53,
-  "IPEFT": 9.87,
-  "LSTD": 4.42
+  "AEFT": 0.09,
+  "BPPTS": 14.13,
+  "ECTD": 5.98,
+  "HEFT": 4.86,
+  "IPEFT": 11.59,
+  "LSTD": 4.58,
+  "v:baseline": 5.98,
+  "v:damp_threshold_p": 5.98,
+  "v:no_damping": 5.93,
+  "v:no_dup": 5.99,
+  "v:own_cost": 1.12,
+  "v:own_cost_aeft_ranks": 0.1,
+  "v:own_cost_pure_eft": 0.0
  },
  "policies": [
   "AEFT",
@@ -233,39 +442,68 @@
   "ECTD",
   "HEFT",
   "IPEFT",
-  "LSTD"
+  "LSTD",
+  "v:baseline",
+  "v:damp_threshold_p",
+  "v:no_damping",
+  "v:no_dup",
+  "v:own_cost",
+  "v:own_cost_aeft_ranks",
+  "v:own_cost_pure_eft"
  ],
  "pooled_geomean_makespan": {
-  "AEFT": 1381.0,
-  "BPPTS": 1590.75,
-  "ECTD": 1466.38,
-  "HEFT": 1443.52,
-  "IPEFT": 1517.24,
-  "LSTD": 1442.07
+  "AEFT": 1802.63,
+  "BPPTS": 2055.48,
+  "ECTD": 1908.65,
+  "HEFT": 1888.49,
+  "IPEFT": 2009.74,
+  "LSTD": 1883.56,
+  "v:baseline": 1908.65,
+  "v:damp_threshold_p": 1908.8,
+  "v:no_damping": 1907.83,
+  "v:no_dup": 1908.95,
+  "v:own_cost": 1821.25,
+  "v:own_cost_aeft_ranks": 1802.79,
+  "v:own_cost_pure_eft": 1801.04
  },
  "ranking": [
+  "v:own_cost_pure_eft",
   "AEFT",
+  "v:own_cost_aeft_ranks",
+  "v:own_cost",
   "LSTD",
   "HEFT",
+  "v:no_damping",
   "ECTD",
+  "v:baseline",
+  "v:damp_threshold_p",
+  "v:no_dup",
   "IPEFT",
   "BPPTS"
  ],
  "shared_wins": {
-  "AEFT": 17,
-  "BPPTS": 9,
-  "ECTD": 26,
-  "HEFT": 53,
-  "IPEFT": 12,
-  "LSTD": 54
+  "AEFT": 7,
+  "ECTD": 14,
+  "HEFT": 5,
+  "LSTD": 5,
+  "v:baseline": 14,
+  "v:damp_threshold_p": 13,
+  "v:no_damping": 12,
+  "v:no_dup": 13,
+  "v:own_cost": 2,
+  "v:own_cost_aeft_ranks": 9,
+  "v:own_cost_pure_eft": 11
  },
  "strict_wins": {
-  "AEFT": 1011,
-  "BPPTS": 45,
-  "ECTD": 323,
-  "HEFT": 209,
-  "IPEFT": 149,
-  "LSTD": 274
+  "AEFT": 8,
+  "HEFT": 4,
+  "IPEFT": 1,
+  "LSTD": 7,
+  "v:no_damping": 3,
+  "v:no_dup": 1,
+  "v:own_cost": 15,
+  "v:own_cost_aeft_ranks": 9,
+  "v:own_cost_pure_eft": 2
  },
- "title": "ECTD benchmark on the real six-family corpus"
+ "title": "ECTD ablation: policies and design variants on the real six-family corpus"
 }
