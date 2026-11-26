@@ -431,10 +431,490 @@
       }
     },
     {
+      "id": "ectd_succ_max_0p25",
+      "title": "ECTD successor accumulation (max, beta=0.25)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_0p25"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_max_0p5",
+      "title": "ECTD successor accumulation (max, beta=0.5)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_max_1",
+      "title": "ECTD successor accumulation (max, beta=1)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_max_2",
+      "title": "ECTD successor accumulation (max, beta=2)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_2"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_0p25",
+      "title": "ECTD successor accumulation (sum, beta=0.25)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_0p25"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_0p5",
+      "title": "ECTD successor accumulation (sum, beta=0.5)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_1",
+      "title": "ECTD successor accumulation (sum, beta=1)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_2",
+      "title": "ECTD successor accumulation (sum, beta=2)",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_2"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "decision": [
+        "Proposed. Cannot be accepted until measured.",
+        "",
+        "beta=0 reproduces the lam=1 control exactly, verified to 0.0 across 10",
+        "graphs, so the family contains its own baseline. max and sum differ as",
+        "expected. The orderings change with beta.",
+        "",
+        "Stopping rule, fixed before measuring: if neither form beats descendant_ranks",
+        "(1366.94) we stop inventing ranks and adopt v:rank_lstd, stating plainly that",
+        "ECTD's contribution is the scoring rule and not the ordering."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
       "id": "ectd_lam_0",
       "title": "ECTD rank with lam = 0: pure max of the OCT row",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_rank",
@@ -474,21 +954,28 @@
         "statement": "lam = 0 is expected worse than descendant_ranks."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1375.76, worse than descendant_ranks 1366.94."
       },
       "decision": [
-        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
         "",
-        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
-        "is what the baselines use. If the family does not beat lam = 1 it has",
-        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
         "",
-        "Selection criterion, stated before the measurement: best pooled score",
-        "against v:own_cost_damped, with the three families carrying 91.4% of the",
-        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
-        "a constraint column, not the objective."
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -498,7 +985,7 @@
       "id": "ectd_lam_0p25",
       "title": "ECTD rank with lam = 0.25: quarter-way from max toward mean",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_rank",
@@ -538,21 +1025,28 @@
         "statement": "lam = 0.25 is expected better than descendant_ranks."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1373.77, worse than descendant_ranks 1366.94."
       },
       "decision": [
-        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
         "",
-        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
-        "is what the baselines use. If the family does not beat lam = 1 it has",
-        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
         "",
-        "Selection criterion, stated before the measurement: best pooled score",
-        "against v:own_cost_damped, with the three families carrying 91.4% of the",
-        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
-        "a constraint column, not the objective."
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -562,7 +1056,7 @@
       "id": "ectd_lam_0p5",
       "title": "ECTD rank with lam = 0.5: halfway from max toward mean",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_rank",
@@ -602,21 +1096,28 @@
         "statement": "lam = 0.5 is expected better than descendant_ranks."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1372.47, worse than descendant_ranks 1366.94."
       },
       "decision": [
-        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
         "",
-        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
-        "is what the baselines use. If the family does not beat lam = 1 it has",
-        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
         "",
-        "Selection criterion, stated before the measurement: best pooled score",
-        "against v:own_cost_damped, with the three families carrying 91.4% of the",
-        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
-        "a constraint column, not the objective."
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -626,7 +1127,7 @@
       "id": "ectd_lam_0p75",
       "title": "ECTD rank with lam = 0.75: three-quarters from max toward mean",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_rank",
@@ -666,21 +1167,28 @@
         "statement": "lam = 0.75 is expected better than descendant_ranks."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1370.88, worse than descendant_ranks 1366.94."
       },
       "decision": [
-        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
         "",
-        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
-        "is what the baselines use. If the family does not beat lam = 1 it has",
-        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
         "",
-        "Selection criterion, stated before the measurement: best pooled score",
-        "against v:own_cost_damped, with the three families carrying 91.4% of the",
-        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
-        "a constraint column, not the objective."
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"
@@ -690,7 +1198,7 @@
       "id": "ectd_lam_1",
       "title": "ECTD rank with lam = 1: the mean, which is the control",
       "kind": "algorithm",
-      "status": "proposed",
+      "status": "rejected",
       "code": {
         "file": "scripts/ectd_variants.py",
         "symbol": "ectd_rank",
@@ -730,21 +1238,28 @@
         "statement": "lam = 1 is expected worse than descendant_ranks."
       },
       "outcome": {
-        "direction": "unknown",
+        "direction": "worse",
         "vs": "v:own_cost_damped",
-        "statement": "Not yet measured. Run the ablation workflow."
+        "statement": "Pooled 1369.78, worse than descendant_ranks 1366.94."
       },
       "decision": [
-        "Proposed. Cannot be accepted until the ablation workflow scores it.",
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
         "",
-        "lam = 1 is the control: it reproduces the mean aggregation exactly, which",
-        "is what the baselines use. If the family does not beat lam = 1 it has",
-        "demonstrated nothing, because it has not improved on the obvious collapse.",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
         "",
-        "Selection criterion, stated before the measurement: best pooled score",
-        "against v:own_cost_damped, with the three families carrying 91.4% of the",
-        "corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are",
-        "a constraint column, not the objective."
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
       ],
       "evidence": [
         "docs/COMPLEXITY.md"

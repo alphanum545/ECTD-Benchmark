@@ -319,6 +319,61 @@ ECTD_LAM_VARIANTS = {
 }
 
 
+# ------------------------------------- ECTD's own successor-accumulation rank
+#
+# lam varied how to collapse one OCT row by its LEVEL (max -> mean). The curve
+# was monotone with the optimum at lam = 1, so tail-level pessimism is not the
+# mechanism. What descendant_ranks actually buys is downstream influence: a task
+# with many important successors is urgent. That is the dimension lam never
+# touched.
+#
+# Here the node weight is still ECTD's own OCT table, and the parameter beta
+# controls how much successor influence propagates:
+#
+#   base(i)  = mean_q oct[i][q]
+#   max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )
+#   sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )
+#
+# beta = 0 collapses to the lam = 1 control, so the family contains its own
+# baseline. beta > 0 adds downstream accumulation. The sum form double-counts
+# shared successors, which is why it is O(e) and not the O(e n/w) transitive
+# closure; that is the deliberate trade. Both are O(e p) to build the table plus
+# O(e) to propagate, so both clear O(n^2 p).
+
+def ectd_successor_rank(problem, beta, form):
+    """ECTD OCT-weighted successor accumulation. O(e p)."""
+    p = problem.p
+    oct_table, _cps = optimistic_cost_table(problem)
+    base = [sum(row) / p for row in oct_table]
+    ranks = [0.0] * problem.n
+    for i in reversed(problem.topo):
+        children = problem.succ[i]
+        if not children:
+            ranks[i] = base[i]
+            continue
+        vals = [problem.edges[i, c] + ranks[c] for c in children]
+        acc = max(vals) if form == "max" else sum(vals)
+        ranks[i] = base[i] + beta * acc
+    return ranks
+
+
+def _ectd_succ(beta, form):
+    def policy(problem, insertion=True):
+        ranks = ectd_successor_rank(problem, beta, form)
+        return _own_cost_damped_with_ranks(problem, ranks, insertion)
+    policy.__name__ = "v_ectd_succ_%s_%s" % (form, ("%g" % beta).replace(".", "p"))
+    return policy
+
+
+ECTD_SUCC_BETAS = (0.25, 0.5, 1.0, 2.0)
+
+ECTD_SUCC_VARIANTS = {}
+for _form in ("max", "sum"):
+    for _beta in ECTD_SUCC_BETAS:
+        _name = "v:ectd_succ_%s_%s" % (_form, ("%g" % _beta).replace(".", "p"))
+        ECTD_SUCC_VARIANTS[_name] = _ectd_succ(_beta, _form)
+
+
 RANK_VARIANTS = {
     "v:rank_heft": v_rank_heft,
     "v:rank_lstd": v_rank_lstd,
@@ -332,3 +387,4 @@ RANK_VARIANTS = {
 
 VARIANTS.update(RANK_VARIANTS)
 VARIANTS.update(ECTD_LAM_VARIANTS)
+VARIANTS.update(ECTD_SUCC_VARIANTS)
