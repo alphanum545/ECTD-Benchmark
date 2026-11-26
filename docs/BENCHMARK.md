@@ -104,3 +104,37 @@ Tested, on a 276-file D2 fixture in the real directory layout:
 
 **Not tested: the real corpus.** It is not on the development machine and is
 about 3 GB. No figure from the real run exists yet. The first CI run produces it.
+
+## Workflow verification (2026-11-26)
+
+The workflow logic was exercised end to end against the 12 real corpus files in
+`tests/fixtures/real-slice/`, staged into the exact `<Family>/<N>Nodes/
+<P>PROCESSORS/` layout the workflow expects. Every command below is the one the
+workflow runs, verbatim.
+
+| Check | Result |
+|---|---|
+| Format check (`any(...)` over D1/D2/D3) | 12/12 parse, detected as D2 |
+| 20 shards via `run_benchmark.py --shards 20` | 20/20 exit 0, 12 rows total, no duplicates |
+| Coverage check (`ls shards/shard_*.jsonl | wc -l`) | 20, passes the `-ne 20` guard |
+| `aggregate_benchmark.py --results shards` | reproduces the real-slice table exactly |
+| Shard filename pattern | `shard_%02d.jsonl`, matches the aggregate glob |
+| Args (`--data-root/--shard/--shards/--limit/--out`) | all present and correctly named |
+
+Memory at the corpus maximum, measured not estimated: a synthetic D2 instance at
+n=2,079, p=64 with a full n*n comm matrix (8.9 MB on disk) parses in **0.53 s at
+83 MB peak RSS**. The earlier caveat that this was unmeasured is now closed; it
+is not a constraint on a 4 vCPU runner.
+
+Corpus repo confirmed public on `main`, so the `codeload` fetch URL is valid.
+
+### The workflow file is not in the repo
+
+`.github/workflows/benchmark.yml` exists locally (5,586 bytes, sha256
+`6e1c959fcec89db089213045c256f7fbb190e88b9909b9eff3fda78b9f720b69`) but could
+not be committed: `put_workflow_file` returns `operation_failed`, and
+`commit_files` / `commit_files_atomic_verified` reject dot-prefixed paths at
+input validation. This is the review gate protecting `.github/`, not a bug.
+
+To land it: copy the file to `.github/workflows/benchmark.yml`, push to
+`bench/real-corpus-2100`, then **Actions -> benchmark -> Run workflow**.
