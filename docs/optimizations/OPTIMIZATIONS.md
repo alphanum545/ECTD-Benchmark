@@ -30,6 +30,11 @@ build rather than being quietly softened in the prose.
 | Read the descendant bitmask by bytes instead of peeling set bits | refactor | ACCEPTED | n/a | n/a |
 | Locate the insertion gap by bisecting instead of scanning from zero | refactor | ACCEPTED | n/a | n/a |
 | Apply damping above outdegree p instead of p+1 | algorithm | INCONCLUSIVE | -0.04% | +6.14% |
+| ECTD rank with lam = 0: pure max of the OCT row | algorithm | PROPOSED | -6.18% | -0.38% |
+| ECTD rank with lam = 0.25: quarter-way from max toward mean | algorithm | PROPOSED | -6.32% | -0.52% |
+| ECTD rank with lam = 0.5: halfway from max toward mean | algorithm | PROPOSED | -6.40% | -0.62% |
+| ECTD rank with lam = 0.75: three-quarters from max toward mean | algorithm | PROPOSED | -6.51% | -0.73% |
+| ECTD rank with lam = 1: the mean, which is the control | algorithm | PROPOSED | -6.59% | -0.81% |
 | Replace descendant ranks with HEFT upward rank | algorithm | PROPOSED | -6.89% | -1.14% |
 | Replace descendant ranks with LSTD rank | algorithm | PROPOSED | -7.01% | -1.26% |
 | Replace descendant ranks with AEFT mean IOCT | algorithm | PROPOSED | -6.08% | -0.27% |
@@ -239,6 +244,171 @@ It must not be adopted on this basis, and it must not be adopted in combination 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
 
 ## Proposed, not yet measured
+
+### `ectd_lam_0` — ECTD rank with lam = 0: pure max of the OCT row
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0` = 1375.76 pooled, -6.18% vs `ECTD`, -0.38% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0 is expected worse than descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it.
+
+lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+
+Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_0p25` — ECTD rank with lam = 0.25: quarter-way from max toward mean
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0p25` = 1373.77 pooled, -6.32% vs `ECTD`, -0.52% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0.25 is expected better than descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it.
+
+lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+
+Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_0p5` — ECTD rank with lam = 0.5: halfway from max toward mean
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0p5` = 1372.47 pooled, -6.40% vs `ECTD`, -0.62% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0.5 is expected better than descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it.
+
+lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+
+Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_0p75` — ECTD rank with lam = 0.75: three-quarters from max toward mean
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_0p75` = 1370.88 pooled, -6.51% vs `ECTD`, -0.73% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 0.75 is expected better than descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it.
+
+lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+
+Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+
+**Evidence:** `docs/COMPLEXITY.md`
+
+### `ectd_lam_1` — ECTD rank with lam = 1: the mean, which is the control
+
+**Status:** PROPOSED  
+**Kind:** algorithm
+
+**Measured:** `v:ectd_lam_1` = 1369.78 pooled, -6.59% vs `ECTD`, -0.81% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost of everything after task i, given i runs on q. Ordering tasks requires collapsing that row to one number, and the collapse is a choice no other algorithm in the suite makes explicitly:
+
+rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])
+
+lam = 0 is the max: assume the tail runs on its worst processor, so a task whose tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT and IPPTS effectively use and which measured 1.0% worse than descendant_ranks. lam > 1 goes below the mean toward the min.
+
+So lam is one knob on how much per-processor pessimism the ordering keeps. The claim is that lam < 1 orders better than the mean, because a task that is expensive on its worst processor is more urgent than its average suggests.
+
+This is deliberately not an imported rank. The v:rank_* variants take another algorithm's priority order wholesale, which solves the complexity problem but leaves ECTD with no contribution of its own in the ordering. Here the table and the parameter are both ECTD's.
+
+**Claim before measuring:** lam = 1 is expected worse than descendant_ranks.
+
+**Measured outcome:** Not yet measured. Run the ablation workflow.
+
+**Decision.**
+
+Proposed. Cannot be accepted until the ablation workflow scores it.
+
+lam = 1 is the control: it reproduces the mean aggregation exactly, which is what the baselines use. If the family does not beat lam = 1 it has demonstrated nothing, because it has not improved on the obvious collapse.
+
+Selection criterion, stated before the measurement: best pooled score against v:own_cost_damped, with the three families carrying 91.4% of the corpus (Montage, Genome, LIGO) weighted by instance count. GE and LA are a constraint column, not the objective.
+
+**Evidence:** `docs/COMPLEXITY.md`
 
 ### `rank_heft` — Replace descendant ranks with HEFT upward rank
 
