@@ -14,8 +14,14 @@ import sys, os, json, random, math, glob, time, statistics
 from multiprocessing import Pool
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, os.path.join(ROOT, "ECTD-Benchmark"))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+import _paths                                            # noqa: E402
+
+ROOT = _paths.REPO_ROOT
+sys.path.insert(0, _paths.find_package_root())
+DATA_ROOT = _paths.find_data_root()
 
 from ectdbench import policy_table
 from ectdbench.model import Problem
@@ -164,7 +170,7 @@ def main():
     jobs = []
     for fam, lv, p in cells:
         fs = sorted(glob.glob(os.path.join(
-            ROOT, "scheduling-benchmark", "data", fam, lv, "*", "*.txt")))
+            DATA_ROOT, fam, lv, "*", "*.txt")))
         if fs:
             jobs.append((fam, lv, p, fs[0]))
 
@@ -188,7 +194,7 @@ def main():
         print("%-8s %-11s %-3d %-7s %-8s %-9.3f %.1f" %
               (fam, lv, p, how, cands if cands else "FAIL", dr, sec))
 
-    dest = os.path.join(ROOT, "scripts", "out", "search_compare.json")
+    dest = os.path.join(_paths.OUT_DIR, "search_compare.json")
     with open(dest, "w") as fh:
         json.dump({"timing": [{"family": f, "level": l, "p": p, "n": n, "sec": s}
                               for f, l, p, n, s in t],
