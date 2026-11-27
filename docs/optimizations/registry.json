@@ -508,6 +508,75 @@
       ]
     },
     {
+      "id": "held_out_rank_params",
+      "title": "Validate beta and gamma on instances the selection never saw",
+      "kind": "validation",
+      "status": "accepted",
+      "validation": {
+        "report": "docs/validation/held_out_rank_params.json",
+        "policy_key": "v:ectd_succ_own_b0p5_g0p5",
+        "min_trials": 100,
+        "scope": "Establishes that beta=0.5/gamma=0.5 is a stable selection from its own family, not an artifact of one split. Does NOT establish that the family beats every other policy on unseen data: the candidate set is the five ectd_succ_own configurations, because that is the search that actually happened. The test-half ranking of all 40 policies is reported in the same file for that separate question."
+      },
+      "mechanism": [
+        "beta and gamma were both selected by measuring them on the same 2,094",
+        "instances used to report the final number. That makes 1360.64 an in-sample",
+        "figure: the best of a search over five configurations, read off the same data",
+        "the search ran on. Nothing in the repo established that the choice survives",
+        "instances it was not made on, and a reviewer is entitled to ask.",
+        "",
+        "The split is stratified within every cell (family, level, processors), not",
+        "across cells. A by-cell split would put whole families or whole processor",
+        "counts on one side, and the two halves would then differ in ways that have",
+        "nothing to do with the parameters under test. Splitting within the cell keeps",
+        "the two halves matched on every structural variable the corpus has.",
+        "",
+        "Re-selection runs on the training half only; the selected configuration is",
+        "then scored on the test half. The split is repeated 200 times because one",
+        "split is one sample, and the question worth answering is whether the",
+        "selection is stable rather than whether it won once."
+      ],
+      "claim": {
+        "direction": "equal",
+        "statement": "The training half selects the same configuration as the full corpus, and it is also the test-half best."
+      },
+      "outcome": {
+        "direction": "equal",
+        "statement": "Training half selected v:ectd_succ_own_b0p5_g0p5 in 200 of 200 trials. It was also the test-half best in 172 of 200, with mean regret 0.005% and worst case 0.094%."
+      },
+      "decision": [
+        "Accepted. The selection is stable and the held-out penalty is negligible.",
+        "",
+        "All 200 stratified splits re-selected beta=0.5/gamma=0.5 on the training",
+        "half. That is stronger than a single split passing: the configuration is not",
+        "sitting on a knife edge where a slightly different sample of instances would",
+        "have picked a neighbour.",
+        "",
+        "On the test half it was the best of all 40 policies in 172 of 200 trials.",
+        "The 28 trials where it was not, the winner was gamma=1 (26) or a rank",
+        "variant (2), and the mean regret against the test-half best was 0.005% with",
+        "a worst case of 0.094%. So the in-sample number is not flattered by the",
+        "selection: the held-out cost of having chosen is under a tenth of a percent",
+        "in the worst of 200 splits.",
+        "",
+        "What this does not establish, stated plainly because it is the obvious next",
+        "question: the candidate set is the five ectd_succ_own configurations, which",
+        "is the search that actually happened. It does not show that this family is",
+        "the right family, only that within it the choice is sound. The test-half",
+        "ranking of all 40 policies is in the same report for that separate question,",
+        "and there the picture is the same: 1361.43 for the selected configuration",
+        "against 1364.13 for the best competitor in the family and 1381.78 for AEFT.",
+        "",
+        "The corpus is still one corpus. Six families from one benchmark suite is not",
+        "a random sample of scheduling problems, and no split of it can make it one.",
+        "This closes the parameter-selection gap, not the external-validity gap."
+      ],
+      "evidence": [
+        "docs/validation/held_out_rank_params.json",
+        "scripts/held_out_validation.py"
+      ]
+    },
+    {
       "id": "ectd_succ_own_g1",
       "title": "ECTD rank with own-cost weight gamma=1, beta=0.5",
       "kind": "algorithm",

@@ -28,6 +28,7 @@ build rather than being quietly softened in the prose.
 | Damp only the tail, not the task's own measured cost | algorithm | ACCEPTED | -6.78% | -1.02% |
 | Control: reimplementation must reproduce published ECTD exactly | algorithm | ACCEPTED | +0.00% | +6.18% |
 | ECTD rank with own-cost weight gamma=0.5, beta=0.5 | algorithm | ACCEPTED | -7.21% | -1.47% |
+| Validate beta and gamma on instances the selection never saw | validation | ACCEPTED | n/a | n/a |
 | ECTD rank with own-cost weight gamma=1, beta=0.5 | algorithm | ACCEPTED | -7.13% | -1.39% |
 | ECTD successor accumulation (max, beta=0.25) | algorithm | ACCEPTED | -6.90% | -1.14% |
 | ECTD successor accumulation (max, beta=0.5) | algorithm | ACCEPTED | -7.08% | -1.33% |
@@ -201,6 +202,41 @@ Per family vs the previous best: Montage -0.39%, Genome +0.14%, LIGO -0.20%, FFT
 Strict wins 66 versus 26 for the previous best, so this one wins more outright as well as pooling better. That is a stronger result than the previous step, where pooled gain came with fewer strict wins.
 
 **Evidence:** `docs/COMPLEXITY.md`
+
+### `held_out_rank_params` — Validate beta and gamma on instances the selection never saw
+
+**Status:** ACCEPTED  
+**Kind:** validation
+
+**Held-out report:** `docs/validation/held_out_rank_params.json`
+
+Scope: Establishes that beta=0.5/gamma=0.5 is a stable selection from its own family, not an artifact of one split. Does NOT establish that the family beats every other policy on unseen data: the candidate set is the five ectd_succ_own configurations, because that is the search that actually happened. The test-half ranking of all 40 policies is reported in the same file for that separate question.
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+beta and gamma were both selected by measuring them on the same 2,094 instances used to report the final number. That makes 1360.64 an in-sample figure: the best of a search over five configurations, read off the same data the search ran on. Nothing in the repo established that the choice survives instances it was not made on, and a reviewer is entitled to ask.
+
+The split is stratified within every cell (family, level, processors), not across cells. A by-cell split would put whole families or whole processor counts on one side, and the two halves would then differ in ways that have nothing to do with the parameters under test. Splitting within the cell keeps the two halves matched on every structural variable the corpus has.
+
+Re-selection runs on the training half only; the selected configuration is then scored on the test half. The split is repeated 200 times because one split is one sample, and the question worth answering is whether the selection is stable rather than whether it won once.
+
+**Claim before measuring:** The training half selects the same configuration as the full corpus, and it is also the test-half best.
+
+**Measured outcome:** Training half selected v:ectd_succ_own_b0p5_g0p5 in 200 of 200 trials. It was also the test-half best in 172 of 200, with mean regret 0.005% and worst case 0.094%.
+
+**Decision.**
+
+Accepted. The selection is stable and the held-out penalty is negligible.
+
+All 200 stratified splits re-selected beta=0.5/gamma=0.5 on the training half. That is stronger than a single split passing: the configuration is not sitting on a knife edge where a slightly different sample of instances would have picked a neighbour.
+
+On the test half it was the best of all 40 policies in 172 of 200 trials. The 28 trials where it was not, the winner was gamma=1 (26) or a rank variant (2), and the mean regret against the test-half best was 0.005% with a worst case of 0.094%. So the in-sample number is not flattered by the selection: the held-out cost of having chosen is under a tenth of a percent in the worst of 200 splits.
+
+What this does not establish, stated plainly because it is the obvious next question: the candidate set is the five ectd_succ_own configurations, which is the search that actually happened. It does not show that this family is the right family, only that within it the choice is sound. The test-half ranking of all 40 policies is in the same report for that separate question, and there the picture is the same: 1361.43 for the selected configuration against 1364.13 for the best competitor in the family and 1381.78 for AEFT.
+
+The corpus is still one corpus. Six families from one benchmark suite is not a random sample of scheduling problems, and no split of it can make it one. This closes the parameter-selection gap, not the external-validity gap.
+
+**Evidence:** `docs/validation/held_out_rank_params.json`; `scripts/held_out_validation.py`
 
 ### `ectd_succ_own_g1` — ECTD rank with own-cost weight gamma=1, beta=0.5
 
@@ -1201,5 +1237,19 @@ computes, so it is judged on identity and needs no delta:
 3. Commit that report to the path the entry names. The gate requires the
    file to exist and to record `verdict: EQUIVALENT` with no failures.
 
-The gate rejects an algorithm entry with no `code.policy_key` and a refactor
-entry with no committed report. Neither can pass on prose alone.
+A **validation** entry makes no makespan claim, so it is judged on whether
+a parameter choice survives data the choice was not made on:
+
+1. Set `kind: "validation"` and give a `validation` block naming a report
+   committed to the tree, the policy the selection is expected to land on,
+   and a `min_trials` floor, plus a `scope` line saying what the split does
+   and does not establish.
+2. Run `python3 scripts/held_out_validation.py --results <shard dir>`. It
+   splits within every cell, re-selects on the training half, and repeats.
+3. Commit that report to the path the entry names. The gate requires the
+   file to exist, to have run at least `min_trials`, and to have selected
+   the policy the entry names.
+
+The gate rejects an algorithm entry with no `code.policy_key`, a refactor
+entry with no committed report, and a validation entry whose report does not
+select the policy it names. None can pass on prose alone.

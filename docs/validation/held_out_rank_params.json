@@ -1,0 +1,85 @@
+{
+ "title": "Held-out validation of the ECTD rank parameters",
+ "instances": 2094,
+ "cells": 282,
+ "trials": 200,
+ "fraction": 0.7,
+ "seed": 20261127,
+ "candidates": [
+  "v:ectd_succ_own_b0p375g0",
+  "v:ectd_succ_own_b0p5_g0p5",
+  "v:ectd_succ_own_b0p5_g1",
+  "v:ectd_succ_own_b0p5_g2",
+  "v:ectd_succ_own_b0p625g0"
+ ],
+ "selection_counts": {
+  "v:ectd_succ_own_b0p5_g0p5": 200
+ },
+ "test_best_counts": {
+  "v:ectd_succ_own_b0p5_g0p5": 172,
+  "v:ectd_succ_own_b0p5_g1": 26,
+  "v:rank_lstd": 1,
+  "v:ectd_succ_own_b0p375g0": 1
+ },
+ "regret_pct": {
+  "mean": 0.0046,
+  "median": 0.0,
+  "p90": 0.0196,
+  "max": 0.0935
+ },
+ "zero_regret_trials": 172,
+ "example_split": {
+  "train_instances": 1428,
+  "test_instances": 666,
+  "chosen": "v:ectd_succ_own_b0p5_g0p5",
+  "train_pooled": {
+   "v:ectd_succ_own_b0p5_g0p5": 1360.27,
+   "v:ectd_succ_own_b0p5_g1": 1361.0,
+   "v:ectd_succ_own_b0p375g0": 1363.31,
+   "v:ectd_succ_own_b0p625g0": 1363.58,
+   "v:ectd_succ_own_b0p5_g2": 1369.51
+  },
+  "test_pooled": {
+   "v:ectd_succ_own_b0p5_g0p5": 1361.43,
+   "v:ectd_succ_own_b0p5_g1": 1363.68,
+   "v:ectd_succ_max_0p5": 1364.13,
+   "v:ectd_succ_own_b0p625g0": 1364.19,
+   "v:ectd_succ_own_b0p375g0": 1364.49,
+   "v:ectd_succ_max_0p25": 1366.15,
+   "v:ectd_succ_max_1": 1366.54,
+   "v:rank_lstd": 1366.93,
+   "v:rank_heft": 1368.24,
+   "v:own_cost_damped": 1369.87,
+   "v:ectd_succ_max_2": 1370.44,
+   "v:ectd_lam_0p75": 1370.92,
+   "v:ectd_lam_1": 1371.02,
+   "v:ectd_lam_0p5": 1371.51,
+   "v:own_cost": 1371.56,
+   "v:rank_ipeft": 1371.79,
+   "v:ectd_succ_own_b0p5_g2": 1371.84,
+   "v:ectd_succ_sum_2": 1372.58,
+   "v:ectd_lam_0p25": 1372.92,
+   "v:ectd_lam_0": 1374.15,
+   "v:ectd_succ_sum_1": 1375.01,
+   "v:rank_aeft": 1377.53,
+   "v:rank_own_cost": 1377.53,
+   "v:ectd_succ_sum_0p5": 1378.03,
+   "v:ectd_succ_sum_0p25": 1378.08,
+   "v:own_cost_pure_eft": 1378.72,
+   "v:rank_bppts": 1379.13,
+   "v:own_cost_aeft_ranks": 1379.69,
+   "v:rank_own_cost_nodamp": 1379.69,
+   "AEFT": 1381.78,
+   "v:rank_ippts": 1384.29,
+   "LSTD": 1443.18,
+   "HEFT": 1446.62,
+   "v:damp_threshold_p": 1464.36,
+   "ECTD": 1464.91,
+   "v:baseline": 1464.91,
+   "v:no_dup": 1467.41,
+   "v:no_damping": 1468.86,
+   "IPEFT": 1516.41,
+   "BPPTS": 1587.65
+  }
+ }
+}

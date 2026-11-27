@@ -101,6 +101,66 @@ def check_equivalence(entry, root):
         report_path, checked, compared)
 
 
+def check_validation(entry, root):
+    """Verify a validation entry against its committed held-out report.
+
+    A validation entry makes no claim about makespan, so there is nothing in the
+    benchmark artifact to check it against. What it claims is that a parameter
+    choice survives instances the choice was not made on, and the evidence for
+    that is a report committed to the tree, produced by
+    ``scripts/held_out_validation.py``.
+
+    The gate requires three things, and each of them closes a way the entry
+    could otherwise pass while being worthless:
+
+    - the report exists, so the claim is not prose alone;
+    - it ran enough trials to say something about stability, since a single
+      split is a single sample and would pass on luck;
+    - the parameter actually selected on the training half is the one the entry
+      names, because a validation entry that validates a different policy than
+      the one shipped is a non-sequitur.
+
+    Returns (ok, detail).
+    """
+    block = entry.get("validation") or {}
+    report_path = block.get("report")
+    if not report_path:
+        return False, "validation entry has no validation.report"
+
+    full = os.path.join(root, report_path)
+    if not os.path.exists(full):
+        return False, "held-out report not committed: %s" % report_path
+
+    try:
+        report = load_json(full)
+    except Exception as exc:
+        return False, "held-out report unreadable: %s" % exc
+
+    trials = int(report.get("trials") or 0)
+    minimum = int(block.get("min_trials") or 20)
+    if trials < minimum:
+        return False, "report ran %d trials, entry requires %d" % (trials, minimum)
+
+    expected = block.get("policy_key")
+    if not expected:
+        return False, "validation entry has no validation.policy_key"
+
+    counts = report.get("selection_counts") or {}
+    if not counts:
+        return False, "report records no selections"
+    selected = max(counts, key=lambda k: counts[k])
+    if selected != expected:
+        return False, ("training half selected %r, entry names %r"
+                       % (selected, expected))
+
+    regret = (report.get("regret_pct") or {}).get("max")
+    if regret is None:
+        return False, "report records no regret"
+
+    return True, "%s: %d trials, selected %s in %d/%d, max regret %.3f%%" % (
+        report_path, trials, selected, counts[selected], trials, regret)
+
+
 def check_claim(entry, summary, baseline_key, reference_key, root):
     """Verify the entry's recorded OUTCOME against the artifact.
 
@@ -115,6 +175,9 @@ def check_claim(entry, summary, baseline_key, reference_key, root):
     kind = entry.get("kind", "algorithm")
     if kind == "refactor":
         ok, detail = check_equivalence(entry, root)
+        return ok, detail, None
+    if kind == "validation":
+        ok, detail = check_validation(entry, root)
         return ok, detail, None
     if kind != "algorithm":
         return False, "unknown entry kind %r" % kind, None
@@ -309,6 +372,13 @@ def render(registry, summary):
                 if block.get("scope"):
                     add("")
                     add("Scope: %s" % block["scope"])
+            if kind == "validation":
+                block = e.get("validation") or {}
+                add("")
+                add("**Held-out report:** `%s`" % block.get("report", "(none)"))
+                if block.get("scope"):
+                    add("")
+                    add("Scope: %s" % block["scope"])
             add("")
             add("**Mechanism.** Why this should move the result, in algorithm terms.")
             add("")
@@ -356,8 +426,22 @@ def render(registry, summary):
     add("3. Commit that report to the path the entry names. The gate requires the")
     add("   file to exist and to record `verdict: EQUIVALENT` with no failures.")
     add("")
-    add("The gate rejects an algorithm entry with no `code.policy_key` and a refactor")
-    add("entry with no committed report. Neither can pass on prose alone.")
+    add("A **validation** entry makes no makespan claim, so it is judged on whether")
+    add("a parameter choice survives data the choice was not made on:")
+    add("")
+    add("1. Set `kind: \"validation\"` and give a `validation` block naming a report")
+    add("   committed to the tree, the policy the selection is expected to land on,")
+    add("   and a `min_trials` floor, plus a `scope` line saying what the split does")
+    add("   and does not establish.")
+    add("2. Run `python3 scripts/held_out_validation.py --results <shard dir>`. It")
+    add("   splits within every cell, re-selects on the training half, and repeats.")
+    add("3. Commit that report to the path the entry names. The gate requires the")
+    add("   file to exist, to have run at least `min_trials`, and to have selected")
+    add("   the policy the entry names.")
+    add("")
+    add("The gate rejects an algorithm entry with no `code.policy_key`, a refactor")
+    add("entry with no committed report, and a validation entry whose report does not")
+    add("select the policy it names. None can pass on prose alone.")
     add("")
 
     return "\n".join(lines).rstrip() + "\n"
