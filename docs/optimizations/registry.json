@@ -392,6 +392,76 @@
       }
     },
     {
+      "id": "no_insertion",
+      "title": "Disable calendar insertion: append after the processor's last task",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_succ_own_no_insertion",
+        "policy_key": "v:succ_own_no_insertion"
+      },
+      "mechanism": [
+        "Every policy in this repo places a task by searching the processor's",
+        "calendar for the earliest gap the task fits in. With insertion off, a task",
+        "is appended after whatever the processor last finished, so an idle gap",
+        "earlier in the calendar is never used.",
+        "",
+        "The argument for removing it: the gap search is what makes placement cost",
+        "O(n^2 p) rather than O(n p). If appending is nearly as good, the algorithm",
+        "gets a factor of n cheaper in the phase that dominates its running time,",
+        "and the complexity claim in COMPLEXITY.md improves with it. That is a",
+        "tempting trade, which is exactly why it needed measuring rather than",
+        "assuming.",
+        "",
+        "The argument against: a gap exists because a task's predecessors were not",
+        "ready yet. Appending leaves that gap permanently empty, and on a DAG with",
+        "uneven path lengths there are many such gaps. The loss should scale with",
+        "how much the instance's parallelism is limited by precedence rather than by",
+        "processor count."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_own_b0p5_g0p5",
+        "min_pct": 0.0,
+        "statement": "Appending instead of inserting is expected to be worse, i.e. the gap search earns its O(n^2 p) cost."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_own_b0p5_g0p5",
+        "statement": "Pooled 1410.26 against 1360.64, so appending costs 3.65%. It is better on only 153 of 2,094 instances."
+      },
+      "decision": [
+        "Rejected. Calendar insertion is worth 3.65% pooled, which is larger than",
+        "every rank change in this registry combined. The O(n^2 p) placement cost",
+        "buys real quality and the complexity claim stays as it is.",
+        "",
+        "The margin is not an averaging artifact. Insertion wins outright on 1,484",
+        "instances, appending on 153, and 457 tie. Where appending wins it wins by",
+        "at most 18.02%, while where it loses it loses by up to 28.78%.",
+        "",
+        "The per-processor breakdown is the informative part, because it is",
+        "non-monotone and that is not what a simple 'more processors, more gaps'",
+        "story predicts: 0.47% at p=2, 2.17% at p=4, 5.29% at p=8, 7.66% at p=16,",
+        "then back down to 4.22% at p=32 and 2.23% at p=64. The peak at p=16 is",
+        "where the corpus has the most precedence-limited parallelism to waste: at",
+        "low p there is no idle capacity to leave unused, and at high p the schedule",
+        "is communication-bound rather than gap-bound.",
+        "",
+        "Per family: Genome 6.81%, GE 3.72%, LIGO 3.39%, FFT 3.21%, LA 2.45%,",
+        "Montage 1.22%. Genome is the widest and also the family with the deepest",
+        "DAGs, which fits the mechanism.",
+        "",
+        "Recorded because insertion is the step most likely to be proposed for",
+        "removal by someone reading the complexity table, and this is the",
+        "measurement that says no."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json",
+        "scripts/ectd_variants.py"
+      ]
+    },
+    {
       "id": "baseline_control",
       "title": "Control: reimplementation must reproduce published ECTD exactly",
       "status": "accepted",

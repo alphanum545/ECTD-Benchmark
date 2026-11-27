@@ -431,6 +431,22 @@ for _beta in (0.375, 0.625):
     ECTD_SUCC_OWN_VARIANTS[_n] = _ectd_succ_own(_beta, 0.0)
 
 
+def v_succ_own_no_insertion(problem, insertion=True):
+    """The winning policy with calendar insertion switched off, to price it.
+
+    ``Schedule(insertion=False)`` appends each task after the processor's
+    current availability instead of searching the calendar for a gap. Every
+    published policy here runs with insertion on, and no entry in the registry
+    had ever measured what it is worth, so this is the ablation that says
+    whether the gap search earns its O(n^2 p) placement cost.
+
+    Same pattern as ``v_no_dup``: the variant exists to price a step that is
+    already in the shipped policy, not to propose a change.
+    """
+    ranks = ectd_succ_own_rank(problem, 0.5, 0.5)
+    return _own_cost_damped_with_ranks(problem, ranks, False)
+
+
 RANK_VARIANTS = {
     "v:rank_heft": v_rank_heft,
     "v:rank_lstd": v_rank_lstd,
@@ -446,3 +462,4 @@ VARIANTS.update(RANK_VARIANTS)
 VARIANTS.update(ECTD_LAM_VARIANTS)
 VARIANTS.update(ECTD_SUCC_VARIANTS)
 VARIANTS.update(ECTD_SUCC_OWN_VARIANTS)
+VARIANTS["v:succ_own_no_insertion"] = v_succ_own_no_insertion
