@@ -48,6 +48,7 @@ build rather than being quietly softened in the prose.
 | Fall back to pure EFT when a task has more successors than processors | algorithm | REJECTED | -5.97% | -0.16% |
 | Remove the critical-successor damping multiplier entirely | algorithm | REJECTED | +0.26% | +6.46% |
 | Disable entry-task duplication | algorithm | REJECTED | +0.12% | +6.31% |
+| Disable calendar insertion: append after the processor's last task | algorithm | REJECTED | -3.83% | +2.12% |
 | ECTD rank with own-cost weight gamma=2, beta=0.5 | algorithm | REJECTED | -6.56% | -0.78% |
 | ECTD rank with own-cost weight gamma=0, beta=0.375 | algorithm | REJECTED | -7.00% | -1.25% |
 | ECTD rank with own-cost weight gamma=0, beta=0.625 | algorithm | REJECTED | -7.00% | -1.25% |
@@ -786,6 +787,39 @@ Rejected. Duplication measurably helps, so it stays. The cost of the copies is o
 Recorded because entry duplication is the step most likely to look like superfluous complexity to a reader of the source, and this is the measurement that says otherwise.
 
 **Evidence:** `docs/benchmark/summary.json (ablation run 45799615516)`
+
+### `no_insertion` — Disable calendar insertion: append after the processor's last task
+
+**Status:** REJECTED  
+**Kind:** algorithm
+
+**Measured:** `v:succ_own_no_insertion` = 1410.26 pooled, -3.83% vs `ECTD`, +2.12% vs `AEFT`
+
+**Mechanism.** Why this should move the result, in algorithm terms.
+
+Every policy in this repo places a task by searching the processor's calendar for the earliest gap the task fits in. With insertion off, a task is appended after whatever the processor last finished, so an idle gap earlier in the calendar is never used.
+
+The argument for removing it: the gap search is what makes placement cost O(n^2 p) rather than O(n p). If appending is nearly as good, the algorithm gets a factor of n cheaper in the phase that dominates its running time, and the complexity claim in COMPLEXITY.md improves with it. That is a tempting trade, which is exactly why it needed measuring rather than assuming.
+
+The argument against: a gap exists because a task's predecessors were not ready yet. Appending leaves that gap permanently empty, and on a DAG with uneven path lengths there are many such gaps. The loss should scale with how much the instance's parallelism is limited by precedence rather than by processor count.
+
+**Claim before measuring:** Appending instead of inserting is expected to be worse, i.e. the gap search earns its O(n^2 p) cost.
+
+**Measured outcome:** Pooled 1410.26 against 1360.64, so appending costs 3.65%. It is better on only 153 of 2,094 instances.
+
+**Decision.**
+
+Rejected. Calendar insertion is worth 3.65% pooled, which is larger than every rank change in this registry combined. The O(n^2 p) placement cost buys real quality and the complexity claim stays as it is.
+
+The margin is not an averaging artifact. Insertion wins outright on 1,484 instances, appending on 153, and 457 tie. Where appending wins it wins by at most 18.02%, while where it loses it loses by up to 28.78%.
+
+The per-processor breakdown is the informative part, because it is non-monotone and that is not what a simple 'more processors, more gaps' story predicts: 0.47% at p=2, 2.17% at p=4, 5.29% at p=8, 7.66% at p=16, then back down to 4.22% at p=32 and 2.23% at p=64. The peak at p=16 is where the corpus has the most precedence-limited parallelism to waste: at low p there is no idle capacity to leave unused, and at high p the schedule is communication-bound rather than gap-bound.
+
+Per family: Genome 6.81%, GE 3.72%, LIGO 3.39%, FFT 3.21%, LA 2.45%, Montage 1.22%. Genome is the widest and also the family with the deepest DAGs, which fits the mechanism.
+
+Recorded because insertion is the step most likely to be proposed for removal by someone reading the complexity table, and this is the measurement that says no.
+
+**Evidence:** `docs/benchmark/summary.json`; `scripts/ectd_variants.py`
 
 ### `ectd_succ_own_g2` — ECTD rank with own-cost weight gamma=2, beta=0.5
 

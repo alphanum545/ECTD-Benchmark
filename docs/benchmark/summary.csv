@@ -1,5 +1,5 @@
 policy,pooled,pct_over_best,strict_wins,shared_wins,invalid
-v:ectd_succ_own_b0p5_g0p5,1360.64,0.00,66,109,0
+v:ectd_succ_own_b0p5_g0p5,1360.64,0.00,60,114,0
 v:ectd_succ_own_b0p5_g1,1361.85,0.09,84,102,0
 v:ectd_succ_max_0p5,1362.58,0.14,26,113,0
 v:rank_lstd,1363.59,0.22,56,95,0
@@ -8,9 +8,9 @@ v:ectd_succ_own_b0p625g0,1363.77,0.23,30,93,0
 v:ectd_succ_max_0p25,1365.27,0.34,23,109,0
 v:rank_heft,1365.31,0.34,60,83,0
 v:ectd_succ_max_1,1365.48,0.36,22,103,0
-v:own_cost_damped,1366.94,0.46,52,142,0
+v:own_cost_damped,1366.94,0.46,51,141,0
 v:rank_ipeft,1368.16,0.55,61,82,0
-v:own_cost,1368.61,0.59,37,141,0
+v:own_cost,1368.61,0.59,37,140,0
 v:ectd_lam_1,1369.78,0.67,40,85,0
 v:ectd_succ_max_2,1370.01,0.69,34,92,0
 v:ectd_succ_own_b0p5_g2,1370.25,0.71,48,95,0
@@ -30,6 +30,7 @@ v:rank_own_cost_nodamp,1378.76,1.33,0,111,0
 v:own_cost_pure_eft,1378.79,1.33,9,106,0
 AEFT,1381.00,1.50,21,92,0
 v:rank_ippts,1383.67,1.69,31,60,0
+v:succ_own_no_insertion,1410.26,3.65,3,40,0
 LSTD,1442.07,5.98,139,39,0
 HEFT,1443.52,6.09,85,36,0
 v:damp_threshold_p,1465.73,7.72,3,192,0

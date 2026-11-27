@@ -18,7 +18,7 @@
   "v:ectd_succ_max_1": 125,
   "v:ectd_succ_max_2": 126,
   "v:ectd_succ_own_b0p375g0": 134,
-  "v:ectd_succ_own_b0p5_g0p5": 175,
+  "v:ectd_succ_own_b0p5_g0p5": 174,
   "v:ectd_succ_own_b0p5_g1": 186,
   "v:ectd_succ_own_b0p5_g2": 143,
   "v:ectd_succ_own_b0p625g0": 123,
@@ -28,9 +28,9 @@
   "v:ectd_succ_sum_2": 112,
   "v:no_damping": 186,
   "v:no_dup": 175,
-  "v:own_cost": 178,
+  "v:own_cost": 177,
   "v:own_cost_aeft_ranks": 111,
-  "v:own_cost_damped": 194,
+  "v:own_cost_damped": 192,
   "v:own_cost_pure_eft": 115,
   "v:rank_aeft": 116,
   "v:rank_bppts": 103,
@@ -39,7 +39,8 @@
   "v:rank_ippts": 91,
   "v:rank_lstd": 151,
   "v:rank_own_cost": 116,
-  "v:rank_own_cost_nodamp": 111
+  "v:rank_own_cost_nodamp": 111,
+  "v:succ_own_no_insertion": 43
  },
  "by_family": {
   "FFT": {
@@ -84,7 +85,8 @@
     "v:rank_ippts": 1233.40976877324,
     "v:rank_lstd": 1237.6612564625136,
     "v:rank_own_cost": 1229.8913601997588,
-    "v:rank_own_cost_nodamp": 1229.8913601997588
+    "v:rank_own_cost_nodamp": 1229.8913601997588,
+    "v:succ_own_no_insertion": 1271.2526698477016
    },
    "wins": {
     "AEFT": 4,
@@ -126,7 +128,8 @@
     "v:rank_ippts": 5,
     "v:rank_lstd": 4,
     "v:rank_own_cost": 8,
-    "v:rank_own_cost_nodamp": 8
+    "v:rank_own_cost_nodamp": 8,
+    "v:succ_own_no_insertion": 1
    }
   },
   "GE": {
@@ -171,7 +174,8 @@
     "v:rank_ippts": 1631.7285670575602,
     "v:rank_lstd": 1635.6274315897285,
     "v:rank_own_cost": 1641.7276396726631,
-    "v:rank_own_cost_nodamp": 1633.6166399005876
+    "v:rank_own_cost_nodamp": 1633.6166399005876,
+    "v:succ_own_no_insertion": 1698.5760158792946
    },
    "wins": {
     "AEFT": 5,
@@ -213,7 +217,8 @@
     "v:rank_ippts": 5,
     "v:rank_lstd": 6,
     "v:rank_own_cost": 5,
-    "v:rank_own_cost_nodamp": 3
+    "v:rank_own_cost_nodamp": 3,
+    "v:succ_own_no_insertion": 4
    }
   },
   "Genome": {
@@ -258,7 +263,8 @@
     "v:rank_ippts": 1304.9605312007923,
     "v:rank_lstd": 1288.5195234367543,
     "v:rank_own_cost": 1297.309041756655,
-    "v:rank_own_cost_nodamp": 1298.2432965135429
+    "v:rank_own_cost_nodamp": 1298.2432965135429,
+    "v:succ_own_no_insertion": 1374.676732500908
    },
    "wins": {
     "AEFT": 46,
@@ -279,7 +285,7 @@
     "v:ectd_succ_max_1": 36,
     "v:ectd_succ_max_2": 28,
     "v:ectd_succ_own_b0p375g0": 55,
-    "v:ectd_succ_own_b0p5_g0p5": 55,
+    "v:ectd_succ_own_b0p5_g0p5": 54,
     "v:ectd_succ_own_b0p5_g1": 60,
     "v:ectd_succ_own_b0p5_g2": 52,
     "v:ectd_succ_own_b0p625g0": 45,
@@ -300,7 +306,8 @@
     "v:rank_ippts": 32,
     "v:rank_lstd": 46,
     "v:rank_own_cost": 45,
-    "v:rank_own_cost_nodamp": 44
+    "v:rank_own_cost_nodamp": 44,
+    "v:succ_own_no_insertion": 4
    }
   },
   "LA": {
@@ -345,7 +352,8 @@
     "v:rank_ippts": 1452.8208384810089,
     "v:rank_lstd": 1440.683103403751,
     "v:rank_own_cost": 1437.0472591995976,
-    "v:rank_own_cost_nodamp": 1434.5545611100806
+    "v:rank_own_cost_nodamp": 1434.5545611100806,
+    "v:succ_own_no_insertion": 1470.3791191818063
    },
    "wins": {
     "AEFT": 5,
@@ -387,7 +395,8 @@
     "v:rank_ippts": 3,
     "v:rank_lstd": 4,
     "v:rank_own_cost": 5,
-    "v:rank_own_cost_nodamp": 5
+    "v:rank_own_cost_nodamp": 5,
+    "v:succ_own_no_insertion": 3
    }
   },
   "LIGO": {
@@ -432,7 +441,8 @@
     "v:rank_ippts": 1311.1561788661586,
     "v:rank_lstd": 1290.9683162514486,
     "v:rank_own_cost": 1311.1614431657536,
-    "v:rank_own_cost_nodamp": 1312.0569817274766
+    "v:rank_own_cost_nodamp": 1312.0569817274766,
+    "v:succ_own_no_insertion": 1333.052125581326
    },
    "wins": {
     "AEFT": 20,
@@ -463,9 +473,9 @@
     "v:ectd_succ_sum_2": 43,
     "v:no_damping": 53,
     "v:no_dup": 53,
-    "v:own_cost": 55,
+    "v:own_cost": 54,
     "v:own_cost_aeft_ranks": 18,
-    "v:own_cost_damped": 57,
+    "v:own_cost_damped": 56,
     "v:own_cost_pure_eft": 19,
     "v:rank_aeft": 19,
     "v:rank_bppts": 17,
@@ -474,7 +484,8 @@
     "v:rank_ippts": 25,
     "v:rank_lstd": 32,
     "v:rank_own_cost": 19,
-    "v:rank_own_cost_nodamp": 18
+    "v:rank_own_cost_nodamp": 18,
+    "v:succ_own_no_insertion": 9
    }
   },
   "Montage": {
@@ -519,7 +530,8 @@
     "v:rank_ippts": 1527.64930918129,
     "v:rank_lstd": 1498.4941131377775,
     "v:rank_own_cost": 1514.2771812041872,
-    "v:rank_own_cost_nodamp": 1518.473027481462
+    "v:rank_own_cost_nodamp": 1518.473027481462,
+    "v:succ_own_no_insertion": 1510.8481052488148
    },
    "wins": {
     "AEFT": 33,
@@ -552,7 +564,7 @@
     "v:no_dup": 33,
     "v:own_cost": 59,
     "v:own_cost_aeft_ranks": 33,
-    "v:own_cost_damped": 72,
+    "v:own_cost_damped": 71,
     "v:own_cost_pure_eft": 35,
     "v:rank_aeft": 34,
     "v:rank_bppts": 41,
@@ -561,7 +573,8 @@
     "v:rank_ippts": 21,
     "v:rank_lstd": 59,
     "v:rank_own_cost": 34,
-    "v:rank_own_cost_nodamp": 33
+    "v:rank_own_cost_nodamp": 33,
+    "v:succ_own_no_insertion": 22
    }
   }
  },
@@ -608,7 +621,8 @@
     "v:rank_ippts": 717.4904077448413,
     "v:rank_lstd": 690.6845391906708,
     "v:rank_own_cost": 713.0426838729497,
-    "v:rank_own_cost_nodamp": 713.6375026720486
+    "v:rank_own_cost_nodamp": 713.6375026720486,
+    "v:succ_own_no_insertion": 746.4977174322332
    }
   },
   "2": {
@@ -653,7 +667,8 @@
     "v:rank_ippts": 8164.993340837486,
     "v:rank_lstd": 8128.337359334666,
     "v:rank_own_cost": 8137.616722299739,
-    "v:rank_own_cost_nodamp": 8140.131967937931
+    "v:rank_own_cost_nodamp": 8140.131967937931,
+    "v:succ_own_no_insertion": 8132.177495549897
    }
   },
   "32": {
@@ -698,7 +713,8 @@
     "v:rank_ippts": 581.277936783639,
     "v:rank_lstd": 573.9525742575964,
     "v:rank_own_cost": 579.8700410422374,
-    "v:rank_own_cost_nodamp": 580.4888018636142
+    "v:rank_own_cost_nodamp": 580.4888018636142,
+    "v:succ_own_no_insertion": 599.6076414118119
    }
   },
   "4": {
@@ -743,7 +759,8 @@
     "v:rank_ippts": 3036.4452870260147,
     "v:rank_lstd": 3006.4247304856112,
     "v:rank_own_cost": 3010.037689786163,
-    "v:rank_own_cost_nodamp": 3016.6172981728705
+    "v:rank_own_cost_nodamp": 3016.6172981728705,
+    "v:succ_own_no_insertion": 3048.153867481236
    }
   },
   "64": {
@@ -788,7 +805,8 @@
     "v:rank_ippts": 534.15503427975,
     "v:rank_lstd": 533.2115363180602,
     "v:rank_own_cost": 533.9423809128501,
-    "v:rank_own_cost_nodamp": 534.6709457334063
+    "v:rank_own_cost_nodamp": 534.6709457334063,
+    "v:succ_own_no_insertion": 543.8275832557564
    }
   },
   "8": {
@@ -833,53 +851,55 @@
     "v:rank_ippts": 1270.5746119440653,
     "v:rank_lstd": 1244.5072448957972,
     "v:rank_own_cost": 1262.0139082487656,
-    "v:rank_own_cost_nodamp": 1263.0335621628394
+    "v:rank_own_cost_nodamp": 1263.0335621628394,
+    "v:succ_own_no_insertion": 1303.7689472949214
    }
   }
  },
  "ectd_wins_slice": {
   "instances": 194,
   "mean_rank": {
-   "AEFT": 16.3505,
-   "BPPTS": 27.4124,
+   "AEFT": 16.6289,
+   "BPPTS": 27.9691,
    "ECTD": 1.0619,
-   "HEFT": 33.3557,
-   "IPEFT": 26.5309,
-   "LSTD": 33.5155,
+   "HEFT": 34.1186,
+   "IPEFT": 27.0567,
+   "LSTD": 34.2784,
    "v:baseline": 2.1237,
    "v:damp_threshold_p": 3.1649,
-   "v:ectd_lam_0": 14.067,
-   "v:ectd_lam_0p25": 14.8041,
-   "v:ectd_lam_0p5": 15.0567,
-   "v:ectd_lam_0p75": 15.3299,
-   "v:ectd_lam_1": 16.2113,
-   "v:ectd_succ_max_0p25": 16.0206,
-   "v:ectd_succ_max_0p5": 16.9485,
-   "v:ectd_succ_max_1": 17.6907,
-   "v:ectd_succ_max_2": 20.4433,
-   "v:ectd_succ_own_b0p375g0": 18.7732,
-   "v:ectd_succ_own_b0p5_g0p5": 18.8196,
-   "v:ectd_succ_own_b0p5_g1": 19.9897,
-   "v:ectd_succ_own_b0p5_g2": 21.2629,
-   "v:ectd_succ_own_b0p625g0": 21.6701,
-   "v:ectd_succ_sum_0p25": 21.0206,
-   "v:ectd_succ_sum_0p5": 22.6082,
-   "v:ectd_succ_sum_1": 23.5979,
-   "v:ectd_succ_sum_2": 24.7784,
-   "v:no_damping": 5.9691,
-   "v:no_dup": 7.2887,
-   "v:own_cost": 23.3866,
-   "v:own_cost_aeft_ranks": 23.7113,
-   "v:own_cost_damped": 24.7938,
-   "v:own_cost_pure_eft": 25.1237,
-   "v:rank_aeft": 26.5309,
-   "v:rank_bppts": 27.1907,
-   "v:rank_heft": 27.8402,
-   "v:rank_ipeft": 28.4175,
-   "v:rank_ippts": 28.7629,
-   "v:rank_lstd": 28.5979,
-   "v:rank_own_cost": 29.7835,
-   "v:rank_own_cost_nodamp": 29.9948
+   "v:ectd_lam_0": 14.2423,
+   "v:ectd_lam_0p25": 14.9742,
+   "v:ectd_lam_0p5": 15.2216,
+   "v:ectd_lam_0p75": 15.5,
+   "v:ectd_lam_1": 16.3866,
+   "v:ectd_succ_max_0p25": 16.1546,
+   "v:ectd_succ_max_0p5": 17.0567,
+   "v:ectd_succ_max_1": 17.8454,
+   "v:ectd_succ_max_2": 20.6753,
+   "v:ectd_succ_own_b0p375g0": 18.8918,
+   "v:ectd_succ_own_b0p5_g0p5": 18.8866,
+   "v:ectd_succ_own_b0p5_g1": 20.1392,
+   "v:ectd_succ_own_b0p5_g2": 21.4485,
+   "v:ectd_succ_own_b0p625g0": 21.7835,
+   "v:ectd_succ_sum_0p25": 21.1856,
+   "v:ectd_succ_sum_0p5": 22.8196,
+   "v:ectd_succ_sum_1": 23.8299,
+   "v:ectd_succ_sum_2": 25.0309,
+   "v:no_damping": 5.9897,
+   "v:no_dup": 7.3247,
+   "v:own_cost": 23.5515,
+   "v:own_cost_aeft_ranks": 23.9175,
+   "v:own_cost_damped": 24.9536,
+   "v:own_cost_pure_eft": 25.3247,
+   "v:rank_aeft": 26.732,
+   "v:rank_bppts": 27.4227,
+   "v:rank_heft": 28.0567,
+   "v:rank_ipeft": 28.6186,
+   "v:rank_ippts": 29.0258,
+   "v:rank_lstd": 28.7835,
+   "v:rank_own_cost": 29.9845,
+   "v:rank_own_cost_nodamp": 30.201,
+   "v:succ_own_no_insertion": 32.6392
   },
   "note": "conditional slice: ECTD is at-or-best on every row by construction",
   "pct_over_ectd": {
@@ -922,7 +942,8 @@
    "v:rank_ippts": 6.93,
    "v:rank_lstd": 6.64,
    "v:rank_own_cost": 6.68,
-   "v:rank_own_cost_nodamp": 6.62
+   "v:rank_own_cost_nodamp": 6.62,
+   "v:succ_own_no_insertion": 8.31
   },
   "pooled_geomean_makespan": {
    "AEFT": 573.45,
@@ -964,7 +985,8 @@
    "v:rank_ippts": 572.98,
    "v:rank_lstd": 571.45,
    "v:rank_own_cost": 571.67,
-   "v:rank_own_cost_nodamp": 571.32
+   "v:rank_own_cost_nodamp": 571.32,
+   "v:succ_own_no_insertion": 580.41
   },
   "rank2_count": {
    "AEFT": 0,
@@ -1006,7 +1028,8 @@
    "v:rank_ippts": 0,
    "v:rank_lstd": 0,
    "v:rank_own_cost": 0,
-   "v:rank_own_cost_nodamp": 0
+   "v:rank_own_cost_nodamp": 0,
+   "v:succ_own_no_insertion": 0
   },
   "ranking": [
    "ECTD",
@@ -1045,6 +1068,7 @@
    "v:ectd_succ_max_2",
    "AEFT",
    "v:ectd_succ_sum_2",
+   "v:succ_own_no_insertion",
    "IPEFT",
    "BPPTS",
    "LSTD",
@@ -1119,7 +1143,8 @@
   "v:rank_ippts": 0,
   "v:rank_lstd": 0,
   "v:rank_own_cost": 0,
-  "v:rank_own_cost_nodamp": 0
+  "v:rank_own_cost_nodamp": 0,
+  "v:succ_own_no_insertion": 0
  },
  "pct_over_best": {
   "AEFT": 1.5,
@@ -1161,7 +1186,8 @@
   "v:rank_ippts": 1.69,
   "v:rank_lstd": 0.22,
   "v:rank_own_cost": 1.22,
-  "v:rank_own_cost_nodamp": 1.33
+  "v:rank_own_cost_nodamp": 1.33,
+  "v:succ_own_no_insertion": 3.65
  },
  "policies": [
   "AEFT",
@@ -1203,7 +1229,8 @@
   "v:rank_ippts",
   "v:rank_lstd",
   "v:rank_own_cost",
-  "v:rank_own_cost_nodamp"
+  "v:rank_own_cost_nodamp",
+  "v:succ_own_no_insertion"
  ],
  "pooled_geomean_makespan": {
   "AEFT": 1381.0,
@@ -1245,7 +1272,8 @@
   "v:rank_ippts": 1383.67,
   "v:rank_lstd": 1363.59,
   "v:rank_own_cost": 1377.25,
-  "v:rank_own_cost_nodamp": 1378.76
+  "v:rank_own_cost_nodamp": 1378.76,
+  "v:succ_own_no_insertion": 1410.26
  },
  "ranking": [
   "v:ectd_succ_own_b0p5_g0p5",
@@ -1279,6 +1307,7 @@
   "v:own_cost_pure_eft",
   "AEFT",
   "v:rank_ippts",
+  "v:succ_own_no_insertion",
   "LSTD",
   "HEFT",
   "v:damp_threshold_p",
@@ -1308,7 +1337,7 @@
   "v:ectd_succ_max_1": 103,
   "v:ectd_succ_max_2": 92,
   "v:ectd_succ_own_b0p375g0": 99,
-  "v:ectd_succ_own_b0p5_g0p5": 109,
+  "v:ectd_succ_own_b0p5_g0p5": 114,
   "v:ectd_succ_own_b0p5_g1": 102,
   "v:ectd_succ_own_b0p5_g2": 95,
   "v:ectd_succ_own_b0p625g0": 93,
@@ -1318,9 +1347,9 @@
   "v:ectd_succ_sum_2": 79,
   "v:no_damping": 172,
   "v:no_dup": 167,
-  "v:own_cost": 141,
+  "v:own_cost": 140,
   "v:own_cost_aeft_ranks": 111,
-  "v:own_cost_damped": 142,
+  "v:own_cost_damped": 141,
   "v:own_cost_pure_eft": 106,
   "v:rank_aeft": 116,
   "v:rank_bppts": 61,
@@ -1329,7 +1358,8 @@
   "v:rank_ippts": 60,
   "v:rank_lstd": 95,
   "v:rank_own_cost": 116,
-  "v:rank_own_cost_nodamp": 111
+  "v:rank_own_cost_nodamp": 111,
+  "v:succ_own_no_insertion": 40
  },
  "strict_wins": {
   "AEFT": 21,
@@ -1348,7 +1378,7 @@
   "v:ectd_succ_max_1": 22,
   "v:ectd_succ_max_2": 34,
   "v:ectd_succ_own_b0p375g0": 35,
-  "v:ectd_succ_own_b0p5_g0p5": 66,
+  "v:ectd_succ_own_b0p5_g0p5": 60,
   "v:ectd_succ_own_b0p5_g1": 84,
   "v:ectd_succ_own_b0p5_g2": 48,
   "v:ectd_succ_own_b0p625g0": 30,
@@ -1359,13 +1389,14 @@
   "v:no_damping": 14,
   "v:no_dup": 8,
   "v:own_cost": 37,
-  "v:own_cost_damped": 52,
+  "v:own_cost_damped": 51,
   "v:own_cost_pure_eft": 9,
   "v:rank_bppts": 42,
   "v:rank_heft": 60,
   "v:rank_ipeft": 61,
   "v:rank_ippts": 31,
-  "v:rank_lstd": 56
+  "v:rank_lstd": 56,
+  "v:succ_own_no_insertion": 3
  },
  "title": "ECTD ablation: policies and design variants on the real six-family corpus"
 }
