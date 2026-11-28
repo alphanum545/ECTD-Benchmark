@@ -1,0 +1,2284 @@
+{
+  "_about": [
+    "Every change to a scheduling policy must have an entry here before it can be",
+    "merged. Each entry states the mechanism (why it should help, in terms of the",
+    "algorithm), the measurement that decides it, and the decision with its reason.",
+    "",
+    "Numbers are NOT written here. The generator reads them out of the artifact",
+    "named in `measurement.artifact` and renders them into OPTIMIZATIONS.md, so the",
+    "prose cannot drift from the data. What is written here is the claim: the",
+    "direction the change is expected to move the result. scripts/render_optimizations.py",
+    "checks that claim against the artifact and fails if the two disagree.",
+    "",
+    "status: accepted | rejected | inconclusive | proposed",
+    "  accepted     measured better, and the mechanism explains why",
+    "  rejected     measured worse or dominated; kept in the doc so it is not retried",
+    "  inconclusive measured effect too small to separate from noise, or untested in",
+    "               the combination that matters",
+    "  proposed     mechanism argued, not yet measured. Cannot merge in this state."
+  ],
+  "baseline": {
+    "policy_key": "ECTD",
+    "artifact": "docs/benchmark/summary.json",
+    "note": "The published ECTD implementation. Every delta below is against this unless stated."
+  },
+  "reference": {
+    "policy_key": "AEFT",
+    "note": "The strongest published baseline on this corpus. Reported alongside so a change is not called a win for beating ECTD alone."
+  },
+  "entries": [
+    {
+      "id": "own_cost",
+      "title": "Weight the task's own execution cost twice in the processor score",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_own_cost",
+        "policy_key": "v:own_cost"
+      },
+      "mechanism": [
+        "`_place_scored` scores a candidate processor as `eft + tail`, where `eft` is",
+        "`start + w[task][q]` and the tail is the optimistic cost of everything AFTER",
+        "the task. So the score is `start + 1*w + continuation`.",
+        "",
+        "This variant scores `eft + (w + continuation)`, which is `start + 2*w +",
+        "continuation`. The task's own execution cost is counted twice.",
+        "",
+        "That is not a correction of an error. Stock ECTD's estimator is already the",
+        "unbiased one: `start + w + continuation` is the actual finish time of this",
+        "task plus the estimated cost of what follows. Counting `w` twice is a",
+        "deliberate bias toward the processor where THIS task runs fastest, at the",
+        "expense of the tail estimate.",
+        "",
+        "It helps because the tail estimate is the unreliable half of the score. The",
+        "optimistic cost table assumes every successor lands on its best processor and",
+        "that no contention occurs, which is systematically optimistic once several",
+        "tasks compete for the same processors. The own-cost term is concrete and",
+        "known. Weighting it up trades a noisy forecast for a certain local cost, and",
+        "on this corpus that trade pays."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "baseline",
+        "min_pct": 1.0,
+        "statement": "At least 1% better than stock ECTD pooled, and not worse than AEFT."
+      },
+      "decision": [
+        "Accepted. Largest single improvement measured on this corpus, and the only",
+        "change that beats AEFT pooled. The mechanism above is the reason to believe it",
+        "generalises rather than being a corpus artifact: it is a bias toward measured",
+        "cost over estimated cost, which should pay wherever the tail estimate is",
+        "optimistic.",
+        "",
+        "The value 2 is now measured as a plateau, not a lucky point. The sweep in",
+        "scripts/ectd_search.py scores self_weight from 0.0 to 3.0 on a 282-instance",
+        "stratified sample (one instance from every family x level x processor cell).",
+        "The curve is smooth and single-peaked: 0.0 is catastrophic (+57.3% vs stock),",
+        "0.5 is +12.5%, 1.0 is stock, 1.5 is -4.4%, 2.0 is -5.45%, 3.0 is -4.0%.",
+        "2.0 sits at the top of a broad basin, with 1.5 and 3.0 both within 1.5 points.",
+        "That shape is what a real effect looks like; a lucky point would not have",
+        "smooth neighbours on both sides.",
+        "",
+        "self_weight = 0.0 is worth keeping in mind as a sanity check on the whole",
+        "harness: it means ignore the task's own cost entirely and place purely on",
+        "start + tail, and it is 57% worse than stock. The own-cost term is doing real",
+        "work, not decoration."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json (ablation run 45799615516, 2094 instances)",
+        "scripts/ectd_search.py sweep, 282-instance stratified sample"
+      ],
+      "outcome": {
+        "direction": "better",
+        "vs": "baseline",
+        "min_pct": 1.0,
+        "statement": "Measured at least 1% faster than stock ECTD pooled."
+      }
+    },
+    {
+      "id": "own_cost_damped",
+      "title": "Damp only the tail, not the task's own measured cost",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_own_cost_damped",
+        "policy_key": "v:own_cost_damped"
+      },
+      "mechanism": [
+        "own_cost sets the score to `start + w + (w + continuation)`, counting the",
+        "task's own execution cost twice. The damping multiplier from the author code",
+        "was then dropped, because at self_weight 1.0 it is worth only 0.12% and the",
+        "first ablation measured the undamped version as marginally better.",
+        "",
+        "That was the wrong conclusion from a real measurement. Damping is not",
+        "worthless; it was being applied to the wrong thing. The multiplier exists to",
+        "correct an over-optimistic tail estimate. The task's own execution cost is",
+        "measured, not estimated, so there is nothing optimistic about it to correct.",
+        "Damping the whole own-cost tail therefore damps a quantity that does not need",
+        "it, which is why its benefit appeared to vanish as self_weight rose.",
+        "",
+        "This variant multiplies only the continuation by the damping weights and",
+        "leaves the own cost alone: `tail = w + continuation * weights`. The",
+        "correction now lands exactly on the part of the estimate that is optimistic."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "At least as good as own_cost, i.e. damping the tail alone recovers the damping benefit without giving up the own-cost gain."
+      },
+      "outcome": {
+        "direction": "better",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "Measured faster than own_cost on the full corpus, and the best configuration measured so far."
+      },
+      "decision": [
+        "Accepted. Best pooled result measured on this corpus: 1366.94, which is",
+        "-6.78% against stock ECTD and -1.02% against AEFT.",
+        "",
+        "The size of the gain is small (0.12% over own_cost) and on its own would not",
+        "justify an entry. What justifies it is that the mechanism predicted the sign",
+        "and the reason: damping should help once it is applied only to the estimated",
+        "part. It does, and it helps at a self_weight where damping the whole tail was",
+        "measured as slightly harmful. A 0.12% move in the predicted direction, with a",
+        "mechanism that explains why the earlier measurement said otherwise, is worth",
+        "more than a 0.12% move on its own.",
+        "",
+        "Honest limit: 0.12% is close to the resolution of this corpus. The ordering",
+        "against own_cost is consistent across the 282-instance stratified sweep and",
+        "the 2094-instance full run, which is why it is accepted, but it should not be",
+        "described as a large effect. It is a small correction that happens to be in",
+        "the right direction for a stated reason.",
+        "",
+        "Still open: the per-family picture is unchanged. This configuration beats",
+        "AEFT on FFT, Genome, LIGO and Montage, and loses on GE (+1.54%) and LA",
+        "(+2.86%). Those two families are where the remaining gain is, and they are a",
+        "separate problem from the pooled score."
+      ],
+      "evidence": [
+        "scripts/ectd_search.py full-corpus run, 2094 instances",
+        "scripts/ectd_search.py sweep, 282-instance stratified sample"
+      ]
+    },
+    {
+      "id": "own_cost_aeft_ranks",
+      "title": "Replace descendant ranks with mean own-cost-plus-tail priority",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_own_cost_aeft_ranks",
+        "policy_key": "v:own_cost_aeft_ranks"
+      },
+      "mechanism": [
+        "ECTD orders ready tasks by `descendant_ranks`, which sums the DCT of every",
+        "distinct descendant. That grows with fan-out, so it favours tasks with many",
+        "downstream nodes. AEFT instead orders by the mean of own-cost-plus-tail.",
+        "",
+        "The argument for it: descendant ranks double-count breadth, so a wide but",
+        "shallow task can outrank a task on the true critical path. A mean over the",
+        "per-processor estimate is smoother and does not reward fan-out on its own."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "At least as good as own_cost, i.e. the ranking change is not a regression."
+      },
+      "decision": [
+        "Rejected. It is better than stock ECTD but worse than own_cost alone, so the",
+        "ranking change gives back part of the gain the scoring change produced. The",
+        "mechanism argument is plausible but the measurement does not support it on",
+        "this corpus.",
+        "",
+        "Worth noting it is the best policy on FFT and GE, the two families where",
+        "own_cost is weakest. That is a real signal and the reason this is recorded as",
+        "rejected-rather-than-deleted: a per-family or per-regime ranking switch is a",
+        "legitimate thing to try, but it must be tried as its own entry with its own",
+        "mechanism, not smuggled in as a global change."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json (ablation run 45799615516)"
+      ],
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "Measured slower than own_cost, so the ranking change gives back part of the gain."
+      }
+    },
+    {
+      "id": "own_cost_pure_eft",
+      "title": "Fall back to pure EFT when a task has more successors than processors",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_own_cost_pure_eft",
+        "policy_key": "v:own_cost_pure_eft"
+      },
+      "mechanism": [
+        "AEFT's selection rule: once outdegree exceeds the processor count, the",
+        "optimistic tail is close to meaningless because the successors cannot all run",
+        "in parallel anyway. In that regime, ignore the tail and place on earliest",
+        "finish time alone.",
+        "",
+        "The argument for it: the tail term is most wrong exactly where contention is",
+        "highest, so switching it off there should be strictly better than trusting it."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "At least as good as own_cost."
+      },
+      "decision": [
+        "Rejected. Statistically indistinguishable from own_cost_aeft_ranks and worse",
+        "than own_cost. The regime switch does not pay on this corpus.",
+        "",
+        "It does have the most shared wins of any policy (323), which means it is",
+        "often tied for best rather than beaten. It is a safe configuration, not a",
+        "winning one. Recorded so it is not proposed again without new evidence."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json (ablation run 45799615516)"
+      ],
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost",
+        "min_pct": 0.0,
+        "statement": "Measured slower than own_cost, so the regime switch does not pay."
+      }
+    },
+    {
+      "id": "no_damping",
+      "title": "Remove the critical-successor damping multiplier entirely",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_no_damping",
+        "policy_key": "v:no_damping"
+      },
+      "mechanism": [
+        "The author code multiplies the tail by a weight below 1 when a task has more",
+        "than p+1 successors, derived from the critical successor's share of the",
+        "remaining rank. Removing it means trusting the raw optimistic tail.",
+        "",
+        "The argument for it: the damping rule is an undocumented heuristic with an",
+        "arbitrary threshold and a rounding step. If the tail is already optimistic,",
+        "damping it further is hard to justify. Simpler is better if it costs nothing."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "baseline",
+        "min_pct": 0.0,
+        "statement": "Removing damping is expected to be worse, i.e. the damping earns its place."
+      },
+      "decision": [
+        "Rejected as a standalone change, but the reason is narrower than first",
+        "recorded and the entry needs that correction.",
+        "",
+        "At stock self_weight=1.0 the damping multiplier is worth only 0.12%. The",
+        "ablation measured +0.26% for removing it, which is the same effect seen from",
+        "the other side and is inside what this corpus resolves. So damping is a small",
+        "positive, not the load-bearing heuristic the first version of this entry",
+        "claimed.",
+        "",
+        "What the sweep adds: damping's value shrinks as self_weight rises. At 1.5 it",
+        "is worth 0.20%, at 2.0 it is 0.10%, and at 3.0 it flips to -0.13%, i.e.",
+        "damping becomes mildly harmful. Per family at self_weight=2.0 it is +0.49% on",
+        "Montage, +0.05% on Genome, +0.15% on LA, and negative on GE (-0.25%) and LIGO",
+        "(-0.05%).",
+        "",
+        "Conclusion: keep damping, because at the operating point it is a small win,",
+        "but do not describe it as essential. It is a marginal heuristic whose benefit",
+        "is being crowded out by the own-cost term. If self_weight is ever pushed",
+        "higher, damping should be re-tested rather than assumed."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json (ablation run 45799615516)",
+        "scripts/ectd_search.py sweep, 282-instance stratified sample"
+      ],
+      "outcome": {
+        "direction": "worse",
+        "vs": "baseline",
+        "min_pct": 0.0,
+        "statement": "Measured slower than stock ECTD, so the damping earns its place."
+      }
+    },
+    {
+      "id": "damp_threshold_p",
+      "title": "Apply damping above outdegree p instead of p+1",
+      "status": "inconclusive",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_damp_threshold_p",
+        "policy_key": "v:damp_threshold_p"
+      },
+      "mechanism": [
+        "The author code damps only when outdegree exceeds p+1. Lowering the threshold",
+        "to p damps one more task per processor count, on the theory that contention",
+        "starts one task earlier than the code assumes.",
+        "",
+        "The argument for it: p+1 is a suspiciously specific threshold with no",
+        "derivation in the source. If the true crossover is p, this recovers a small",
+        "amount of accuracy for free."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "baseline",
+        "min_pct": 0.0,
+        "statement": "Expected to be marginally better than stock ECTD."
+      },
+      "decision": [
+        "Inconclusive. The measured move is a fraction of a percent, which is inside",
+        "what this corpus can resolve. It is not evidence of an improvement and not",
+        "evidence of harm.",
+        "",
+        "It must not be adopted on this basis, and it must not be adopted in",
+        "combination with own_cost either: the two were never measured together, and",
+        "damping interacts with the tail that own_cost reweights. Testing that",
+        "combination is a legitimate next step and needs its own entry."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json (ablation run 45799615516)"
+      ],
+      "outcome": {
+        "direction": "equal",
+        "vs": "baseline",
+        "tolerance_pct": 0.1,
+        "statement": "Measured within 0.10% of stock ECTD, which this corpus cannot resolve."
+      }
+    },
+    {
+      "id": "no_dup",
+      "title": "Disable entry-task duplication",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_no_dup",
+        "policy_key": "v:no_dup"
+      },
+      "mechanism": [
+        "ECTD places a copy of the entry task on every processor where a local copy",
+        "finishes before any remote successor could arrive. Disabling it prices that",
+        "step: if duplication is worthless, removing it should be neutral or better,",
+        "since each copy occupies a real processor interval.",
+        "",
+        "The argument for it: duplication consumes real execution slots. On a",
+        "communication-light instance it should be pure waste."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "baseline",
+        "min_pct": 0.0,
+        "statement": "Disabling duplication is expected to be worse, i.e. duplication earns its place."
+      },
+      "decision": [
+        "Rejected. Duplication measurably helps, so it stays. The cost of the copies is",
+        "outweighed by the communication it avoids.",
+        "",
+        "Recorded because entry duplication is the step most likely to look like",
+        "superfluous complexity to a reader of the source, and this is the measurement",
+        "that says otherwise."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json (ablation run 45799615516)"
+      ],
+      "outcome": {
+        "direction": "worse",
+        "vs": "baseline",
+        "min_pct": 0.0,
+        "statement": "Measured slower than stock ECTD, so duplication earns its place."
+      }
+    },
+    {
+      "id": "no_insertion",
+      "title": "Disable calendar insertion: append after the processor's last task",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_succ_own_no_insertion",
+        "policy_key": "v:succ_own_no_insertion"
+      },
+      "mechanism": [
+        "Every policy in this repo places a task by searching the processor's",
+        "calendar for the earliest gap the task fits in. With insertion off, a task",
+        "is appended after whatever the processor last finished, so an idle gap",
+        "earlier in the calendar is never used.",
+        "",
+        "The argument for removing it: the gap search is what makes placement cost",
+        "O(n^2 p) rather than O(n p). If appending is nearly as good, the algorithm",
+        "gets a factor of n cheaper in the phase that dominates its running time,",
+        "and the complexity claim in COMPLEXITY.md improves with it. That is a",
+        "tempting trade, which is exactly why it needed measuring rather than",
+        "assuming.",
+        "",
+        "The argument against: a gap exists because a task's predecessors were not",
+        "ready yet. Appending leaves that gap permanently empty, and on a DAG with",
+        "uneven path lengths there are many such gaps. The loss should scale with",
+        "how much the instance's parallelism is limited by precedence rather than by",
+        "processor count."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_own_b0p5_g0p5",
+        "min_pct": 0.0,
+        "statement": "Appending instead of inserting is expected to be worse, i.e. the gap search earns its O(n^2 p) cost."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_own_b0p5_g0p5",
+        "statement": "Pooled 1410.26 against 1360.64, so appending costs 3.65%. It is better on only 153 of 2,094 instances."
+      },
+      "decision": [
+        "Rejected. Calendar insertion is worth 3.65% pooled, which is larger than",
+        "every rank change in this registry combined. The O(n^2 p) placement cost",
+        "buys real quality and the complexity claim stays as it is.",
+        "",
+        "The margin is not an averaging artifact. Insertion wins outright on 1,484",
+        "instances, appending on 153, and 457 tie. Where appending wins it wins by",
+        "at most 18.02%, while where it loses it loses by up to 28.78%.",
+        "",
+        "The per-processor breakdown is the informative part, because it is",
+        "non-monotone and that is not what a simple 'more processors, more gaps'",
+        "story predicts: 0.47% at p=2, 2.17% at p=4, 5.29% at p=8, 7.66% at p=16,",
+        "then back down to 4.22% at p=32 and 2.23% at p=64. The peak at p=16 is",
+        "where the corpus has the most precedence-limited parallelism to waste: at",
+        "low p there is no idle capacity to leave unused, and at high p the schedule",
+        "is communication-bound rather than gap-bound.",
+        "",
+        "Per family: Genome 6.81%, GE 3.72%, LIGO 3.39%, FFT 3.21%, LA 2.45%,",
+        "Montage 1.22%. Genome is the widest and also the family with the deepest",
+        "DAGs, which fits the mechanism.",
+        "",
+        "Recorded because insertion is the step most likely to be proposed for",
+        "removal by someone reading the complexity table, and this is the",
+        "measurement that says no."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json",
+        "scripts/ectd_variants.py"
+      ]
+    },
+    {
+      "id": "baseline_control",
+      "title": "Control: reimplementation must reproduce published ECTD exactly",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_baseline",
+        "policy_key": "v:baseline"
+      },
+      "mechanism": [
+        "Not an optimization. This is the control that makes every other entry",
+        "meaningful: `v_baseline` reimplements stock ECTD inside the variant harness,",
+        "so if it does not reproduce the published `ECTD` figure exactly, the harness",
+        "is measuring something other than what it claims and no delta below is",
+        "trustworthy.",
+        "",
+        "It is listed as an entry because it is a claim that must be checked on every",
+        "run, not a one-time assertion."
+      ],
+      "claim": {
+        "direction": "equal",
+        "vs": "baseline",
+        "tolerance_pct": 0.005,
+        "statement": "Pooled makespan must equal published ECTD to within rounding."
+      },
+      "decision": [
+        "Accepted as a control. It reproduces ECTD to the cent on every run so far,",
+        "which is the precondition for reading any other row in the table."
+      ],
+      "evidence": [
+        "docs/benchmark/summary.json (ablation run 45799615516)"
+      ],
+      "outcome": {
+        "direction": "equal",
+        "vs": "baseline",
+        "tolerance_pct": 0.005,
+        "statement": "Measured identical to published ECTD to within rounding."
+      }
+    },
+    {
+      "id": "ectd_succ_own_g0p5",
+      "title": "ECTD rank with own-cost weight gamma=0.5, beta=0.5",
+      "kind": "algorithm",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p5_g0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "better",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Pooled 1360.64, better than gamma=0 (1362.58), -0.142%."
+      },
+      "decision": [
+        "Accepted. New best on the corpus: 1360.64, which is -0.142% against",
+        "the previous best v:ectd_succ_max_0p5, -1.474% vs AEFT and -7.211% vs",
+        "published ECTD. Still O(e p), so the complexity requirement holds.",
+        "",
+        "My prediction was wrong. I predicted gamma=0.5 would be worse than",
+        "gamma=0 and gamma=1 better. The measurement is the reverse: gamma=0.5",
+        "is best (1360.64), gamma=1 is second (1361.85), gamma=0 is third",
+        "(1362.58). The reasoning that own cost should be weighted in the rank",
+        "was right; my guess at the right magnitude was wrong. Recorded as-is.",
+        "",
+        "The gamma curve has an interior optimum at 0.5: gamma=0 gives 1362.58,",
+        "0.5 gives 1360.64, 1 gives 1361.85, 2 gives 1370.25. gamma=2 collapsing",
+        "sharply is informative: matching the scoring rule's self_weight of 2 in",
+        "the rank is too much. The two mechanisms want different magnitudes.",
+        "",
+        "The beta refinement at gamma=0 confirms 0.5 was the peak: 0.375 gives",
+        "1363.68 and 0.625 gives 1363.77, both worse than 1362.58. So beta=0.5",
+        "was not a lucky grid point.",
+        "",
+        "Per family vs the previous best: Montage -0.39%, Genome +0.14%, LIGO",
+        "-0.20%, FFT -0.29%, GE +0.26%, LA +0.08%. Instance-weighted over the",
+        "three families carrying 91.4% of the corpus that is -0.157%, so the",
+        "gain is on the bulk. GE regresses slightly here, but it remains far",
+        "better than published ECTD, which was the original gap.",
+        "",
+        "Strict wins 66 versus 26 for the previous best, so this one wins more",
+        "outright as well as pooling better. That is a stronger result than the",
+        "previous step, where pooled gain came with fewer strict wins."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "held_out_rank_params",
+      "title": "Validate beta and gamma on instances the selection never saw",
+      "kind": "validation",
+      "status": "accepted",
+      "validation": {
+        "report": "docs/validation/held_out_rank_params.json",
+        "policy_key": "v:ectd_succ_own_b0p5_g0p5",
+        "min_trials": 100,
+        "scope": "Establishes that beta=0.5/gamma=0.5 is a stable selection from its own family, not an artifact of one split. Does NOT establish that the family beats every other policy on unseen data: the candidate set is the five ectd_succ_own configurations, because that is the search that actually happened. The test-half ranking of all 40 policies is reported in the same file for that separate question."
+      },
+      "mechanism": [
+        "beta and gamma were both selected by measuring them on the same 2,094",
+        "instances used to report the final number. That makes 1360.64 an in-sample",
+        "figure: the best of a search over five configurations, read off the same data",
+        "the search ran on. Nothing in the repo established that the choice survives",
+        "instances it was not made on, and a reviewer is entitled to ask.",
+        "",
+        "The split is stratified within every cell (family, level, processors), not",
+        "across cells. A by-cell split would put whole families or whole processor",
+        "counts on one side, and the two halves would then differ in ways that have",
+        "nothing to do with the parameters under test. Splitting within the cell keeps",
+        "the two halves matched on every structural variable the corpus has.",
+        "",
+        "Re-selection runs on the training half only; the selected configuration is",
+        "then scored on the test half. The split is repeated 200 times because one",
+        "split is one sample, and the question worth answering is whether the",
+        "selection is stable rather than whether it won once."
+      ],
+      "claim": {
+        "direction": "equal",
+        "statement": "The training half selects the same configuration as the full corpus, and it is also the test-half best."
+      },
+      "outcome": {
+        "direction": "equal",
+        "statement": "Training half selected v:ectd_succ_own_b0p5_g0p5 in 200 of 200 trials. It was also the test-half best in 172 of 200, with mean regret 0.005% and worst case 0.094%."
+      },
+      "decision": [
+        "Accepted. The selection is stable and the held-out penalty is negligible.",
+        "",
+        "All 200 stratified splits re-selected beta=0.5/gamma=0.5 on the training",
+        "half. That is stronger than a single split passing: the configuration is not",
+        "sitting on a knife edge where a slightly different sample of instances would",
+        "have picked a neighbour.",
+        "",
+        "On the test half it was the best of all 40 policies in 172 of 200 trials.",
+        "The 28 trials where it was not, the winner was gamma=1 (26) or a rank",
+        "variant (2), and the mean regret against the test-half best was 0.005% with",
+        "a worst case of 0.094%. So the in-sample number is not flattered by the",
+        "selection: the held-out cost of having chosen is under a tenth of a percent",
+        "in the worst of 200 splits.",
+        "",
+        "What this does not establish, stated plainly because it is the obvious next",
+        "question: the candidate set is the five ectd_succ_own configurations, which",
+        "is the search that actually happened. It does not show that this family is",
+        "the right family, only that within it the choice is sound. The test-half",
+        "ranking of all 40 policies is in the same report for that separate question,",
+        "and there the picture is the same: 1361.43 for the selected configuration",
+        "against 1364.13 for the best competitor in the family and 1381.78 for AEFT.",
+        "",
+        "The corpus is still one corpus. Six families from one benchmark suite is not",
+        "a random sample of scheduling problems, and no split of it can make it one.",
+        "This closes the parameter-selection gap, not the external-validity gap."
+      ],
+      "evidence": [
+        "docs/validation/held_out_rank_params.json",
+        "scripts/held_out_validation.py"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_g1",
+      "title": "ECTD rank with own-cost weight gamma=1, beta=0.5",
+      "kind": "algorithm",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p5_g1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected better than gamma=0."
+      },
+      "outcome": {
+        "direction": "better",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Pooled 1361.85, better than gamma=0 (1362.58), -0.054%."
+      },
+      "decision": [
+        "Accepted as a valid but dominated point. Pooled 1361.85 beats gamma=0 but",
+        "loses to gamma=0.5. Kept in the registry so the shape of the curve is",
+        "visible: gamma=0.5 and gamma=1 are close, gamma=2 falls off sharply."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_g2",
+      "title": "ECTD rank with own-cost weight gamma=2, beta=0.5",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p5_g2"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Pooled 1370.25, worse than gamma=0 (1362.58), +0.563%."
+      },
+      "decision": [
+        "Rejected. Pooled 1370.25 against gamma=0 at 1362.58.",
+        "",
+        "The beta refinement confirms 0.5 is the peak; both neighbouring points",
+        "are worse. gamma=2 is far worse, showing that the rank and the scoring",
+        "rule want different magnitudes of own-cost weight.",
+        "",
+        "Kept so the optima are visible rather than only the winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_b0p375",
+      "title": "ECTD rank with own-cost weight gamma=0, beta=0.375",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p375g0"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Pooled 1363.68, worse than gamma=0 (1362.58), +0.081%."
+      },
+      "decision": [
+        "Rejected. Pooled 1363.68 against gamma=0 at 1362.58.",
+        "",
+        "The beta refinement confirms 0.5 is the peak; both neighbouring points",
+        "are worse. gamma=2 is far worse, showing that the rank and the scoring",
+        "rule want different magnitudes of own-cost weight.",
+        "",
+        "Kept so the optima are visible rather than only the winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_own_b0p625",
+      "title": "ECTD rank with own-cost weight gamma=0, beta=0.625",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_succ_own_rank",
+        "policy_key": "v:ectd_succ_own_b0p625g0"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The winning successor rank uses a node base of mean_q oct[i][q], the tail only.",
+        "But the scoring rule that won earlier established that the task's own cost",
+        "deserves extra weight (self_weight = 2). The rank ignores that principle. This",
+        "family applies it to the ordering:",
+        "",
+        "    base(i) = mean_q [ oct[i][q] + gamma * w[i][q] ]",
+        "    rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "",
+        "gamma = 0 reproduces the current best exactly, verified to == across 10 graphs.",
+        "gamma = 1 makes the base the mean IOCT. gamma = 2 matches the scoring rule's",
+        "double weight on own cost.",
+        "",
+        "This also partly recovers what descendant_ranks had and the cheap OCT base",
+        "lacks: descendant_ranks' DCT weight starts from min execution time, an own-cost",
+        "quantity. gamma asks how much of that the rank needs."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "min_pct": 0.0,
+        "statement": "Expected worse than gamma=0."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:ectd_succ_max_0p5",
+        "statement": "Pooled 1363.77, worse than gamma=0 (1362.58), +0.087%."
+      },
+      "decision": [
+        "Rejected. Pooled 1363.77 against gamma=0 at 1362.58.",
+        "",
+        "The beta refinement confirms 0.5 is the peak; both neighbouring points",
+        "are worse. gamma=2 is far worse, showing that the rank and the scoring",
+        "rule want different magnitudes of own-cost weight.",
+        "",
+        "Kept so the optima are visible rather than only the winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_max_0p25",
+      "title": "ECTD successor accumulation (max, beta=0.25)",
+      "kind": "algorithm",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_0p25"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1365.27, better than descendant_ranks 1366.94 (-0.122%)."
+      },
+      "decision": [
+        "Rejected. Pooled 1365.27 against descendant_ranks 1366.94.",
+        "",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
+        "",
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_max_0p5",
+      "title": "ECTD successor accumulation (max, beta=0.5)",
+      "kind": "algorithm",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1362.58, better than descendant_ranks 1366.94 (-0.319%)."
+      },
+      "decision": [
+        "Accepted. Best pooled result measured on this corpus: 1362.58, which is",
+        "-0.319% vs descendant_ranks, -1.353% vs AEFT, and better than the",
+        "borrowed LSTD rank at 1363.59. It also clears O(n^2 p) worst case in n,",
+        "so the complexity requirement and the quality objective agree.",
+        "",
+        "The mechanism survived. lam varied the LEVEL of one OCT row and failed;",
+        "beta varies downstream influence and works. The max form at beta=0.5",
+        "beats the mean control (lam=1, 1369.78) by 0.53% and descendant_ranks",
+        "by 0.32%. So what descendant_ranks was buying is downstream influence,",
+        "and a cheap OCT-weighted critical-successor recurrence recovers most of",
+        "it without a transitive closure.",
+        "",
+        "The curve has an interior optimum: beta=0.25 gives 1365.27, beta=0.5",
+        "gives 1362.58, beta=1 gives 1365.48, beta=2 gives 1370.01. That shape",
+        "is what a real effect looks like; a lucky point would not have smooth",
+        "neighbours on both sides. The optimum being near 0.5 rather than 1",
+        "says the base OCT already carries much of the influence, so adding all",
+        "of the successor rank overshoots.",
+        "",
+        "The sum form is rejected at every beta (1372-1377): double-counting",
+        "shared successors is too crude. That is informative. It means the",
+        "distinctness that descendant_ranks pays O(n^3/w) for is partly real,",
+        "but the max form captures enough of it at O(e p).",
+        "",
+        "Per family vs descendant_ranks: Montage +0.31%, Genome -0.21%, LIGO",
+        "-0.65%, FFT -0.09%, GE -2.26%, LA -2.79%. Instance-weighted over the",
+        "three families carrying 91.4% of the corpus, that is -0.185%, so the",
+        "gain is on the bulk of the corpus and not bought by sacrificing it.",
+        "",
+        "Caveat: 41 strict wins versus 70 for descendant_ranks. The pooled gain",
+        "comes from many small improvements rather than more outright wins, and",
+        "the shared-win count falls accordingly. That is worth stating in the",
+        "paper rather than quoting only the pooled number.",
+        "",
+        "This is ECTD's own parameter: the node weight is ECTD's OCT table and",
+        "beta is new. Nothing is imported from another algorithm."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_max_1",
+      "title": "ECTD successor accumulation (max, beta=1)",
+      "kind": "algorithm",
+      "status": "accepted",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1365.48, better than descendant_ranks 1366.94 (-0.107%)."
+      },
+      "decision": [
+        "Rejected. Pooled 1365.48 against descendant_ranks 1366.94.",
+        "",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
+        "",
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_max_2",
+      "title": "ECTD successor accumulation (max, beta=2)",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_max_2"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1370.01, worse than descendant_ranks 1366.94 (+0.225%)."
+      },
+      "decision": [
+        "Rejected. Pooled 1370.01 against descendant_ranks 1366.94.",
+        "",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
+        "",
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_0p25",
+      "title": "ECTD successor accumulation (sum, beta=0.25)",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_0p25"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1376.64, worse than descendant_ranks 1366.94 (+0.710%)."
+      },
+      "decision": [
+        "Rejected. Pooled 1376.64 against descendant_ranks 1366.94.",
+        "",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
+        "",
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_0p5",
+      "title": "ECTD successor accumulation (sum, beta=0.5)",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1375.50, worse than descendant_ranks 1366.94 (+0.626%)."
+      },
+      "decision": [
+        "Rejected. Pooled 1375.50 against descendant_ranks 1366.94.",
+        "",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
+        "",
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_1",
+      "title": "ECTD successor accumulation (sum, beta=1)",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1372.07, worse than descendant_ranks 1366.94 (+0.375%)."
+      },
+      "decision": [
+        "Rejected. Pooled 1372.07 against descendant_ranks 1366.94.",
+        "",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
+        "",
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_succ_sum_2",
+      "title": "ECTD successor accumulation (sum, beta=2)",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_successor_rank",
+        "policy_key": "v:ectd_succ_sum_2"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "The lam family varied how to collapse one OCT row by its LEVEL (max -> mean).",
+        "The curve was monotone with the optimum at lam=1, so tail-level pessimism is not",
+        "the mechanism. What descendant_ranks actually buys is downstream influence: a",
+        "task with many important successors is urgent. That is the dimension lam never",
+        "touched.",
+        "",
+        "The node weight is still ECTD's own OCT table. beta controls how much successor",
+        "influence propagates:",
+        "",
+        "    base(i)  = mean_q oct[i][q]",
+        "    max form:  rank(i) = base(i) + beta * max_c ( edge(i,c) + rank(c) )",
+        "    sum form:  rank(i) = base(i) + beta * sum_c ( edge(i,c) + rank(c) )",
+        "",
+        "The sum form double-counts shared successors. That is deliberate: it is O(e),",
+        "not the O(e n/w) transitive closure, and it is the cheapest way to approximate",
+        "the descendant count. Both forms are O(e p) to build the table plus O(e) to",
+        "propagate, so both clear O(n^2 p)."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to beat descendant_ranks by restoring downstream influence."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1372.75, worse than descendant_ranks 1366.94 (+0.425%)."
+      },
+      "decision": [
+        "Rejected. Pooled 1372.75 against descendant_ranks 1366.94.",
+        "",
+        "The max form has an interior optimum at beta=0.5; this setting is off",
+        "that peak. The sum form is worse at every beta, which shows that",
+        "double-counting shared successors is too crude an approximation to the",
+        "distinct-descendant sum.",
+        "",
+        "Kept in the registry so the shape of the curve is visible rather than",
+        "only its winner."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_0",
+      "title": "ECTD rank with lam = 0: pure max of the OCT row",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0 is expected worse than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1375.76, worse than descendant_ranks 1366.94."
+      },
+      "decision": [
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
+        "",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
+        "",
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_0p25",
+      "title": "ECTD rank with lam = 0.25: quarter-way from max toward mean",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0p25"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0.25 is expected better than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1373.77, worse than descendant_ranks 1366.94."
+      },
+      "decision": [
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
+        "",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
+        "",
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_0p5",
+      "title": "ECTD rank with lam = 0.5: halfway from max toward mean",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0p5"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0.5 is expected better than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1372.47, worse than descendant_ranks 1366.94."
+      },
+      "decision": [
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
+        "",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
+        "",
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_0p75",
+      "title": "ECTD rank with lam = 0.75: three-quarters from max toward mean",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_0p75"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "better",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 0.75 is expected better than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1370.88, worse than descendant_ranks 1366.94."
+      },
+      "decision": [
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
+        "",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
+        "",
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "ectd_lam_1",
+      "title": "ECTD rank with lam = 1: the mean, which is the control",
+      "kind": "algorithm",
+      "status": "rejected",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "ectd_rank",
+        "policy_key": "v:ectd_lam_1"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true,
+        "note": "no descendant set, no imported rank"
+      },
+      "mechanism": [
+        "ECTD's optimistic cost table is per processor: oct[i][q] is the best-case cost",
+        "of everything after task i, given i runs on q. Ordering tasks requires",
+        "collapsing that row to one number, and the collapse is a choice no other",
+        "algorithm in the suite makes explicitly:",
+        "",
+        "    rank_lam(i) = max_q oct[i][q] + lam * (mean_q oct[i][q] - max_q oct[i][q])",
+        "",
+        "lam = 0 is the max: assume the tail runs on its worst processor, so a task whose",
+        "tail is expensive somewhere is urgent. lam = 1 is the mean, which is what AEFT",
+        "and IPPTS effectively use and which measured 1.0% worse than descendant_ranks.",
+        "lam > 1 goes below the mean toward the min.",
+        "",
+        "So lam is one knob on how much per-processor pessimism the ordering keeps. The",
+        "claim is that lam < 1 orders better than the mean, because a task that is",
+        "expensive on its worst processor is more urgent than its average suggests.",
+        "",
+        "This is deliberately not an imported rank. The v:rank_* variants take another",
+        "algorithm's priority order wholesale, which solves the complexity problem but",
+        "leaves ECTD with no contribution of its own in the ordering. Here the table and",
+        "the parameter are both ECTD's."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "lam = 1 is expected worse than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "statement": "Pooled 1369.78, worse than descendant_ranks 1366.94."
+      },
+      "decision": [
+        "Rejected. The curve is monotone in lam: lam=1 is the best of the family",
+        "and every step toward the max is worse. lam=1 is itself 0.207% worse than",
+        "descendant_ranks, so the family does not reach the thing it was meant to",
+        "replace.",
+        "",
+        "The mechanism is falsified. The claim was that a task expensive on its",
+        "worst processor is more urgent than its average suggests, so lam < 1 should",
+        "beat the mean. It does not. Per-processor pessimism in the row collapse is",
+        "not what descendant_ranks buys.",
+        "",
+        "What it did get right: every lam beats descendant_ranks on GE and LA by",
+        "1.9-3.0%, and pays for it on Montage, Genome and LIGO. Same trade as the",
+        "AEFT-ordering swap, just smaller. That is recorded here so the next rank",
+        "candidate is not judged on GE and LA alone.",
+        "",
+        "Kept in the registry as a rejection, not deleted. This is the record of a",
+        "mechanism that was argued, predicted, measured and falsified."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_heft",
+      "title": "Replace descendant ranks with HEFT upward rank",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_heft",
+        "policy_key": "v:rank_heft"
+      },
+      "complexity": {
+        "rank_bound": "O(n + e)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "HEFT's upward rank is mean compute plus the max over successors of edge",
+        "delay plus successor rank. One reverse-topological pass, no set.",
+        "",
+        "The argument for it: it is the cheapest rank in the suite and the one the",
+        "most baselines already use, so it is the natural floor. If it costs little",
+        "quality, the complexity problem is solved for free."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected worse than descendant_ranks; the question is by how much."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If it matches v:own_cost_damped within 0.2% pooled, the complexity fix is free and should be adopted immediately.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_lstd",
+      "title": "Replace descendant ranks with LSTD rank",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_lstd",
+        "policy_key": "v:rank_lstd"
+      },
+      "complexity": {
+        "rank_bound": "O(n + e)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "LSTD ranks by a weighted max over successors, where the weight is",
+        "min_w*(max_w-min_w)/max_w. One reverse-topological pass, no set.",
+        "",
+        "The argument for it: it encodes processor heterogeneity in the weight,",
+        "which descendant_ranks does not. That may matter on families where the",
+        "per-processor cost spread is large."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected worse than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If it beats v:own_cost_damped, the descendant sum is not earning its cost at all.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_aeft",
+      "title": "Replace descendant ranks with AEFT mean IOCT",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_aeft",
+        "policy_key": "v:rank_aeft"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "Mean over processors of own-cost-plus-tail. This is the rank AEFT uses,",
+        "and AEFT is the strongest published baseline.",
+        "",
+        "Already measured in an undamped form as v:own_cost_aeft_ranks: 0.74% worse",
+        "than v:own_cost. This entry is the damped configuration, which was never",
+        "measured, so the interaction between the rank and the damping weights is",
+        "still unknown."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected slightly worse pooled, better on GE and LA."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If the damped form is within 0.2% of v:own_cost_damped, adopt it: it clears the bound and costs almost nothing.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_own_cost",
+      "title": "Replace descendant ranks with mean own-cost-plus-tail",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_own_cost",
+        "policy_key": "v:rank_own_cost"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "Mean over processors of the own-cost table. Same shape as AEFT's IOCT rank",
+        "because the own-cost table is IOCT; kept separate to confirm the two agree",
+        "and to catch any discrepancy in the table construction."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected to match v:rank_aeft closely."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If it diverges from v:rank_aeft, one of the two table constructions is wrong.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_bppts",
+      "title": "Replace descendant ranks with BPPTS BPCM mean",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_bppts",
+        "policy_key": "v:rank_bppts"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "Mean over processors of the BPCM table, which includes sink costs and uses",
+        "mean compute per task rather than per-processor compute."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected worse than descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If it beats the AEFT rank, the sink-cost handling matters more than expected.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_ipeft",
+      "title": "Replace descendant ranks with IPEFT PCT rank",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_ipeft",
+        "policy_key": "v:rank_ipeft"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "IPEFT's PCT recurrence uses max over processors rather than min, which is",
+        "a pessimistic rather than optimistic tail. Different failure mode from the",
+        "other candidates, so worth measuring rather than assuming."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected worse; the pessimistic tail should under-order."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If the pessimistic tail beats the optimistic one, the tail estimate's bias direction is the wrong thing to correct.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_ippts",
+      "title": "Replace descendant ranks with IPPTS PCM rank",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_ippts",
+        "policy_key": "v:rank_ippts"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "IPPTS's PCM table scaled by outdegree, as the source does. The outdegree",
+        "scaling is the closest any baseline rank gets to rewarding fan-out, which",
+        "is part of what descendant_ranks does by summing over descendants."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Expected worse, but the closest structural match to descendant_ranks."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If any candidate closes most of the gap, it should be this one; if it does not, fan-out weighting is not the mechanism.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "rank_own_cost_nodamp",
+      "title": "Control: mean own-cost rank with damping off",
+      "kind": "algorithm",
+      "status": "proposed",
+      "code": {
+        "file": "scripts/ectd_variants.py",
+        "symbol": "v_rank_own_cost_nodamp",
+        "policy_key": "v:rank_own_cost_nodamp"
+      },
+      "complexity": {
+        "rank_bound": "O(e p)",
+        "meets_n2p": true
+      },
+      "mechanism": [
+        "Holds the winning scoring rule fixed (own-cost tail, damped continuation) and changes only the priority order. Measured against v:own_cost_damped, so the delta is attributable to the rank alone.",
+        "",
+        "Not a candidate. This is the control that separates the rank change from",
+        "the damping coupling: critical_path_weights takes ranks as an argument, so",
+        "changing the order also changes the damping weights. Comparing this against",
+        "v:rank_own_cost isolates how much of the delta is the rank and how much is",
+        "the damping reacting to it."
+      ],
+      "claim": {
+        "direction": "worse",
+        "vs": "v:own_cost_damped",
+        "min_pct": 0.0,
+        "statement": "Control; expected to bracket v:rank_own_cost."
+      },
+      "outcome": {
+        "direction": "unknown",
+        "vs": "v:own_cost_damped",
+        "statement": "Not yet measured. Run the ablation workflow."
+      },
+      "falsification": "If v:rank_own_cost and this control differ by more than 0.2%, the damping coupling dominates and must be reported separately.",
+      "decision": [
+        "Proposed. Cannot be accepted until the ablation workflow scores it and",
+        "the outcome above is replaced with the measured direction.",
+        "",
+        "Why it is in the candidate set at all: every rank here is O(n + e) or",
+        "O(e p), so every one of them clears O(n^2 p) worst case in n. That is",
+        "the constraint that forces a replacement. descendant_ranks is the only",
+        "rank in the suite that needs a descendant set, and the set is what",
+        "costs O(e n/w).",
+        "",
+        "Selection criterion: whichever candidate loses least against",
+        "v:own_cost_damped on the three families that carry 91.4% of the corpus",
+        "(Montage, Genome, LIGO). GE and LA are a constraint column, not the",
+        "objective: together they are 120 of 2094 instances, so fixing both to",
+        "AEFT parity is worth 0.125% globally."
+      ],
+      "evidence": [
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "refactor_byte_scan",
+      "title": "Read the descendant bitmask by bytes instead of peeling set bits",
+      "kind": "refactor",
+      "status": "accepted",
+      "code": {
+        "file": "ectdbench/proposed.py",
+        "symbol": "descendant_ranks"
+      },
+      "equivalence": {
+        "report": "docs/equivalence/byte-scan-and-bisect.json",
+        "scope": "Removes the per-set-bit walk from the rank. Does NOT remove the per-edge big-integer union, which is the other n^3/w term. ECTD is O(n^3/w + n^2 p) before this change and O(n^3/w + n^2 p) after it, so this is a constant-factor win and not a bound fix."
+      },
+      "mechanism": [
+        "descendant_ranks peeled one set bit at a time with `bits & -bits` and",
+        "`bits ^= low`. Each of those touches the whole n-bit value, so one iteration",
+        "costs O(n/w) word operations. The loop runs once per distinct descendant,",
+        "which is Theta(n^2) over all tasks, so the walk was O(n^3/w).",
+        "",
+        "The loop only accumulates a sum, so the order of visitation does not matter.",
+        "Scanning the mask as bytes costs O(n/8) per task regardless of popcount,",
+        "which is O(n^2/8) for the walk.",
+        "",
+        "Equality is exact rather than approximate because both routines visit set",
+        "bits in ascending order, so the floats are accumulated in the same order.",
+        "That matters downstream: the rank feeds a heap key in ready_order and a",
+        "ceil-to-a-tenth boundary in critical_path_weights, where a reordering could",
+        "flip a tie and change the schedule."
+      ],
+      "claim": {
+        "direction": "equal",
+        "statement": "Bit-identical ranks and bit-identical schedules; only the cost changes."
+      },
+      "outcome": {
+        "direction": "equal",
+        "statement": "482 rank cases and 282 instances x 14 policies compared, zero differences. 400/400 synthetic graphs bit-identical under exact ==, not a tolerance."
+      },
+      "decision": [
+        "Accepted on proof, not on a benchmark. A refactor that changes no output",
+        "cannot be judged by a quality delta, and does not need to be: it is judged",
+        "by identity, which is a stronger claim.",
+        "",
+        "Measured speedup on the rank phase alone: 3.4x at n=500 and 3.9x at n=4000",
+        "on sparse graphs, 2.4x at n=4000 on dense. Those are observations, not the",
+        "justification. The justification is the equivalence report.",
+        "",
+        "Scope, and this is the part that must not get lost: this removes one of",
+        "two n^3/w terms. The rank after the change is O(e*n/w + n^2), and at the",
+        "worst case e = Theta(n^2) that is still O(n^3/w). ECTD does not meet",
+        "O(n^2 p) before this change and does not meet it after. An earlier version",
+        "of this entry said the change made ECTD O(n^2 p) on sparse graphs, which",
+        "conditioned a complexity claim on the input's density. That is not a bound",
+        "and the claim has been withdrawn."
+      ],
+      "evidence": [
+        "docs/equivalence/byte-scan-and-bisect.json",
+        "docs/COMPLEXITY.md"
+      ]
+    },
+    {
+      "id": "refactor_calendar_bisect",
+      "title": "Locate the insertion gap by bisecting instead of scanning from zero",
+      "kind": "refactor",
+      "status": "accepted",
+      "code": {
+        "file": "ectdbench/engine.py",
+        "symbol": "Schedule.place"
+      },
+      "equivalence": {
+        "report": "docs/equivalence/byte-scan-and-bisect.json",
+        "scope": "Removes a linear scan from placement. Placement was already inside O(n^2 p), so this is a low-order and constant-factor win, not a bound fix. It changes no exponent anywhere."
+      },
+      "mechanism": [
+        "earliest_slots walked every event on a processor from index 0 for every",
+        "(task, processor) pair, and place located its insertion point with a linear",
+        "`next(...)` over the calendar. Both were O(n) per call, so placement carried",
+        "an O(n^2) term unrelated to the algorithm.",
+        "",
+        "Events on one processor never overlap, so their start times and their finish",
+        "times are both ascending. Two consequences:",
+        "",
+        "In place, the insertion index is bisect_right over the start times, which",
+        "returns the first index whose start is strictly greater, exactly what the",
+        "linear `next(...)` returned.",
+        "",
+        "In earliest_slots, any event finishing at or before the candidate is a",
+        "no-op: its start is also <= candidate, so it cannot trigger the break and it",
+        "cannot raise the candidate. Skipping them is equivalent to walking from",
+        "index 0. bisect_right over the finishes finds the first event that can still",
+        "matter, and the scan re-bisects whenever the candidate moves forward."
+      ],
+      "claim": {
+        "direction": "equal",
+        "statement": "Bit-identical schedules; only the cost changes."
+      },
+      "outcome": {
+        "direction": "equal",
+        "statement": "282 instances x 14 policies compared, zero differences, zero invalid schedules. The 23-test suite passes."
+      },
+      "decision": [
+        "Accepted on proof. Same reasoning as the byte-scan: identity is the claim,",
+        "and the equivalence report is the evidence.",
+        "",
+        "self.events stays a list of per-processor lists in the same order, because",
+        "tests/test_suite.py:263 reads it directly. The bisect index is a parallel",
+        "pair of lists updated at the single write site, so it cannot drift from the",
+        "calendars.",
+        "",
+        "Scope: this changes no exponent. It is worth having because placement is the",
+        "phase that carries the O(n^2 p) term for every policy, so its constant",
+        "factor is paid six times over on every benchmark run."
+      ],
+      "evidence": [
+        "docs/equivalence/byte-scan-and-bisect.json",
+        "docs/COMPLEXITY.md"
+      ]
+    }
+  ]
+}

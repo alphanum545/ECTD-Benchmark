@@ -1,0 +1,198 @@
+name: ablation
+
+# Scores the six published policies PLUS every ECTD design variant, then
+# commits the aggregate back to the branch.
+#
+# Why this exists separately from benchmark.yml: benchmark.yml measures the
+# published reference implementations and is the number that belongs in a
+# paper. This one is exploratory. It answers "which ECTD design choice costs
+# what", and it writes its output into docs/benchmark/ so the result is in git
+# rather than on whichever machine happened to run it.
+#
+# Variants are prefixed v: in every output so a tuned configuration can never
+# be mistaken for a published baseline.
+#
+# Trigger: Actions -> ablation -> Run workflow, or push to scripts/ectd_variants.py.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset_repo:
+        description: "owner/repo holding the corpus"
+        required: false
+        default: "Techietal/Task-Scheduling-Dataset"
+      dataset_ref:
+        description: "branch, tag or SHA of the corpus"
+        required: false
+        default: "main"
+      limit:
+        description: "score only N files per shard (0 = all)"
+        required: false
+        default: "0"
+      commit_results:
+        description: "commit the aggregate back to this branch"
+        type: boolean
+        required: false
+        default: true
+  push:
+    branches: [main, "bench/**"]
+    paths:
+      - "scripts/ectd_variants.py"
+      - "scripts/run_variants.py"
+      - ".github/workflows/ablation.yml"
+
+permissions:
+  contents: write
+
+env:
+  DATASET_REPO: ${{ github.event.inputs.dataset_repo || 'Techietal/Task-Scheduling-Dataset' }}
+  DATASET_REF: ${{ github.event.inputs.dataset_ref || 'main' }}
+  LIMIT: ${{ github.event.inputs.limit || '0' }}
+  SHARDS: "20"
+
+jobs:
+  ablate:
+    name: shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch corpus
+        run: |
+          set -euo pipefail
+          url="https://codeload.github.com/${DATASET_REPO}/tar.gz/refs/heads/${DATASET_REF}"
+          echo "fetching $url"
+          curl -sSL --retry 3 --retry-delay 5 --max-time 900 -o corpus.tar.gz "$url"
+          ls -lh corpus.tar.gz
+          mkdir -p corpus
+          tar -xzf corpus.tar.gz -C corpus --strip-components=1
+          rm -f corpus.tar.gz
+
+      - name: Verify corpus
+        run: |
+          set -euo pipefail
+          total=$(find corpus -name '*.txt' -path '*PROCESSORS*' | wc -l)
+          echo "instance files: $total"
+          if [ "$total" -lt 2000 ]; then
+            echo "::error::expected ~2100 instance files, found $total"
+            exit 1
+          fi
+
+      - name: Score shard (policies + variants)
+        env:
+          # build_composition.py resolves the corpus at import time through
+          # _paths.find_data_root(), which only knows about
+          # scheduling-benchmark/data. --data-root alone is not enough.
+          ECTD_DATA_ROOT: ${{ github.workspace }}/corpus
+        run: |
+          set -euo pipefail
+          python3 scripts/run_variants.py \
+            --data-root corpus \
+            --shard "${{ matrix.shard }}" \
+            --shards "$SHARDS" \
+            --limit "$LIMIT" \
+            --out bench-out
+
+      - name: Upload shard result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ablation-shard-${{ matrix.shard }}
+          path: bench-out
+          retention-days: 7
+
+  aggregate:
+    name: aggregate
+    needs: ablate
+    if: always() && needs.ablate.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need a real branch ref to push back to, not a detached head.
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download all shard results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ablation-shard-*
+          path: shards
+          merge-multiple: true
+
+      - name: Check shard coverage
+        run: |
+          set -euo pipefail
+          count=$(ls shards/shard_*.jsonl 2>/dev/null | wc -l)
+          echo "shard files: $count"
+          if [ "$count" -ne "$SHARDS" ]; then
+            echo "::error::expected $SHARDS shard files, found $count"
+            exit 1
+          fi
+
+      - name: Aggregate
+        run: |
+          python3 scripts/aggregate_benchmark.py \
+            --results shards \
+            --out docs/benchmark \
+            --title "ECTD ablation: policies and design variants on the real six-family corpus"
+
+      - name: Show result
+        run: |
+          echo "--- summary.csv ---"
+          cat docs/benchmark/summary.csv
+
+      # The gate. Every policy change must carry a mechanism and a recorded
+      # outcome in docs/optimizations/registry.json, and the recorded outcome
+      # must match the artifact this run just produced. A variant that appears
+      # in the results without an entry fails here, so an optimization cannot
+      # be merged on the strength of its own argument or on a number nobody
+      # wrote down.
+      #
+      # This step regenerates OPTIMIZATIONS.md rather than diffing it. Diffing
+      # would always fail: the document is derived from the artifact this same
+      # run produces, so it is stale by construction until it is regenerated.
+      # The check that matters is the generator's own exit code, which is
+      # non-zero when a recorded outcome is contradicted by the artifact or
+      # when a policy in the registry was never scored.
+      - name: Verify every variant is documented
+        run: |
+          set -euo pipefail
+          python3 scripts/render_optimizations.py
+          echo "optimization log regenerated; every recorded outcome holds"
+
+      - name: Upload summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ablation-summary
+          path: docs/benchmark
+          retention-days: 90
+
+      - name: Commit results to the branch
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_results }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/benchmark/summary.json docs/benchmark/summary.csv \
+                  docs/benchmark/winners.csv \
+                  docs/optimizations/OPTIMIZATIONS.md
+          if git diff --cached --quiet; then
+            echo "no change in results, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Record ablation results from run ${{ github.run_id }}"
+          git push origin "HEAD:${{ github.ref_name }}"

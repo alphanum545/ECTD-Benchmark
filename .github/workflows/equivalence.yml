@@ -1,0 +1,161 @@
+name: equivalence
+
+# Proves a refactor changes nothing, without scoring the whole corpus.
+#
+# The full ablation takes ~70s of shard time and exists to measure quality. This
+# workflow exists to answer a narrower question: does the patched code produce
+# the same schedules as the published implementation? That is a correctness
+# question, and it is decidable on a small stratified sample.
+#
+# Two checks, both cheap:
+#   1. Rank equality. The patched descendant_ranks is compared against a frozen
+#      copy of the pre-patch set-bit walk on synthetic graphs of both densities
+#      and on real corpus instances. Exact equality is required, not tolerance,
+#      because the two routines visit bits in the same order and so accumulate
+#      the same floats.
+#   2. Schedule equality. Every policy and variant is scored on a stratified
+#      sample and the makespans are compared against a committed baseline
+#      artifact. Any difference is a behaviour change and fails the job.
+#
+# Trigger: Actions -> equivalence -> Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset_repo:
+        description: "owner/repo holding the corpus"
+        required: false
+        default: "Techietal/Task-Scheduling-Dataset"
+      dataset_ref:
+        description: "branch, tag or SHA of the corpus"
+        required: false
+        default: "main"
+      per_cell:
+        description: "instances per (family, nodes, processors) cell"
+        required: false
+        default: "1"
+      write_baseline:
+        description: "regenerate the baseline from THIS commit (only from a known-good tree)"
+        type: boolean
+        required: false
+        default: false
+      commit_report:
+        description: "commit the equivalence report so the registry can cite it"
+        type: boolean
+        required: false
+        default: false
+      report_path:
+        description: "where to commit the report"
+        required: false
+        default: "docs/equivalence/equivalence-report.json"
+  push:
+    branches: [main, "bench/**"]
+    paths:
+      - "ectdbench/**"
+      - "scripts/check_equivalence.py"
+      - ".github/workflows/equivalence.yml"
+
+permissions:
+  contents: write
+
+env:
+  DATASET_REPO: ${{ github.event.inputs.dataset_repo || 'Techietal/Task-Scheduling-Dataset' }}
+  DATASET_REF: ${{ github.event.inputs.dataset_ref || 'main' }}
+  PER_CELL: ${{ github.event.inputs.per_cell || '1' }}
+
+jobs:
+  equivalence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch corpus
+        run: |
+          set -euo pipefail
+          url="https://codeload.github.com/${DATASET_REPO}/tar.gz/refs/heads/${DATASET_REF}"
+          curl -sSL --retry 3 --retry-delay 5 --max-time 900 -o corpus.tar.gz "$url"
+          mkdir -p corpus
+          tar -xzf corpus.tar.gz -C corpus --strip-components=1
+          rm -f corpus.tar.gz
+          echo "instance files: $(find corpus -name '*.txt' -path '*PROCESSORS*' | wc -l)"
+
+      - name: Check equivalence
+        env:
+          ECTD_DATA_ROOT: ${{ github.workspace }}/corpus
+        run: |
+          set -euo pipefail
+          ARGS="--data-root corpus --per-cell $PER_CELL --baseline docs/benchmark/equivalence_baseline.json --out equivalence-report.json"
+          if [ "${{ github.event.inputs.write_baseline }}" = "true" ]; then
+            ARGS="$ARGS --write-baseline"
+          fi
+          python3 scripts/check_equivalence.py $ARGS
+
+      # Only runs when write_baseline was requested. The baseline is the
+      # contract every later refactor is checked against, so it has to be
+      # produced from a tree that is known good. Generating it from a patched
+      # tree would encode the new behaviour as the specification and make the
+      # check vacuous.
+      - name: Commit baseline
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.write_baseline }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/benchmark/equivalence_baseline.json
+          if git diff --cached --quiet; then
+            echo "baseline unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Record equivalence baseline from run ${{ github.run_id }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+      # The report is committed, not only uploaded. An artifact expires after
+      # 30 days; the optimization registry points at a path in the tree, so the
+      # evidence has to live in the tree or the entry becomes an assertion with
+      # nothing behind it.
+      - name: Commit report
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_report }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p docs/equivalence
+          python3 - <<'PY'
+          import json, os, sys
+          src = "equivalence-report.json"
+          with open(src) as fh:
+              report = json.load(fh)
+          report["provenance"] = {
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_url": ("https://github.com/%s/actions/runs/%s"
+                          % (os.environ["GITHUB_REPOSITORY"], os.environ["GITHUB_RUN_ID"])),
+              "head_sha": os.environ["GITHUB_SHA"],
+          }
+          out = os.environ["REPORT_PATH"]
+          os.makedirs(os.path.dirname(out), exist_ok=True)
+          with open(out, "w") as fh:
+              json.dump(report, fh, indent=1, sort_keys=True)
+          print("wrote %s: verdict=%s" % (out, report.get("verdict")))
+          PY
+          git add "$REPORT_PATH"
+          if git diff --cached --quiet; then
+            echo "report unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Record equivalence report from run ${{ github.run_id }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+        env:
+          REPORT_PATH: ${{ github.event.inputs.report_path || 'docs/equivalence/equivalence-report.json' }}
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: equivalence-report
+          path: equivalence-report.json
+          retention-days: 30

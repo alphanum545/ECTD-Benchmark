@@ -8,8 +8,14 @@ import sys, os, json, random, math, glob, collections
 from multiprocessing import Pool
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, os.path.join(ROOT, "ECTD-Benchmark"))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+import _paths                                            # noqa: E402
+
+ROOT = _paths.REPO_ROOT
+sys.path.insert(0, _paths.find_package_root())
+DATA_ROOT = _paths.find_data_root()
 
 from ectdbench import policy_table
 from ectdbench.model import Problem
@@ -96,7 +102,7 @@ def main():
     for fam in ("Montage", "Genome", "LIGO", "FFT", "GE", "LA"):
         bylevel = collections.defaultdict(list)
         for s in sorted(glob.glob(os.path.join(
-                ROOT, "scheduling-benchmark", "data", fam, "*", "*", "*.txt"))):
+                DATA_ROOT, fam, "*", "*", "*.txt"))):
             bylevel[os.path.basename(os.path.dirname(os.path.dirname(s)))].append(s)
         for lv in sorted(bylevel, key=lambda k: int(k.replace("Nodes", ""))):
             srcs = bylevel[lv][:NSRC]
@@ -110,7 +116,7 @@ def main():
     for fam, lv, p, w, c in results:
         out["%s|%s|%d" % (fam, lv, p)] = [w, c]
 
-    dest = os.path.join(ROOT, "scripts", "out", "cell_rates.json")
+    dest = os.path.join(_paths.OUT_DIR, "cell_rates.json")
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     with open(dest, "w") as fh:
         json.dump(out, fh, indent=1, sort_keys=True)

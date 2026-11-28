@@ -1,0 +1,7 @@
+policy,pooled,pct_over_best,strict_wins,shared_wins,invalid
+ECTD,267.26,0.00,1,6,0
+BPPTS,283.19,5.96,1,1,0
+IPEFT,284.31,6.38,0,3,0
+AEFT,285.77,6.93,3,0,0
+LSTD,288.24,7.85,0,2,0
+HEFT,293.51,9.83,1,2,0
